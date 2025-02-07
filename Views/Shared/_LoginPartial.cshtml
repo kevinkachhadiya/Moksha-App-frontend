@@ -1,0 +1,39 @@
+﻿
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Login</h5>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" method="post" action="@Url.Action("Login", "Auth")">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    v.modal-backdrop {
+        background-color: #ffffff; /* Darken the background behind the modal */
+        z-index: 1040; /* Ensure the backdrop is above other content */
+    }
+
+    /* White background for the modal content */
+    .modal-content {
+        background-color: #ffffff; /* White background for the modal content */
+        color: black; /* Text color for readability on the white background */
+    }
+</style>
+

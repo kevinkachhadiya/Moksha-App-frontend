@@ -1,0 +1,855 @@
+﻿@model IEnumerable<Moksha_App.Models.B_Bill>
+@{
+    ViewData["Title"] = "All_bills";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-fluid vh-100 d-flex flex-column p-0">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-0 shadow-sm">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-receipt-cutoff text-primary fs-3 me-3"></i>
+            <h2 class="text-primary fw-semibold mb-0 fs-3">Buying Billing</h2>
+        </div>
+        <button class="btn btn-gradient btn-lg d-flex align-items-center shadow-sm transition-all"
+                data-bs-toggle="modal"
+                data-bs-target="#addBillModal"
+                style="transition: all 0.2s;">
+            <i class="bi bi-plus-circle me-2 fs-5"></i>
+            <span>Add Bill</span>
+        </button>
+    </div>
+
+    <!-- Bills Table -->
+    <div class="table-responsive shadow-sm rounded-0 flex-grow-1" style="overflow-y: auto;">
+        <table class="table table-bordered table-hover align-middle text-center mb-0">
+            <thead class="table-light sticky-top">
+                <tr>
+                    <th class="text-nowrap">#</th>
+                    <th class="text-nowrap">Bill No</th>
+                    <th class="text-nowrap">Buyer Name</th>
+                    <th class="text-nowrap">Total Amount</th>
+                    <th class="text-nowrap">Payment Method</th>
+                    <th class="text-nowrap">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    int bill_no = 1;
+                    foreach (var bill in Model)
+                    {
+                        <tr class="transition-all">
+                            <td>@bill_no</td>
+                            <td>@bill.BillNo</td>
+                            <td>@bill.BuyerName</td>
+                            <td class="text-success fw-bold">
+                                @string.Format(new System.Globalization.CultureInfo("hi-IN"), "{0:C}", bill.TotalBillPrice)
+                            </td>
+                            <td>@bill.PaymentMethod</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button class="btn btn-warning btn-sm edit-bill-btn d-flex align-items-center"
+                                            data-id="@bill.B_Id"
+                                            title="Edit Bill">
+                                        <i class="bi bi-pencil-square me-1"></i>
+                                        <span class="d-none d-md-inline">Edit</span>
+                                    </button>
+                                    <button class="btn btn-danger btn-sm delete-bill-btn d-flex align-items-center"
+                                            data-id="@bill.B_Id"
+                                            title="Delete Bill">
+                                        <i class="bi bi-trash me-1"></i>
+                                        <span class="d-none d-md-inline">Delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        bill_no++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-file-earmark-excel fs-4"></i>
+                            <p class="mb-0 mt-2">No bills found. Click "Add Bill" to create one.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Bill Modal -->
+<div class="modal fade" id="addBillModal" tabindex="-1" aria-labelledby="addBillModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+            <!-- Modal Header -->
+            <div class="modal-header bg-gradient-primary text-white rounded-top-4 position-relative py-4">
+                <div class="w-100 text-center">
+                    <h5 class="modal-title fw-bold d-flex align-items-center justify-content-center">
+                        <i class="bi bi-receipt-cutoff me-2 fs-2"></i>
+                        <span class="fs-3">Create New Invoice</span>
+                    </h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3 top-50 translate-middle-y"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body p-4">
+                <form id="addBillForm" class="needs-validation" novalidate method="post">
+                    <div class="row g-4">
+                        <!-- Buyer Name Section -->
+                        <div class="col-12">
+                            <div class="form-floating position-relative">
+                                <input type="text"
+                                       class="form-control form-control-lg shadow-sm rounded-3"
+                                       id="buyerName"
+                                       name="BuyerName"
+                                       placeholder=" "
+                                       required
+                                       autocomplete="off">
+                                <label for="buyerName" class="fw-semibold text-secondary ms-3">
+                                    <i class="bi bi-person-badge me-2"></i>Customer Name
+                                </label>
+                                <div class="invalid-feedback animated fadeIn" id="buyerNameError"></div>
+                            </div>
+                        </div>
+
+                        <!-- Materials Section -->
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm hover-shadow">
+                                <div class="card-header bg-transparent border-0 py-3">
+                                    <h6 class="fw-semibold text-primary mb-0 d-flex align-items-center">
+                                        <i class="bi bi-pallet me-2 fs-5"></i>Items
+                                        <span class="badge bg-primary ms-2" id="itemCount">0</span>
+                                    </h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div id="materialsContainer" class="d-grid gap-3">
+                                        <!-- Dynamic Materials Will Be Added Here -->
+                                    </div>
+                                    <button type="button"
+                                            class="btn btn-outline-primary w-100 mt-3 py-3 rounded-3 add-material-btn"
+                                            id="addMaterialBtn">
+                                        <i class="bi bi-plus-circle me-2"></i>Add Item
+                                    </button>
+                                    <div class="invalid-feedback animated fadeIn" id="materialsError"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Total Amount -->
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 border">
+                                <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
+                                    <i class="bi bi-calculator me-2 fs-4"></i>Total Amount
+                                </h5>
+                                <h3 id="totalAmount" class="text-success fw-bold mb-0">
+                                    <span class="fs-4">₹</span><span id="totalValue">0.00</span>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Payment Section -->
+                        <div class="col-md-6">
+                            <div class="form-floating position-relative">
+                                <select class="form-select form-select-lg shadow-sm rounded-3"
+                                        id="paymentMethod" name="PaymentMethod" required>
+                                    <option value=0>💰 Cash</option>
+                                    <option value=1>💳 Credit Card</option>
+                                    <option value=2>🏦 Bank Transfer</option>
+                                </select>
+                                <label for="paymentMethod" class="fw-semibold text-secondary">
+                                    <i class="bi bi-credit-card-2-back me-2"></i>Payment Method
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Payment Status -->
+                        <div class="col-md-6">
+                            <div class="form-check form-switch form-switch-lg bg-light rounded-pill p-3 h-100 d-flex align-items-center">
+                                <input class="form-check-input shadow-sm" type="checkbox" id="isPaid" name="IsPaid" required>
+                                <label class="form-check-label fw-semibold text-secondary ms-4" for="isPaid" style="margin-left: 1.5rem!important;">
+                                    <i class="bi bi-receipt me-2"></i>Mark as Paid
+                                </label>
+                                <div class="invalid-feedback animated fadeIn" id="isPaidError"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer mt-4 px-0 pb-0">
+                        <div class="w-100 d-flex justify-content-between border-top pt-4">
+                            <button type="button"
+                                    class="btn btn-lg btn-outline-secondary rounded-pill px-4 shadow-sm d-flex align-items-center"
+                                    data-bs-dismiss="modal">
+                                <i class="bi bi-x-lg me-2"></i>Cancel
+                            </button>
+                            <button type="submit"
+                                    class="btn btn-lg btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center">
+                                <i class="bi bi-file-earmark-check me-2"></i>Create Invoice
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function () 
+    {
+
+
+            // Event listener for quantity input
+            document.addEventListener("input", (event) => {
+            if (event.target.classList.contains("quantityInput")) {
+                updateQuantity(event.target);
+            }
+        });
+
+            function updateMaterialIndices() {
+                const materialRows = document.querySelectorAll('.materialRow');
+                materialRows.forEach((row, index) => {
+                    const materialIndexElement = row.querySelector('.materialIndex');
+                    if (materialIndexElement) {
+                        materialIndexElement.textContent = ((index + 1) == 1) ? 1 : (index + 1) / 2; // Sequential numbering
+                    }
+                });
+            }
+            const form = document.getElementById("addBillForm");
+            const materialsContainer = document.getElementById("materialsContainer");
+            const paymentMethod = document.getElementById("paymentMethod");
+            const isPaidCheckbox = document.getElementById("isPaid");
+            const buyerName = document.getElementById("buyerName");
+
+            // Global alert container (Ensure it is created once)
+            let globalAlertContainer = document.getElementById("globalAlertContainer");
+            if (!globalAlertContainer) {
+                globalAlertContainer = document.createElement("div");
+                globalAlertContainer.id = "globalAlertContainer";
+                globalAlertContainer.style.position = "fixed";
+                globalAlertContainer.style.top = "10px";
+                globalAlertContainer.style.left = "50%";
+                globalAlertContainer.style.transform = "translateX(-50%)";
+                globalAlertContainer.style.zIndex = "1100";  // Ensure it's above the modal
+                globalAlertContainer.style.width = "400px";
+                globalAlertContainer.style.maxWidth = "90%";
+                globalAlertContainer.style.display = "flex";
+                globalAlertContainer.style.flexDirection = "column";
+                globalAlertContainer.style.alignItems = "center";
+                document.body.appendChild(globalAlertContainer);
+            }
+
+
+            document.getElementById("addBillForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent form submission initially
+            event.stopPropagation();
+
+            let isValid = true;
+            let errorMessages = [];
+
+            // Buyer Name Validation
+            const buyerName = document.getElementById("buyerName");
+            const buyerNameError = document.getElementById("buyerNameError");
+            const buyerNameRegex = /^[A-Za-z\s]+$/;
+
+            if (!buyerName.value.trim() || !buyerNameRegex.test(buyerName.value)) {
+                buyerName.classList.add("is-invalid");
+                buyerNameError.textContent = "❌ Please enter a valid buyer name (no numbers allowed).";
+                buyerNameError.style.display = "block";
+                isValid = false;
+            } else {
+                buyerName.classList.remove("is-invalid");
+                buyerName.classList.add("is-valid");
+                buyerNameError.textContent = "";
+                buyerNameError.style.display = "none";
+            }
+
+            // Materials Validation
+            const materialsContainer = document.getElementById("materialsContainer");
+            const materialsError = document.getElementById("materialsError");
+
+            if (materialsContainer.children.length === 0) {
+                materialsError.textContent = "❌ Please add at least one material.";
+                materialsError.style.display = "block";
+                isValid = false;
+            } else {
+                materialsError.textContent = "";
+                materialsError.style.display = "none";
+            }
+
+
+            const isMaterialsValid = validateMaterials();
+            if (!isMaterialsValid) {
+                isValid = false;
+            }
+
+            // Is Paid Checkbox Validation
+            const isPaidCheckbox = document.getElementById("isPaid");
+            const isPaidError = document.getElementById("isPaidError");
+
+            if (!isPaidCheckbox.checked) {
+                isPaidCheckbox.classList.add("is-invalid");
+                isPaidError.textContent = "💡 Please mark the bill as paid.";
+                isPaidError.style.display = "block";
+                isValid = false;
+            } else {
+                isPaidCheckbox.classList.remove("is-invalid");
+                isPaidError.textContent = "";
+                isPaidError.style.display = "none";
+            }
+
+            // If form is valid, submit it
+            if (isValid) {
+                this.submit();
+            }
+        });
+
+            // Fetch materials when the modal is shown
+            $('#addBillModal').on('shown.bs.modal', function () {
+                fetchMaterials(); // Call async function to fetch materials
+            });
+
+            //handle add material button to pop up form model
+            document.getElementById('addMaterialBtn').addEventListener('click', function () {
+                const materialsContainer = document.getElementById('materialsContainer');
+                const newRow = document.createElement('div');
+                const materialRows = materialsContainer.children; // Get the current material rows
+                let materialIndex = materialRows.length + 1; // Get the correct material index
+                newRow.classList.add('materialRow', 'row', 'g-3', 'pl-4', 'ml-4', 'mb-4');
+                newRow.innerHTML = `
+                    <div class="materialRow row g-3  align-items-center p-4 border rounded-4 bg-white shadow-sm position-relative">
+
+        <!-- Header Section -->
+        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold text-primary mb-0">
+                <i class="bi bi-box-seam me-2"></i>Material <span class="materialIndex">${materialIndex}</span>
+            </h6>
+            <button type="button" class="btn btn-sm btn-outline-danger removeMaterialBtn rounded-circle shadow-sm" title="Remove">
+                <i class="bi bi-trash3"></i>
+            </button>
+        </div>
+
+        <!-- Material Details Section -->
+        <div class="row g-3 align-items-end">
+
+            <!-- Material Dropdown -->
+            <div class="col-md-5"> <!-- Increased to col-md-5 for more space -->
+                <label class="form-label small fw-semibold text-secondary mb-2" for="MaterialId_${materialIndex}">
+                    <i class="bi bi-box me-2"></i>Material
+                </label>
+                <select class="form-select form-select-lg shadow-sm rounded-3" id="MaterialId_${materialIndex}" name="MaterialId[]" required>
+                    <option value="" selected disabled>Select Material</option>
+                    <!-- Dynamic options go here -->
+                </select>
+            </div>
+
+            <!-- Quantity and Total Quantity Section -->
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold text-secondary mb-2" for="Quantity_${materialIndex}">
+                    <i class="bi bi-calculator me-2"></i>Quantity
+                </label>
+                <div class="input-group input-group-lg shadow-sm rounded-3">
+                    <!-- Quantity Input -->
+                    <input type="text"
+                           class="form-control quantityInput rounded-start-3"
+                           id="Quantity_${materialIndex}"
+                           name="Quantity[]"
+                           placeholder="Qty"
+                           required
+                           style="font-size: 1.0rem; padding: 8px 12px; flex: 5;">
+
+                    <!-- Equals Sign -->
+                    <span class="input-group-text bg-light d-flex align-items-center justify-content-center"
+                          style="font-size: 1.1rem; flex: 0.8; padding: 0 4px;">=</span>
+
+                    <!-- Total Quantity Group -->
+                    <div class="d-flex flex-column" style="flex: 2;">
+                        <!-- Total Kg Label -->
+                        <small class="form-text text-muted text-center mb-1" style="font-size: 0.75rem;">
+                            Total Kg
+                        </small>
+
+                        <!-- Total Quantity Input -->
+                        <input type="text"
+                               class="form-control totalQuantity text-dark bg-light border-0 py-2"
+                               id="totalQuantity_${materialIndex}"
+                               name="TotalQuantity[]"
+                               value="0"
+                               readonly
+                               style="font-size: 1.1rem; padding: 8px 10px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Section -->
+            <div class="col-md-2">
+                <label class="form-label small fw-semibold text-secondary mb-2" for="Price_${materialIndex}">
+                    <i class="bi bi-currency-rupee me-2"></i>Price (₹/Kg)
+                </label>
+                <input type="number"
+                       class="form-control form-control-lg shadow-sm rounded-3"
+                       id="Price_${materialIndex}"
+                       name="Price[]"
+                       placeholder="Price"
+                       step="0.01"
+                       required
+                       oninput="calculateTotal(${materialIndex})">
+            </div>
+
+            <!-- Total Price Section -->
+            <div class="col-md-1"> <!-- Reduced to col-md-1 for better spacing -->
+                <label class="form-label small fw-semibold text-secondary mb-2" for="TotalPrice_${materialIndex}">
+                    <i class="bi bi-cash-stack me-2"></i>Total
+                </label>
+                <input type="text"
+                       class="form-control form-control-lg totalPrice shadow-sm rounded-3 bg-light"
+                       id="TotalPrice_${materialIndex}"
+                       name="TotalPrice[]"
+                       value="0"
+                       readonly>
+            </div>
+        </div>
+    </div>
+                `;
+
+                // Append the new row to the container
+                materialsContainer.appendChild(newRow);
+                populateMaterialDropdown(newRow); // Populate the dropdown with materials for the new row
+
+                newRow.querySelector('.removeMaterialBtn').addEventListener('click', function () {
+                    const materialIndexElement = newRow.querySelector('.materialIndex');
+                    const currentIndex = parseInt(materialIndexElement.textContent);
+                    newRow.remove();
+                    updateMaterialIndices(); // Update material indices after removal
+                updateGrandTotal();
+                });
+            });
+           
+            // Handle material dropdown change event
+            document.getElementById('materialsContainer').addEventListener('change', function (e) {
+                if (e.target && e.target.name === 'MaterialId[]') {
+                    const materialSelect = e.target;
+                    const newRow = materialSelect.closest('.materialRow');
+                    handleMaterialChange(materialSelect, newRow);
+                }
+            });
+
+            // Update total amount when price changes
+            document.addEventListener('input', function (e) {
+                if (e.target.matches('input[name="Price[]"]')) {
+                updateGrandTotal();
+                }
+            });
+
+            // Fetch materials from server
+            async function fetchMaterials() {
+                try {
+                    const response = await fetch('/Materials/all_list');
+                    if (response.ok) {
+                        materials = await response.json(); // Save materials globally
+                        populateMaterialDropdown(); // Populate dropdown after data is available
+                    } else {
+                        console.error("Failed to fetch materials.", response);
+                    }
+                } catch (error) {
+                    console.error("Error fetching materials:", error);
+                }
+            }
+
+            // Populate the material dropdown
+            function populateMaterialDropdown(newRow = null) {
+                const materialRows = document.querySelectorAll('.materialRow');
+                materialRows.forEach(row => {
+                    const selectElement = row.querySelector('select[name="MaterialId[]"]');
+                    if (newRow && row !== newRow) return; // Skip if this is not the newly added row
+
+                    // Clear previous options
+                    selectElement.innerHTML = '<option value="">Select Material</option>';
+
+                    // Populate the material options
+                    materials.forEach(material => {
+                        const option = document.createElement('option');
+                        option.value = material.id;
+                        option.textContent = `${material.colorName} - ₹${material.basePrice.toFixed(2)}`;
+                        selectElement.appendChild(option);
+                    });
+                });
+            }
+
+            // Handle material change and set base price
+            function handleMaterialChange(materialSelect, newRow) {
+                const selectedMaterial = materials.find(material => material.id == materialSelect.value);
+                const priceInput = newRow.querySelector('input[name="Price[]"]');
+
+                if (selectedMaterial) {
+                    priceInput.value = selectedMaterial.basePrice.toFixed(2); // Set the price
+                } else {
+                    priceInput.value = ''; // Reset price if no material selected
+                }
+
+            updateGrandTotal(); // Recalculate the total amount
+            }
+
+ 
+            function showAlert(message, type = "danger", duration = 3000) {
+            const alertDiv = document.createElement("div");
+            alertDiv.classList.add("alert", `alert-${type}`, "shadow-lg", "p-3", "rounded", "animated-alert");
+            alertDiv.style.position = "relative";
+            alertDiv.style.marginBottom = "10px";
+            alertDiv.style.opacity = "0";
+            alertDiv.style.transform = "scale(0.9)";
+            alertDiv.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+            alertDiv.style.width = "100%";
+            alertDiv.style.maxWidth = "400px";
+            alertDiv.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.1)";
+            alertDiv.style.borderLeft = `5px solid ${type === "danger" ? "#dc3545" : type === "warning" ? "#ffc107" : "#28a745"}`;
+
+            // Progress bar for auto-hide timer
+            const progressBar = document.createElement("div");
+            progressBar.style.height = "3px";
+            progressBar.style.width = "100%";
+            progressBar.style.position = "absolute";
+            progressBar.style.bottom = "0";
+            progressBar.style.left = "0";
+            progressBar.style.backgroundColor = type === "danger" ? "#dc3545" : type === "warning" ? "#ffc107" : "#28a745";
+            progressBar.style.transition = `width ${duration}ms linear`;
+
+            alertDiv.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold">${message}</span>
+                                    <button type="button" class="btn-close" aria-label="Close"></button>
+                                </div>
+                            `;
+
+            alertDiv.appendChild(progressBar);
+            globalAlertContainer.appendChild(alertDiv);
+
+            // Show the alert with animation
+            setTimeout(() => {
+                alertDiv.style.opacity = "1";
+                alertDiv.style.transform = "scale(1)";
+                progressBar.style.width = "0"; // Progress bar animation
+            }, 100);
+
+            // Auto-hide after specified duration
+            setTimeout(() => {
+                alertDiv.style.opacity = "0";
+                alertDiv.style.transform = "scale(0.9)";
+                setTimeout(() => alertDiv.remove(), 500);
+            }, duration);
+
+            // Close button event
+            alertDiv.querySelector(".btn-close").addEventListener("click", function () {
+                alertDiv.style.opacity = "0";
+                alertDiv.style.transform = "scale(0.9)";
+                setTimeout(() => alertDiv.remove(), 500);
+            });
+        }
+     });
+
+    function evaluateExpression(expression) {
+        try {
+            const sanitized = expression.replace(/[^0-9+\-*/().]/g, "");
+
+            // Corrected regex patterns
+            if (!sanitized ||
+                /^[+*\/.]/.test(sanitized) || // Hyphen removed from start check
+                /[+*\/.-]{2,}/.test(sanitized) || // Hyphen moved to end
+                /[+*\/.-]$/.test(sanitized) // Hyphen moved to end
+            ) {
+                return NaN;
+            }
+
+            const result = new Function(`return ${sanitized}`)();
+            return typeof result === "number" && isFinite(result) ? result : NaN;
+        } catch (error) {
+            return NaN;
+        }
+    }
+
+    function updateQuantity(inputField) {
+        const row = inputField.closest('.materialRow');
+        const totalQuantityField = row.querySelector('.totalQuantity');
+        const priceInput = row.querySelector('input[name="Price[]"]');
+        const totalPriceField = row.querySelector('.totalPrice');
+
+        const expression = inputField.value.trim();
+        const quantity = expression ? evaluateExpression(expression) : 0;
+
+        if (!isNaN(quantity) && quantity >= 0) {
+            totalQuantityField.value = quantity.toFixed(2);
+            inputField.setCustomValidity("");
+
+            const price = parseFloat(priceInput.value) || 0;
+            totalPriceField.value = (quantity * price).toFixed(2);
+        } else {
+            totalQuantityField.value = "0.00";
+            totalPriceField.value = "0.00";
+            inputField.setCustomValidity("Invalid expression. Use numbers and + - * /");
+        }
+
+        updateGrandTotal();
+    }
+
+    // Calculate grand total for all materials
+    function updateGrandTotal() {
+        let grandTotal = 0;
+        document.querySelectorAll('.materialRow').forEach(row => {
+            const totalPrice = parseFloat(row.querySelector('.totalPrice').value) || 0;
+            grandTotal += (totalPrice)/2;
+        });
+        document.getElementById('totalAmount').textContent = `₹${grandTotal.toFixed(2)}`;
+    }
+
+    // Event listener for quantity inputs
+    document.addEventListener("input", (event) => {
+        if (event.target.classList.contains("quantityInput")) {
+            updateQuantity(event.target);
+        }
+    });
+
+    // Event listener for price inputs
+    document.addEventListener("input", (event) => {
+        if (event.target.matches('input[name="Price[]"]')) {
+            updateQuantity(event.target.closest('.materialRow').querySelector('.quantityInput'));
+        }
+    });
+
+    // Validate Buyer Name
+    function validateBuyerName() {
+        const buyerName = document.getElementById('buyerName').value.trim();
+        const buyerNameError = document.getElementById('buyerNameError');
+        const regex = /^[A-Za-z\s]+$/; // Only letters and spaces allowed
+
+        if (!buyerName || !regex.test(buyerName)) {
+            buyerNameError.textContent = "Please enter a valid buyer name (no numbers allowed).";
+            buyerNameError.style.display = 'block'; // Show the error
+            return false;
+        }
+        buyerNameError.textContent = "";
+        return true;
+    }
+       
+    // Validate validateMaterials
+    function validateMaterials() {
+        const materialRows = document.querySelectorAll('.materialRow');
+        let isValid = true;
+
+        materialRows.forEach(row => {
+            const materialSelect = row.querySelector('select[name="MaterialId[]"]');
+            const quantityInput = row.querySelector('input[name="Quantity[]"]');
+            const priceInput = row.querySelector('input[name="Price[]"]');
+
+            // Reset previous validation styles
+            materialSelect.classList.remove("is-invalid");
+            quantityInput.classList.remove("is-invalid");
+            priceInput.classList.remove("is-invalid");
+
+            // Material selection validation
+            if (!materialSelect.value) {
+                materialSelect.classList.add("is-invalid");
+                materialSelect.style.display = 'block'; // Show the error
+                isValid = false;
+            }
+
+            // Quantity validation (must be greater than 0)
+            if (!quantityInput.value || isNaN(quantityInput.value) || parseFloat(quantityInput.value) <= 0) {
+                quantityInput.classList.add("is-invalid");
+                errorFeedback.style.display = 'block'; // Show error message
+                isValid = false;
+            }
+
+
+            // Price validation (must be greater than 0)
+            if (!priceInput.value || isNaN(priceInput.value) || parseFloat(priceInput.value) <= 0) {
+                priceInput.classList.add("is-invalid");
+                priceInput.style.display = 'block'; // Show the error
+                isValid = false;
+            }
+        });
+
+        return isValid;
+    }
+
+</script>
+
+<style>
+    .table-row-hover:hover {
+        background-color: rgba(0, 123, 255, 0.1) !important;
+    }
+
+    .modal-header.bg-gradient {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+    }
+
+    .transition-all {
+        transition: all 0.2s ease;
+    }
+
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(45deg, #007bff, #00bfff);
+        color: white;
+        border: none;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    .btn-gradient:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+    }
+
+    .add-material-btn {
+        transition: all 0.3s ease;
+        color: #0d6efd !important;
+    }
+
+    .add-material-btn:hover {
+        transform: translateY(-2px);
+        color: #0b5ed7 !important;
+    }
+
+    .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
+
+    .form-floating label {
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus ~ label {
+        color: #0d6efd !important;
+    }
+
+    .invalid-feedback {
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: #fff5f5;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+        display: none; /* Hide by default */
+    }
+
+    .hover-shadow {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-shadow:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .animated.fadeIn {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    #totalValue {
+        transition: color 0.3s ease;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .add-material-btn {
+        transition: all 0.3s ease;
+        color: #0d6efd !important;
+    }
+    <!-- Payment Status -->
+<div class="col-md-6">
+    <div class="form-check form-switch form-switch-lg bg-light rounded-pill p-3 h-100 d-flex align-items-center shadow-sm">
+        <input class="form-check-input shadow-sm" type="checkbox" id="isPaid" name="IsPaid" required>
+        <label class="form-check-label fw-semibold text-secondary ms-3" for="isPaid">
+            <i class="bi bi-receipt me-2"></i>Mark as Paid
+        </label>
+        <div class="invalid-feedback animated fadeIn" id="isPaidError"></div>
+    </div>
+</div>
+
+<style>
+    /* Adjusting the form-switch container for better alignment and spacing */
+    .form-switch {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 50rem;
+        background-color: #f8f9fa;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced checkbox */
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    /* When the checkbox is checked */
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    /* Label styling with added margin for better spacing */
+    .form-check-label {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-left: 12px;
+    }
+
+   
+
+    /* Show feedback when needed */
+    .invalid-feedback.show {
+        display: none;
+        opacity: 1;
+    }
+
+    /* Animation for fadeIn effect */
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Box shadow for hover effect */
+    .form-switch:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+</style>

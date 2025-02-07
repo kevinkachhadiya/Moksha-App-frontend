@@ -1,0 +1,599 @@
+﻿@model IEnumerable<Moksha_App.Models.Material>
+
+@{
+    // Check if TempData contains a success message
+    var successMessage = TempData["Success"] as string;
+    var deleteMessage = TempData["Delete"] as string;
+    var modifyMessage = TempData["modify"] as string;
+    ViewData["Title"] = "Material Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            showAlert("@successMessage", "success");
+        });
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(deleteMessage))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            showAlert("@deleteMessage", "danger");
+        });
+    </script>
+}
+
+@if (!string.IsNullOrEmpty(modifyMessage))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            showAlert("@modifyMessage", "warning");
+        });
+    </script>
+}
+<h2>Material Management</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+else
+{
+    <div class="container mt-5">
+        <!-- Header Section -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary fw-bold">Materials List</h2>
+            <button class="btn btn-success btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+                <i class="bi bi-plus-circle me-2"></i>Add Material
+            </button>
+        </div>
+
+        <!-- Materials Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-center shadow-lg">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col" class="text-uppercase">#</th>
+                        <th scope="col" class="text-uppercase">Color Name</th>
+                        <th scope="col" class="text-uppercase">Base Price</th>
+                        <th scope="col" class="text-uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    @if (Model != null && Model.Any())
+                    {
+                        int material_no = 1;
+
+                        foreach (var material in Model)
+                        {
+                            <tr class="table-row-hover">
+                                <td class="fw-bold text-dark">@material_no</td>
+                                <td class="text-dark">@material.ColorName</td>
+                                <td class="text-success fw-bold">@string.Format(new System.Globalization.CultureInfo("hi-IN"), "{0:C}", material.BasePrice)</td>
+                                <td>
+                                    <!-- Modify Button -->
+                                    <button class="btn btn-outline-warning btn-sm details-btn me-2 shadow d-block d-sm-inline mb-2 mb-sm-0"
+                                            data-id="@material.Id"
+                                            data-material-no="@material_no"
+                                            data-color="@material.ColorName"
+                                            data-base-price="@material.BasePrice">
+                                        <i class="bi bi-pencil-square"></i> Modify
+                                    </button>
+
+                                    <!-- Delete Button -->
+                                    <button class="btn btn-outline-danger btn-sm delete-btn shadow d-block d-sm-inline"
+                                            data-id="@material.Id">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                            material_no++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <em>No materials found. Click "Add Material" to create one.</em>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg">
+                <!-- Modal Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="modifyModalLabel">
+                        <i class="bi bi-pencil-square me-2"></i> Modify Material
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="modifyMaterialForm" novalidate>
+                        <!-- Material Number (Disabled) -->
+                        <div class="mb-4">
+                            <label for="materialNo" class="form-label fw-bold">Material Number</label>
+                            <input type="text" class="form-control bg-light text-dark" id="materialNo" disabled>
+                        </div>
+
+                        <!-- Color Name -->
+                        <div class="mb-4">
+                            <label for="colorName" class="form-label fw-bold">Color Name</label>
+                            <input type="text" class="form-control" id="colorName" placeholder="Enter color name" required>
+                            <div class="form-text text-muted">E.g., Red, Blue, Green</div>
+                        </div>
+
+                        <!-- Base Price -->
+                        <div class="mb-4">
+                            <label for="basePrice" class="form-label fw-bold">Base Price</label>
+                            <input type="number" class="form-control" id="basePrice" placeholder="Enter base price" step="any" required>
+                            <div class="form-text text-muted">Enter the price in your local currency.</div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Confirm Deletion Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <!-- Modal Header -->
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold" id="deleteConfirmModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body text-center">
+                    <p class="fw-bold mb-3">Are you sure you want to delete this item?</p>
+                    <p class="text-muted small">This action cannot be undone.</p>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger px-4" id="confirmDeleteBtn">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <!-- Enhanced Add Material Modal -->
+    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <!-- Modal Header -->
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold" id="addMaterialModalLabel">
+                        <i class="bi bi-plus-circle me-2"></i> Add New Material
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="addMaterialForm" method="post" action="@Url.Action("Create", "Materials")" novalidate>
+                        <div class="mb-3">
+                            <label for="ColorName" class="form-label fw-semibold">Color Name</label>
+                            <input type="text" class="form-control" id="ColorName" name="ColorName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="BasePrice" class="form-label fw-semibold">Base Price (₹)</label>
+                            <input type="number" class="form-control" id="BasePrice" name="BasePrice" required min="0" step="any">
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                    <button type="submit" form="addMaterialForm" class="btn btn-primary px-4">
+                        <i class="bi bi-save"></i> Save Material
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Form validation for adding materials
+        const form = document.getElementById("addMaterialForm");
+        if (form) {
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                // Get form input values
+                const colorName = document.getElementById("ColorName").value.trim();
+                const basePrice = document.getElementById("BasePrice").value.trim();
+
+                // Clear previous error messages
+                const errorMessages = form.querySelectorAll(".error-message");
+                errorMessages.forEach((msg) => msg.remove());
+
+                let isValid = true;
+
+                // Validate Color Name
+                if (!colorName) {
+                    showError("ColorName", "Color Name is required.");
+                    isValid = false;
+                } else if (!/^[a-zA-Z0-9\s]+$/.test(colorName)) {
+                    showError("ColorName", "Color Name must contain only letters and numbers.");
+                    isValid = false;
+                } else if (colorName.length < 3) {
+                    showError("ColorName", "Color Name must be at least 3 characters.");
+                    isValid = false;
+                } else if (colorName.length > 50) {
+                    showError("ColorName", "Color Name cannot exceed 50 characters.");
+                    isValid = false;
+                }
+
+                // Validate Base Price
+                if (!basePrice) {
+                    showError("BasePrice", "Base Price is required.");
+                    isValid = false;
+                } else if (isNaN(basePrice) || parseFloat(basePrice) <= 0) {
+                    showError("BasePrice", "Please enter a valid non-negative number for Base Price.");
+                    isValid = false;
+                }
+
+                // Submit the form if valid
+                if (isValid) {
+                    console.log("Form submitted successfully!");
+                    form.submit();
+                }
+            });
+
+            function showError(inputId, message) {
+                const input = document.getElementById(inputId);
+                const error = document.createElement("span");
+                error.className = "text-danger error-message";
+                error.textContent = message;
+
+                input.classList.add("is-invalid");
+                input.parentNode.appendChild(error);
+
+                // Remove 'is-invalid' class when user starts typing
+                input.addEventListener("input", function () {
+                    input.classList.remove("is-invalid");
+                    if (error.parentNode) {
+                        error.parentNode.removeChild(error);
+                    }
+                });
+            }
+        }
+
+        // Alert box behavior
+        const alertBox = document.getElementById('alertBox');
+        if (alertBox) {
+            alertBox.style.display = 'block'; // Show the alert
+            alertBox.classList.add('show'); // Add class for fade-in effect
+
+            setTimeout(function () {
+                alertBox.classList.remove('show'); // Fade out effect
+                setTimeout(function () {
+                    alertBox.style.display = 'none'; // Hide after fade-out
+                }, 500);
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Handle Modify button click
+        document.querySelectorAll('.modify-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const materialId = this.getAttribute('data-id');
+                fetch(`/YourController/Modify?id=${materialId}`, { method: 'GET' })
+                    .then(response => response.text())
+                    .then(data => {
+                        document.querySelector('#actionModalLabel').textContent = "Modify Material";
+                        document.querySelector('#actionModal .modal-body').innerHTML = data;
+                        new bootstrap.Modal(document.getElementById('actionModal')).show();
+                    });
+            });
+        });
+
+        // Handle Delete button click
+        let deleteMaterialId = null; // Variable to hold the ID of the material to delete
+        const deleteConfirmModalElement = document.getElementById('deleteConfirmModal');
+        if (deleteConfirmModalElement) {
+            const deleteConfirmModal = new bootstrap.Modal(deleteConfirmModalElement);
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    deleteMaterialId = this.getAttribute('data-id'); // Store the ID of the material
+                    deleteConfirmModal.show(); // Show the custom modal
+                });
+            });
+
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+                if (deleteMaterialId) {
+                    fetch(`/Materials/Delete_material?id=${deleteMaterialId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log(`Material with ID ${deleteMaterialId} deleted successfully.`);
+                                location.reload(); // Refresh the page to reflect changes
+                            } else {
+                                // Handle non-200 HTTP responses
+                                return response.json().then(errorData => {
+                                    console.error(`Failed to delete material. Error: ${errorData.message || 'Unknown error'}`);
+                                    alert(`Error: ${errorData.message || 'Unable to delete the material. Please try again.'}`);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            // Handle network or other errors
+                            console.error('Error during delete operation:');
+                            alert('An error occurred while deleting the material. Please check your connection and try again.');
+                        });
+                } else {
+                    console.error('No material ID provided for deletion.');
+                    alert('No material selected for deletion.');
+                }
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Handle Modify button click
+        document.querySelectorAll('.details-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                // Get material details from button's data attributes
+                const materialId = this.getAttribute('data-id');
+                const materialNo = this.getAttribute('data-material-no');
+                const colorName = this.getAttribute('data-color');
+                const basePrice = this.getAttribute('data-base-price');
+
+                // Set modal fields with material data
+                document.getElementById('materialNo').value = materialNo; // material number
+                document.getElementById('colorName').value = colorName;   // color name
+                document.getElementById('basePrice').value = basePrice;   // base price
+
+                // Show the modal
+                const modifyModal = new bootstrap.Modal(document.getElementById('modifyModal'));
+                modifyModal.show();
+
+                // Handle form submission
+                document.getElementById('modifyMaterialForm').onsubmit = function (event) {
+                    event.preventDefault();
+
+                    // Get the updated values
+                    const updatedColorName = document.getElementById('colorName').value.trim();
+                    const updatedBasePrice = document.getElementById('basePrice').value.trim();
+
+                    // Clear previous error messages
+                    document.querySelectorAll('.error-message').forEach(msg => msg.remove());
+                    let isValid = true;
+
+                    // Validate Color Name
+                    if (!updatedColorName) {
+                        showError('colorName', 'Color Name is required.');
+                        isValid = false;
+                    } else if (!/^[a-zA-Z0-9\s]+$/.test(updatedColorName)) {
+                        showError('colorName', 'Color Name must contain only letters, numbers, and spaces.');
+                        isValid = false;
+                    } else if (updatedColorName.length < 3) {
+                        showError('colorName', 'Color Name must be at least 3 characters.');
+                        isValid = false;
+                    } else if (updatedColorName.length > 50) {
+                        showError('colorName', 'Color Name cannot exceed 50 characters.');
+                        isValid = false;
+                    }
+
+                    // Validate Base Price
+                    if (!updatedBasePrice) {
+                        showError('basePrice', 'Base Price is required.');
+                        isValid = false;
+                    } else if (isNaN(updatedBasePrice) || updatedBasePrice < 1) {
+                        showError('basePrice', 'Please enter a valid non-negative number for Base Price.');
+                        isValid = false;
+                    }
+
+                    // If validation fails, stop form submission
+                    if (!isValid) {
+                        return;
+                    }
+
+                    // Send data via Fetch if valid
+                    fetch(`/Materials/Modify/${materialId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            Id: materialId, // Ensure this matches the route parameter
+                            ColorName: updatedColorName,
+                            BasePrice: updatedBasePrice
+                        })
+                    })
+                        .then(response => {
+                            if (response.ok) { // Check if the HTTP status is 200-299
+                                if (response.status === 204) {
+                                 
+                                    location.reload();
+                                } else {
+                                    return response.json(); // Parse JSON for other status codes
+                                }
+                            } else {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                        })
+                        .then(data => {
+                            if (data) {
+                                // Handle response data if present
+                                if (data.success) {
+                                    
+                                    location.reload();
+                                } else {
+                                    alert('Error updating material!');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Fetch Error:", error);
+                            alert('Error updating material!');
+                        });
+                };
+            });
+        });
+
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.createElement('span');
+            error.className = 'text-danger error-message';
+            error.textContent = message;
+            input.parentNode.appendChild(error);
+
+            // Remove error message on input change
+            input.addEventListener('input', function () {
+                if (error.parentNode) {
+                    error.parentNode.removeChild(error);
+                }
+            });
+        }
+    });
+</script>
+<style>
+
+
+
+    #alertBox {
+    position: fixed; /* Fixed at the top */
+    top: 10px; /* Slight margin from the top */
+    left: 50%;
+    transform: translateX(-50%); /* Center the alert horizontally */
+    z-index: 1050; /* Ensure it's on top */
+    width: auto;
+    max-width: 90%; /* Prevent it from stretching too wide */
+    border-radius: 12px; /* Rounded corners */
+    padding: 15px 65px; /* Padding for more space around the content */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow effect for a lifted look */
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition for fade-in/out and slight scale effect */
+    display: none; /* Hide by default */
+    background-color: #48bb78; /* Tailwind's green-500 color for success */
+    color: #ffffff; /* White text color */
+}
+
+#alertBox.show {
+    opacity: 1; /* Fade in */
+    transform: translateX(-50%) scale(1.05); /* Slightly enlarged */
+}
+
+#alertBox .btn-close {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: #fff;
+    opacity: 0.8;
+    cursor: pointer; /* Pointer cursor for the close button */
+    transition: opacity 0.3s, transform 0.3s; /* Smooth transition for hover effect */
+}
+
+#alertBox .btn-close:hover {
+    opacity: 1; /* Hover effect for the close button */
+    transform: rotate(90deg); /* Rotate close button on hover */
+}
+
+/* Mobile-Responsive Design: Center on screen and adjust padding */
+@@media (max-width: 767px) {
+    #alertBox {
+        max-width: 100%; /* Take up more width on smaller screens */
+        padding: 15px 40px; /* Reduce padding for smaller screens */
+        font-size: 14px; /* Slightly smaller text */
+    }
+}
+
+/* Animation for smooth fade-in */
+@@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95); /* Start slightly above and smaller */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1); /* End at normal position and size */
+    }
+}
+
+/* Animation for smooth fade-out */
+@@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1); /* Start at normal position and size */
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95); /* End slightly above and smaller */
+    }
+}
+
+#alertBox {
+    animation: fadeIn 0.5s ease-out;
+}
+
+#alertBox.hide {
+    animation: fadeOut 0.5s ease-out forwards; /* Use forwards to keep end state after animation */
+}
+
+    .modal-footer .btn:hover {
+        transform: scale(1.05);
+        transition: all 0.2s ease-in-out;
+    }
+
+    .modal-header {
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .modal-footer {
+        border-top: 2px solid #e9ecef;
+    }
+
+    .modal-footer .btn:hover {
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-header {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.modal-footer {
+    border-top: 2px solid #e9ecef;
+}
+</style>
