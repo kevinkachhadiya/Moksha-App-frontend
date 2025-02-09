@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Moksha_App.Controllers;
+using Moksha_App.Models;
 using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,8 +17,10 @@ if (!Directory.Exists(keysPath))
 
 // ✅ Configure Data Protection (Linux-compatible)
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(keysPath)) // 🔴 Still not persistent in Render
-    .SetApplicationName("Moksha_App"); // ✅ Removed ProtectKeysWithDpapiNG()
+    .SetApplicationName("Moksha_App")
+    .DisableAutomaticKeyGeneration(); // Prevents key warnings
+
+builder.Services.AddHostedService<KeepAliveService>();
 
 // ✅ Authentication Configuration
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -88,5 +91,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=Login}");
+
+Console.WriteLine("[INFO] Application started successfully and is running...");
 
 app.Run();
