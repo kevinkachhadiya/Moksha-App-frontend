@@ -14,9 +14,10 @@ if (!Directory.Exists(keysPath))
     Console.WriteLine($"[INFO] Created Data Protection Keys directory: {keysPath}");
 }
 
-// ✅ Configure Data Protection
+// ✅ Configure Data Protection (Use Redis or Blob Storage for Persistence)
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath)) // ❌ Not persistent in Render (Consider Redis/Azure Blob)
+    .ProtectKeysWithDpapiNG() // ✅ Encrypt keys for security
     .SetApplicationName("Moksha_App");
 
 // ✅ Authentication Configuration
@@ -59,17 +60,25 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// ✅ Force HTTPS Redirect in Production
-if (app.Environment.IsProduction())
+// ✅ Disable HTTPS Redirection for Render (since Render already provides HTTPS)
+if (!app.Environment.IsDevelopment())
+{
+    Console.WriteLine("[INFO] Running in production mode. Skipping UseHttpsRedirection.");
+
+    // ✅ Explicitly bind to PORT (Fixes Render shutting down issue)
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    app.Urls.Add($"http://0.0.0.0:{port}");
+}
+else
 {
     app.UseHttpsRedirection();
-
-    // ✅ Configure headers for reverse proxy (Required for Render)
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    });
 }
+
+// ✅ Configure headers for reverse proxy (Required for Render)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // ✅ Middleware Pipeline
 app.UseStaticFiles();
@@ -83,5 +92,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=Login}");
 
-Console.WriteLine("[INFO] Application is starting...");
 app.Run();
