@@ -23,6 +23,7 @@ builder.Services.AddControllersWithViews(options =>
     ));
 });
 
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -37,18 +38,12 @@ if (!app.Environment.IsDevelopment())
 }
 if (app.Environment.IsProduction())
 {
-    builder.Services.AddDataProtection()
-        .PersistKeysToStackExchangeRedis(() =>
-        {
-            var redis = ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionString"]);
-            return redis.GetDatabase();
-        }, "DataProtection-Keys")
-        .SetApplicationName("MyApp");
+
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     });
-
+ 
 }
 
 app.UseStaticFiles();
