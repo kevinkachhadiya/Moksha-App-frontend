@@ -1,19 +1,19 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.DataProtection;
-using StackExchange.Redis;
-using Moksha_App.Controllers;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Moksha_App.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/Auth/Login";
-                options.LogoutPath = "/Auth/Logout";
-                options.AccessDeniedPath = "/Auth/AccessDenied";
-            });
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+    });
 
+// Global Authorization Filter
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
@@ -23,45 +23,46 @@ builder.Services.AddControllersWithViews(options =>
     ));
 });
 
+// CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// 🔴 REMOVE Redis Configuration because it's handled by another API
 
-builder.Services.AddDataProtection()
-    .ProtectKeysWithDpapi();
-
-
+// Build application
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware Configuration
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Configure headers for reverse proxy (Required for Render)
 if (app.Environment.IsProduction())
 {
-    builder.WebHost.ConfigureKestrel(serverOptions =>
-    {
-        serverOptions.ListenAnyIP(5000);
-        serverOptions.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps());
-    });
-
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     });
- 
 }
 
+// Middleware Pipeline
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("AllowAllOrigins");
 
+// Default Route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=Login}");
+
 app.Run();
