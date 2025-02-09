@@ -18,7 +18,7 @@ if (!Directory.Exists(keysPath))
 // ✅ Configure Data Protection (Linux-compatible)
 builder.Services.AddDataProtection()
     .SetApplicationName("Moksha_App")
-    .DisableAutomaticKeyGeneration(); // Prevents key warnings
+    .UseEphemeralDataProtectionProvider(); // ✅ Uses in-memory keys (will reset on restart)
 
 builder.Services.AddHostedService<KeepAliveService>();
 
