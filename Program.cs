@@ -5,10 +5,9 @@ using Moksha_App.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Disable Data Protection (use this if your app doesn't need it)
 builder.Services.AddDataProtection()
-    .DisableAutomaticKeyGeneration();
-
+    .PersistKeysToFileSystem(new DirectoryInfo("/app-keys")) // Store keys in container (temporary)
+    .SetApplicationName("MyApp"); // Ensures consistent keys across app instances
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
