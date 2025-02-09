@@ -83,7 +83,8 @@ namespace Moksha_App.Controllers
 
             if (response.StatusCode == HttpStatusCode.Created) // Check for 201 Created
             {
-                TempData["Success"] = "Material Name: " + material.ColorName + " [Added Successfully]"; // Set success message
+                TempData["Success"] = "Material '" + material.ColorName + "' added!";
+
 
                 // If creation is successful, redirect to "All_Materials"
                 return RedirectToAction("All_Materials");
@@ -111,11 +112,10 @@ namespace Moksha_App.Controllers
     
             // response
             var response = await _httpClient.DeleteAsync(baseAdd+Id);
-            Console.WriteLine(baseAdd);
 
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
-                TempData["delete"] = "Material_No: " + Id + " [Deleted Successfully]"; // Set delete message
+                TempData["Delete"] = "Material Id : '" + Id + "' deleted successfully!";
                 return NoContent();
             }
             else
@@ -170,7 +170,7 @@ namespace Moksha_App.Controllers
 
                 if (response.StatusCode == HttpStatusCode.NoContent)
                 {
-                    TempData["modify"] = "Material with ID "+id+" was modified successfully.";
+                    TempData["Modify"] = "Material '" + material.ColorName + "' updated.";
                     return NoContent();
                 }
                 else

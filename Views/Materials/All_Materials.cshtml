@@ -13,16 +13,17 @@
 {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            showAlert("@successMessage", "success");
+            document.body.appendChild(globalAlertContainer);
+            showAlert("✅ @successMessage", "success");
         });
     </script>
 }
-
 @if (!string.IsNullOrEmpty(deleteMessage))
 {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            showAlert("@deleteMessage", "danger");
+            document.body.appendChild(globalAlertContainer);
+            showAlert("❌ @deleteMessage", "danger");
         });
     </script>
 }
@@ -31,10 +32,12 @@
 {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            showAlert("@modifyMessage", "warning");
+            document.body.appendChild(globalAlertContainer);
+            showAlert("⚠️ @modifyMessage", "warning");
         });
     </script>
 }
+
 <h2>Material Management</h2>
 
 @if (ViewBag.Error != null)

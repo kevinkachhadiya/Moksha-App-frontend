@@ -1,16 +1,19 @@
-﻿
-@{
+﻿@{
     if (TempData["message"] != null && (bool)TempData["message"] == false)
     {
         <script>
-            document.body.appendChild(globalAlertContainer);
-
-            showAlert("❌ Login failed! Incorrect credentials.<br>&nbsp;&nbsp;Check your username and password.", "danger");
-
+            document.addEventListener("DOMContentLoaded", function () {
+                if (typeof globalAlertContainer !== "undefined") {
+                    document.body.appendChild(globalAlertContainer);
+                    showAlert("❌ Login failed! Incorrect credentials.<br>&nbsp;&nbsp;Check your username and password.", "danger");
+                } else {
+                    console.error("globalAlertContainer is not defined");
+                }
+            });
         </script>
-
     }
 }
+
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -34,18 +37,16 @@
     </div>
 </div>
 
-
-
 <style>
-    v.modal-backdrop {
-        background-color: #ffffff; /* Darken the background behind the modal */
-        z-index: 1040; /* Ensure the backdrop is above other content */
+    /* Fix modal backdrop issue */
+    .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.5) !important; /* Slightly darken */
+        z-index: 1040;
     }
 
     /* White background for the modal content */
     .modal-content {
-        background-color: #ffffff; /* White background for the modal content */
-        color: black; /* Text color for readability on the white background */
+        background-color: #ffffff !important;
+        color: black;
     }
 </style>
-
