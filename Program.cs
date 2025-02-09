@@ -6,9 +6,6 @@ using Moksha_App.Areas.Identity.Data;
 using Moksha_App.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DBContextIdentityConnection") ?? throw new InvalidOperationException("Connection string 'DBContextIdentityConnection' not found.");
-
-builder.Services.AddDbContext<DBContextIdentity>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
