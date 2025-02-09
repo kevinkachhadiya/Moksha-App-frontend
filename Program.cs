@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Moksha_App.Areas.Identity.Data;
+using Microsoft.AspNetCore.DataProtection;
+
 using Moksha_App.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Disable Data Protection (use this if your app doesn't need it)
+builder.Services.AddDataProtection()
+    .DisableAutomaticKeyGeneration();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
