@@ -1,0 +1,161 @@
+﻿
+    .table-row-hover:hover {
+        background-color: rgba(0, 123, 255, 0.1) !important;
+    }
+
+    .modal-header.bg-gradient {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+    }
+
+    .transition-all {
+        transition: all 0.2s ease;
+    }
+
+    .sticky-top {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(45deg, #007bff, #00bfff);
+        color: white;
+        border: none;
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+    }
+
+    .btn-gradient:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+    }
+
+    .add-material-btn {
+        transition: all 0.3s ease;
+        color: #0d6efd !important;
+    }
+
+    .add-material-btn:hover {
+        transform: translateY(-2px);
+        color: #0b5ed7 !important;
+    }
+
+    .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+
+    .rounded-pill {
+        border-radius: 50rem !important;
+    }
+
+    .form-floating label {
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus ~ label {
+        color: #0d6efd !important;
+    }
+
+    .invalid-feedback {
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: #fff5f5;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+        display: none; /* Hide by default */
+    }
+
+    .hover-shadow {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .hover-shadow:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .animated.fadeIn {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    #totalValue {
+        transition: color 0.3s ease;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .add-material-btn {
+        transition: all 0.3s ease;
+        color: #0d6efd !important;
+    }
+  
+    /* Adjusting the form-switch container for better alignment and spacing */
+    .form-switch {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        border-radius: 50rem;
+        background-color: #f8f9fa;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced checkbox */
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        transition: background-color 0.3s ease;
+    }
+
+    /* When the checkbox is checked */
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    /* Label styling with added margin for better spacing */
+    .form-check-label {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-left: 12px;
+    }
+
+   
+
+    /* Show feedback when needed */
+    .invalid-feedback.show {
+        display: none;
+        opacity: 1;
+    }
+
+    /* Animation for fadeIn effect */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Box shadow for hover effect */
+    .form-switch:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }

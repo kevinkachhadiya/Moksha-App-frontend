@@ -1,0 +1,107 @@
+﻿
+#alertBox {
+    position: fixed; /* Fixed at the top */
+    top: 10px; /* Slight margin from the top */
+    left: 50%;
+    transform: translateX(-50%); /* Center the alert horizontally */
+    z-index: 1050; /* Ensure it's on top */
+    width: auto;
+    max-width: 90%; /* Prevent it from stretching too wide */
+    border-radius: 12px; /* Rounded corners */
+    padding: 15px 65px; /* Padding for more space around the content */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow effect for a lifted look */
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth transition for fade-in/out and slight scale effect */
+    display: none; /* Hide by default */
+    background-color: #48bb78; /* Tailwind's green-500 color for success */
+    color: #ffffff; /* White text color */
+}
+
+#alertBox.show {
+    opacity: 1; /* Fade in */
+    transform: translateX(-50%) scale(1.05); /* Slightly enlarged */
+}
+
+#alertBox .btn-close {
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    color: #fff;
+    opacity: 0.8;
+    cursor: pointer; /* Pointer cursor for the close button */
+    transition: opacity 0.3s, transform 0.3s; /* Smooth transition for hover effect */
+}
+
+    #alertBox .btn-close:hover {
+        opacity: 1; /* Hover effect for the close button */
+        transform: rotate(90deg); /* Rotate close button on hover */
+    }
+
+/* Mobile-Responsive Design: Center on screen and adjust padding */
+@media (max-width: 767px) {
+    #alertBox {
+        max-width: 100%; /* Take up more width on smaller screens */
+        padding: 15px 40px; /* Reduce padding for smaller screens */
+        font-size: 14px; /* Slightly smaller text */
+    }
+}
+
+/* Animation for smooth fade-in */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95); /* Start slightly above and smaller */
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1); /* End at normal position and size */
+    }
+}
+
+/* Animation for smooth fade-out */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1); /* Start at normal position and size */
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95); /* End slightly above and smaller */
+    }
+}
+
+#alertBox {
+    animation: fadeIn 0.5s ease-out;
+}
+
+    #alertBox.hide {
+        animation: fadeOut 0.5s ease-out forwards; /* Use forwards to keep end state after animation */
+    }
+
+.modal-footer .btn:hover {
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
+}
+
+.modal-header {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.modal-footer {
+    border-top: 2px solid #e9ecef;
+}
+
+    .modal-footer .btn:hover {
+        transform: scale(1.05);
+        transition: all 0.2s ease-in-out;
+    }
+
+.modal-header {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.modal-footer {
+    border-top: 2px solid #e9ecef;
+}
