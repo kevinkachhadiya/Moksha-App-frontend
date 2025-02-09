@@ -21,7 +21,6 @@ namespace Moksha_App.Controllers
             _logger = logger;
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
-
         }
         [HttpGet]
         public IActionResult Login()
@@ -47,11 +46,12 @@ namespace Moksha_App.Controllers
                         Secure = true, // Set to true if using HTTPS
                         SameSite = SameSiteMode.Strict
                     });
-
+                    TempData["message"] = true;
                     return RedirectToAction("Dash_Board", "DashBoard");
                 }
                 else
                 {
+                    TempData["message"] = false;
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
             }

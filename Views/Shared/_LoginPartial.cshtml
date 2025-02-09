@@ -1,4 +1,16 @@
 ﻿
+@{
+    if (TempData["message"] != null && (bool)TempData["message"] == false)
+    {
+        <script>
+            document.body.appendChild(globalAlertContainer);
+
+            showAlert("❌ Login failed! Incorrect credentials.<br>&nbsp;&nbsp;Check your username and password.", "danger");
+
+        </script>
+
+    }
+}
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">

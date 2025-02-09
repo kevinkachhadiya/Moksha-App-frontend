@@ -3,6 +3,17 @@
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    if (TempData["message"] != null && (bool)TempData["message"]==true)
+    {
+        <script>
+            document.body.appendChild(globalAlertContainer);
+            showAlert("✅ Login successful! Welcome, admin.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You’re now authenticated.", "success");
+
+
+        </script>
+    
+    }
+
 }
 
 <h1>Index</h1>
