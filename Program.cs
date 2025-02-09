@@ -39,7 +39,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-pu
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseStaticFiles();
 
