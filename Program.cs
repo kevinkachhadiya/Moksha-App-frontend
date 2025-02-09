@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moksha_App.Areas.Identity.Data;
@@ -17,6 +18,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 options.LogoutPath = "/Auth/Logout";
                 options.AccessDeniedPath = "/Auth/AccessDenied";
             });
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app-keys")) // Prevents /root/.aspnet issue
+    .SetApplicationName("MyApp") // Helps in multi-instance deployments
+    .DisableAutomaticKeyGeneration(); // Prevents unencrypted key warning
+
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
