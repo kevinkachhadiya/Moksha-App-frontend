@@ -55,9 +55,11 @@ if (!app.Environment.IsDevelopment())
 {
     Console.WriteLine("[INFO] Running in production mode. Skipping UseHttpsRedirection.");
 
-    // ✅ Explicitly bind to PORT (Fixes Render shutting down issue)
+    // ✅ Bind to Render-assigned PORT instead of hardcoding 8080
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    app.Urls.Clear();
     app.Urls.Add($"http://0.0.0.0:{port}");
+    Console.WriteLine($"[INFO] Application running on port {port}");
 }
 else
 {
