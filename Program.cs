@@ -6,84 +6,109 @@ using Moksha_App.Models;
 using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Get the current environment
+var env = builder.Environment;
+
+// Determine the data protection keys storage path
+string keysPath = env.IsDevelopment()
+    ? Path.Combine(env.ContentRootPath, "DataProtection-Keys") // Local folder in development
+    : "/var/data-protection-keys";                              // Use persistent storage on Render (or production)
+
+// Ensure the keys folder exists
+if (!Directory.Exists(keysPath))
+{
+    Directory.CreateDirectory(keysPath);
+    Console.WriteLine($"[INFO] Created Data Protection Keys directory: {keysPath}");
+}
+
+// Configure Data Protection without certificate encryption
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/app/DataProtection-Keys"));
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
+    .SetApplicationName("Moksha_App");
 
-
+// Register your KeepAliveService (make sure this service is implemented in your project)
 builder.Services.AddHostedService<KeepAliveService>();
 
-// ✅ Authentication Configuration
+// Configure authentication using cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Auth/Login";
         options.LogoutPath = "/Auth/Logout";
         options.AccessDeniedPath = "/Auth/AccessDenied";
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
     });
 
-// ✅ Global Authorization Filter
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("Missing Jwt:Key");
-var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new Exception("Missing Jwt:Issuer");
-var jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new Exception("Missing Jwt:Audience");
-
+// Configure JWT using settings from configuration
+var jwtConfig = builder.Configuration.GetSection("Jwt");
 builder.Services.AddControllersWithViews(options =>
 {
-    options.Filters.Add(new GlobalTokenAuthorizationFilter(jwtKey, jwtIssuer, jwtAudience));
+    options.Filters.Add(new GlobalTokenAuthorizationFilter(
+        jwtConfig["Key"] ?? throw new ArgumentNullException("Jwt:Key"),
+        jwtConfig["Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer"),
+        jwtConfig["Audience"] ?? throw new ArgumentNullException("Jwt:Audience")
+    ));
 });
 
-// ✅ CORS Policy (Allow all origins)
+// Configure CORS for both production and development
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", policy =>
+    options.AddPolicy("RenderPolicy", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        policy.WithOrigins("https://your-render-service.onrender.com", "http://localhost")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
-// 🔥 Build application
 var app = builder.Build();
 
-// ✅ Middleware Configuration
-if (!app.Environment.IsDevelopment())
+// Configure middleware based on environment
+if (app.Environment.IsProduction())
 {
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.All
+    });
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-// ✅ Disable HTTPS Redirection for Render (since Render already provides HTTPS)
-if (!app.Environment.IsDevelopment())
-{
-    Console.WriteLine("[INFO] Running in production mode. Skipping UseHttpsRedirection.");
-
-    // ✅ Bind to Render-assigned PORT instead of hardcoding 8080
-    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-    app.Urls.Clear();
-    app.Urls.Add($"http://0.0.0.0:{port}");
-    Console.WriteLine($"[INFO] Application running on port {port}");
-}
 else
 {
+    app.UseDeveloperExceptionPage();
     app.UseHttpsRedirection();
 }
 
-// ✅ Configure headers for reverse proxy (Required for Render)
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+// Configure static file serving with caching headers
+app.UseStaticFiles(new StaticFileOptions
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    ServeUnknownFileTypes = false,
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
+    }
 });
 
-// ✅ Middleware Pipeline
-app.UseStaticFiles();
 app.UseRouting();
-app.UseCors("AllowAllOrigins");
+app.UseCors("RenderPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ✅ Default Route
+// Set up the default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Auth}/{action=Login}");
 
-Console.WriteLine("[INFO] Application started successfully and is running...");
+// Bind to the Render-assigned port if in production
+if (!app.Environment.IsDevelopment())
+{
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    app.Urls.Clear();
+    app.Urls.Add($"http://0.0.0.0:{port}");
+    Console.WriteLine($"[INFO] Running on port {port}");
+}
 
 app.Run();
