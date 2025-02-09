@@ -7,8 +7,7 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/app/DataProtection-Keys"))
-    .ProtectKeysWithCertificate("<your-certificate-thumbprint>");
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/DataProtection-Keys"));
 
 
 builder.Services.AddHostedService<KeepAliveService>();
