@@ -14,11 +14,10 @@ if (!Directory.Exists(keysPath))
     Console.WriteLine($"[INFO] Created Data Protection Keys directory: {keysPath}");
 }
 
-// ✅ Configure Data Protection (Use Redis or Blob Storage for Persistence)
+// ✅ Configure Data Protection (Linux-compatible)
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(keysPath)) // ❌ Not persistent in Render (Consider Redis/Azure Blob)
-    .ProtectKeysWithDpapiNG() // ✅ Encrypt keys for security
-    .SetApplicationName("Moksha_App");
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath)) // 🔴 Still not persistent in Render
+    .SetApplicationName("Moksha_App"); // ✅ Removed ProtectKeysWithDpapiNG()
 
 // ✅ Authentication Configuration
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -47,8 +46,6 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
-
-// 🔴 REMOVE Redis Configuration (Handled by another API)
 
 // 🔥 Build application
 var app = builder.Build();
