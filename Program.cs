@@ -6,19 +6,10 @@ using Moksha_App.Models;
 using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// ✅ Ensure directory exists for Data Protection keys
-var keysPath = Path.Combine("/app", "DataProtection-Keys");
-if (!Directory.Exists(keysPath))
-{
-    Directory.CreateDirectory(keysPath);
-    Console.WriteLine($"[INFO] Created Data Protection Keys directory: {keysPath}");
-}
-
-// ✅ Configure Data Protection (Linux-compatible)
 builder.Services.AddDataProtection()
-    .SetApplicationName("Moksha_App")
-    .UseEphemeralDataProtectionProvider(); // ✅ Uses in-memory keys (will reset on restart)
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/DataProtection-Keys"))
+    .ProtectKeysWithCertificate("<your-certificate-thumbprint>");
+
 
 builder.Services.AddHostedService<KeepAliveService>();
 
