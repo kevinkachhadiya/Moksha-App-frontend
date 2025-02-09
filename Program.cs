@@ -27,6 +27,10 @@ builder.Services.AddControllersWithViews(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDataProtection()
+    .ProtectKeysWithDpapi();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,6 +42,11 @@ if (!app.Environment.IsDevelopment())
 }
 if (app.Environment.IsProduction())
 {
+    builder.WebHost.ConfigureKestrel(serverOptions =>
+    {
+        serverOptions.ListenAnyIP(5000);
+        serverOptions.ListenAnyIP(5001, listenOptions => listenOptions.UseHttps());
+    });
 
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
