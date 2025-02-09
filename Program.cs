@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
-
+using StackExchange.Redis;
 using Moksha_App.Controllers;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo("/app-keys")) // Store keys in container (temporary)
-    .SetApplicationName("MyApp"); // Ensures consistent keys across app instances
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
@@ -16,6 +13,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                 options.LogoutPath = "/Auth/Logout";
                 options.AccessDeniedPath = "/Auth/AccessDenied";
             });
+
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
@@ -37,13 +35,27 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+if (app.Environment.IsProduction())
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToStackExchangeRedis(() =>
+        {
+            var redis = ConnectionMultiplexer.Connect(builder.Configuration["Redis:ConnectionString"]);
+            return redis.GetDatabase();
+        }, "DataProtection-Keys")
+        .SetApplicationName("MyApp");
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    });
+
+}
+
 app.UseStaticFiles();
 app.UseRouting();
-app.UseRouting();
-
-app.UseAuthorization();
 app.UseAuthentication();
-app.UseCors("AllowAllOrigins"); // Enable CORS
+app.UseAuthorization();
+app.UseCors("AllowAllOrigins");
 
 app.MapControllerRoute(
     name: "default",

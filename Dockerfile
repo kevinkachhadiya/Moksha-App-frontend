@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copy the project files
+# Copy project files
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy everything else and build
+# Copy everything and build
 COPY . ./
 RUN dotnet publish -c Release -o out
 
@@ -15,7 +15,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 
-# Expose the correct port for Render (8080)
+# Copy static files (Fix missing JS/CSS)
+COPY wwwroot ./wwwroot
+
+# Expose correct port for Render
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
