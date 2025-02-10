@@ -94,9 +94,9 @@ app.MapControllerRoute(
 // 7. Render-specific configuration: Bind to the port provided by the environment
 if (!app.Environment.IsDevelopment())
 {
-    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
     app.Urls.Clear();
-    app.Urls.Add($"http://0.0.0.0:{port}");
+    app.Urls.Add($"https://moksha-app-frontend.onrender.com:{port}");
     Console.WriteLine($"[INFO] Running on port {port}");
 }
 
