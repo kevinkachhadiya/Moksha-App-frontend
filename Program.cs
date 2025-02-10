@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.HttpOverrides;
 using Moksha_App.Controllers;
 using Moksha_App.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Get the current hosting environment
 var env = builder.Environment;
-builder.WebHost.UseUrls();
 
 builder.Services.AddDataProtection().UseCryptographicAlgorithms(
     new AuthenticatedEncryptorConfiguration
@@ -65,7 +65,6 @@ if (app.Environment.IsProduction())
     });
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-
 }
 else
 {
@@ -94,9 +93,9 @@ app.MapControllerRoute(
 // 7. Render-specific configuration: Bind to the port provided by the environment
 if (!app.Environment.IsDevelopment())
 {
-    var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+    var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
     app.Urls.Clear();
-    app.Urls.Add($"https://moksha-app-frontend.onrender.com:{port}");
+    app.Urls.Add($"http://0.0.0.0:{port}");
     Console.WriteLine($"[INFO] Running on port {port}");
 }
 
