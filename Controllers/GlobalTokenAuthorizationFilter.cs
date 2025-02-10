@@ -12,8 +12,6 @@ namespace Moksha_App.Controllers
         private readonly string _jwtIssuer;
         private readonly string _jwtAudience;
         private readonly HttpClient _client;
-        
-
         public GlobalTokenAuthorizationFilter(string jwtKey, string jwtIssuer, string jwtAudience,string backend_url)
         {
             _client = new HttpClient();
@@ -21,12 +19,10 @@ namespace Moksha_App.Controllers
             _jwtKey = jwtKey;
             _jwtIssuer = jwtIssuer;
             _jwtAudience = jwtAudience;
-           
             Uri baseAddress = new Uri(backend_url);
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
         }
-
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var actionDescriptor = context.ActionDescriptor;
@@ -36,8 +32,6 @@ namespace Moksha_App.Controllers
             {
                 return;
             }
-           
-
             var request = context.HttpContext.Request;
             var token = request.Cookies["AuthToken"]; // Retrieve the token from cookies
             // Decode the token if it is JSON encoded
@@ -56,7 +50,7 @@ namespace Moksha_App.Controllers
             {
                 context.Result = new RedirectToActionResult("Login", "Auth", null);
             }
-            
+    
         }
 
         private bool ValidateToken(string _token)

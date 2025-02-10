@@ -16,6 +16,7 @@ builder.Services.AddDataProtection().UseCryptographicAlgorithms(
         EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
         ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
     });
+
 // 2. KeepAlive Service Configuration
 builder.Services.AddHostedService<KeepAliveService>();
 
