@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.HttpOverrides;
 using Moksha_App.Controllers;
 using Moksha_App.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Get the current hosting environment
@@ -33,12 +32,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // 4. JWT Configuration
 var jwtConfig = builder.Configuration.GetSection("Jwt");
+var backend = builder.Configuration.GetSection("connectionstrings");
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
         jwtConfig["Key"] ?? throw new ArgumentNullException("Jwt:Key"),
         jwtConfig["Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer"),
-        jwtConfig["Audience"] ?? throw new ArgumentNullException("Jwt:Audience")
+        jwtConfig["Audience"] ?? throw new ArgumentNullException("Jwt:Audience"),
+        backend["backend_url"] ?? throw new ArgumentNullException("can not find backend url")
     ));
 });
 
@@ -87,8 +88,8 @@ app.MapControllerRoute(
 if (!app.Environment.IsDevelopment())
 {
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-    app.Urls.Clear();
-
+    var backend_url = Environment.GetEnvironmentVariable("backend_url");
+    builder.Configuration["connectionstrings:backend_url"] = backend_url;
     app.Urls.Add($"http://0.0.0.0:{port}");
     Console.WriteLine($"[INFO] Running on port {port}");
 }

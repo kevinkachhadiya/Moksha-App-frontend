@@ -14,14 +14,16 @@ namespace Moksha_App.Controllers
     {
         private readonly ILogger<AuthController> _logger;
         private readonly HttpClient _client;
-        Uri baseAddress = new Uri("http://localhost:45753/api");
-
-        public AuthController(ILogger<AuthController> logger)
+        private readonly IConfiguration _appsettings;
+        public AuthController(ILogger<AuthController> logger, IConfiguration appsettings)
         {
             _logger = logger;
+            _appsettings = appsettings;
+            var backend_url = _appsettings["connectionstrings:backend_url"];
+            Uri baseAddress = new Uri(backend_url);
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
-        }
+        }        
         [HttpGet]
         public IActionResult Login()
         {
@@ -33,7 +35,7 @@ namespace Moksha_App.Controllers
         {
             if (ModelState.IsValid)
             {
-                string baseAdd = baseAddress + "/Auth/authenticate";
+                string baseAdd = _client.BaseAddress + "/Auth/authenticate";
                 var response = await _client.PostAsJsonAsync(baseAdd, model);
 
                 if (response.StatusCode == HttpStatusCode.OK)
@@ -69,7 +71,7 @@ namespace Moksha_App.Controllers
             // Decode the token if it is JSON encoded
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
 
-            string baseAdd = baseAddress + "/Auth/ValidateToken";
+            string baseAdd = _client.BaseAddress + "/Auth/ValidateToken";
 
             // Create a new HttpRequestMessage
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, baseAdd)
@@ -89,9 +91,6 @@ namespace Moksha_App.Controllers
                 return Unauthorized("Token is invalid or expired");
             }
         }
-
-
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

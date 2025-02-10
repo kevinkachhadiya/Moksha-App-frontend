@@ -13,14 +13,15 @@ namespace Moksha_App.Controllers
     {
         private readonly HttpClient _httpClient;
         Uri baseAddress = new Uri("http://localhost:45753/api");
+        private readonly IConfiguration _appsettings;
 
-        public MaterialsController()
+        public MaterialsController(IConfiguration ic)
         {
-            // Initialize HttpClient (ideally use IHttpClientFactory for better management)
-
+            _appsettings = ic;
+            var backend_url = _appsettings["connectionstrings:backend_url"];
+            Uri baseAddress = new Uri(backend_url);
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
-
 
         }
         // GET: All Materials

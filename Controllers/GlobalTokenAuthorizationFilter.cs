@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
+using System.Net.Http;
 
 namespace Moksha_App.Controllers
 {
@@ -11,15 +12,19 @@ namespace Moksha_App.Controllers
         private readonly string _jwtIssuer;
         private readonly string _jwtAudience;
         private readonly HttpClient _client;
-        Uri baseAddress = new Uri("http://localhost:45753/api");
+        
 
-        public GlobalTokenAuthorizationFilter(string jwtKey, string jwtIssuer, string jwtAudience)
+        public GlobalTokenAuthorizationFilter(string jwtKey, string jwtIssuer, string jwtAudience,string backend_url)
         {
             _client = new HttpClient();
-            _client.BaseAddress = baseAddress;
+          
             _jwtKey = jwtKey;
             _jwtIssuer = jwtIssuer;
             _jwtAudience = jwtAudience;
+           
+            Uri baseAddress = new Uri(backend_url);
+            _client = new HttpClient();
+            _client.BaseAddress = baseAddress;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
@@ -62,7 +67,7 @@ namespace Moksha_App.Controllers
                 return false;
                 
             }
-            string baseAdd = baseAddress + "/Auth/ValidateToken";
+            string baseAdd = _client.BaseAddress + "/Auth/ValidateToken";
 
             // Create a new HttpRequestMessage
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, baseAdd)

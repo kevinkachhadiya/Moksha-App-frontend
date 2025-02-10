@@ -9,15 +9,15 @@ namespace Moksha_App.Controllers
 
         private readonly HttpClient _httpClient;
         Uri baseAddress = new Uri("http://localhost:45753/api");
-
-        public BuyerBillingController()
+        private readonly IConfiguration _appsettings;
+        public BuyerBillingController(IConfiguration appsettings)
         {
-            // Initialize HttpClient (ideally use IHttpClientFactory for better management)
-
+           
+            _appsettings = appsettings;
+            var backend_url = _appsettings["connectionstrings:backend_url"];
+            Uri baseAddress = new Uri(backend_url);
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
-
-
         }
 
         [HttpGet]
