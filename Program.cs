@@ -88,6 +88,7 @@ if (!app.Environment.IsDevelopment())
 {
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
     app.Urls.Clear();
+
     app.Urls.Add($"http://0.0.0.0:{port}");
     Console.WriteLine($"[INFO] Running on port {port}");
 }

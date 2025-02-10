@@ -5,14 +5,14 @@
                 <h5 class="modal-title" id="loginModalLabel">Login</h5>
             </div>
             <div class="modal-body">
-                <form id="loginForm" method="post" action="@Url.Action("Login", "Auth")">
+                <form id="loginForm_@Guid.NewGuid()" method="post" action="@Url.Action("Login", "Auth")">
                     <div class="mb-3">
-                        <label for="usernameLogin" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="usernameLogin" name="username" required />
+                        <label for="usernameLogin_@Guid.NewGuid()" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="usernameLogin_@Guid.NewGuid()" name="username" required />
                     </div>
                     <div class="mb-3">
-                        <label for="passwordLogin" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="passwordLogin" name="password" required />
+                        <label for="passwordLogin_@Guid.NewGuid()" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="passwordLogin_@Guid.NewGuid()" name="password" required />
                     </div>
                     <button type="submit" class="btn btn-primary">Login</button>
                 </form>

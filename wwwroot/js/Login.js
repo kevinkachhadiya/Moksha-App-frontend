@@ -6,25 +6,23 @@
 
     // Check if AuthToken exists in cookies
     var token = getCookie("AuthToken");
+    let loginModalElement = document.getElementById("uniqueLoginModal");
 
-
-    if (!token) {
-        // No token, show login modal
-        var loginModal = new bootstrap.Modal(document.getElementById('uniqueLoginModal'));
-        loginModal.show();
+     if (loginModalElement) {
+        let loginModal = new bootstrap.Modal(loginModalElement);
+        
+        var token = getCookie("AuthToken");
+        if (!token) {
+            loginModal.show();
+        } else {
+            validateToken(token).then(isValid => {
+                if (!isValid) {
+                    loginModal.show();
+                }
+            });
+        }
     } else {
-        // Make an API request to validate the token
-        validateToken(token).then(isValid => {
-            if (!isValid) {
-                // If token is invalid or expired, show login modal
-                var loginModal = new bootstrap.Modal(document.getElementById('uniqueLoginModal'));
-                loginModal.show();
-            }
-            else {
-                // Token is valid, proceed with other operations
-                console.log("Token is valid");
-            }
-        });
+        console.warn("Login modal not found. Check if _LoginPartial is correctly loaded.");
     }
 });
 
