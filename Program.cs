@@ -13,24 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Get the current hosting environment
 var env = builder.Environment;
 
-// 1. Data Protection Configuration with encryption
-// Choose a keys folder based on the environment:
-// - Development: use a folder within your project
-// - Production: use a persistent storage folder (e.g. on Render, if available)
-string keysPath = env.IsDevelopment()
-    ? Path.Combine(env.ContentRootPath, "DataProtection-Keys")
-    : "/var/data-protection-keys";
-
-// Ensure the keys directory exists
-if (!Directory.Exists(keysPath))
-{
-    Directory.CreateDirectory(keysPath);
-    Console.WriteLine($"[INFO] Created Data Protection Keys directory: {keysPath}");
-}
-
-
-
-
 builder.Services.AddDataProtection().UseCryptographicAlgorithms(
     new AuthenticatedEncryptorConfiguration
     {
@@ -67,7 +49,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("RenderPolicy", policy =>
     {
-        policy.WithOrigins("https://your-render-service.onrender.com", "http://localhost")
+        policy.WithOrigins("https://moksha-app-frontend.onrender.com", "http://localhost")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
