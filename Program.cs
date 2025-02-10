@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.HttpOverrides;
 using Moksha_App.Controllers;
 using Moksha_App.Models;
@@ -28,13 +30,13 @@ if (!Directory.Exists(keysPath))
 
 
 
-// Configure Data Protection to persist keys and encrypt them using the certificate
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
-    .SetApplicationName("Moksha_App");
-// Note: If you remove ProtectKeysWithCertificate(certificate), keys will be stored unencrypted,
-// and the warning "No XML encryptor configured" will disappear—but then your keys are not protected.
 
+builder.Services.AddDataProtection().UseCryptographicAlgorithms(
+    new AuthenticatedEncryptorConfiguration
+    {
+        EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+    });
 // 2. KeepAlive Service Configuration
 builder.Services.AddHostedService<KeepAliveService>();
 
