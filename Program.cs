@@ -26,14 +26,12 @@ if (!Directory.Exists(keysPath))
     Console.WriteLine($"[INFO] Created Data Protection Keys directory: {keysPath}");
 }
 
-// Load the certificate for protecting the keys
-var certificate = GetCertificate(builder);
+
 
 // Configure Data Protection to persist keys and encrypt them using the certificate
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
-    .SetApplicationName("Moksha_App")
-    .ProtectKeysWithCertificate(certificate);
+    .SetApplicationName("Moksha_App");
 // Note: If you remove ProtectKeysWithCertificate(certificate), keys will be stored unencrypted,
 // and the warning "No XML encryptor configured" will disappear—but then your keys are not protected.
 
@@ -122,63 +120,3 @@ if (!app.Environment.IsDevelopment())
 app.Run();
 
 
-// ----------------------------------------------------------------
-// Certificate loading implementation
-// ----------------------------------------------------------------
-static X509Certificate2 GetCertificate(WebApplicationBuilder builder)
-{
-    if (builder.Environment.IsDevelopment())
-    {
-        // In development, load a self-signed certificate from a local file.
-        string certPath = Path.Combine(builder.Environment.ContentRootPath, "localhost.pfx");
-
-        if (!File.Exists(certPath))
-        {
-            throw new FileNotFoundException(
-                $"Development certificate not found: {certPath}. " +
-                "Generate it with: dotnet dev-certs https -ep localhost.pfx -p localhost"
-            );
-        }
-
-        Console.WriteLine($"[INFO] Loading development certificate from: {certPath}");
-        return new X509Certificate2(
-            certPath,
-            "localhost", // Ensure this matches the password used with dev-certs
-            X509KeyStorageFlags.EphemeralKeySet | X509KeyStorageFlags.Exportable
-        );
-    }
-    else
-    {
-        // In production, load the certificate from environment variables.
-        var certContent = Environment.GetEnvironmentVariable("CERTIFICATE_CONTENT");
-        var certPassword = Environment.GetEnvironmentVariable("CERTIFICATE_PASSWORD");
-
-        if (string.IsNullOrWhiteSpace(certContent) || string.IsNullOrWhiteSpace(certPassword))
-        {
-            throw new InvalidOperationException(
-                "Production certificate not configured. Ensure these environment variables are set:\n" +
-                "CERTIFICATE_CONTENT - Base64 encoded .pfx file\n" +
-                "CERTIFICATE_PASSWORD - Certificate password"
-            );
-        }
-
-        try
-        {
-            var certBytes = Convert.FromBase64String(certContent);
-            Console.WriteLine("[INFO] Successfully loaded production certificate.");
-            return new X509Certificate2(
-                certBytes,
-                certPassword,
-                X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable
-            );
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException(
-                "Failed to load production certificate. Verify:\n" +
-                "1. CERTIFICATE_CONTENT is valid base64\n" +
-                "2. CERTIFICATE_PASSWORD is correct\n" +
-                "3. The certificate is not expired", ex);
-        }
-    }
-}
