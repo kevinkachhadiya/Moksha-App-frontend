@@ -5,13 +5,11 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.HttpOverrides;
 using Moksha_App.Controllers;
 using Moksha_App.Models;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Get the current hosting environment
 var env = builder.Environment;
+builder.WebHost.UseUrls();
 
 builder.Services.AddDataProtection().UseCryptographicAlgorithms(
     new AuthenticatedEncryptorConfiguration
@@ -67,6 +65,7 @@ if (app.Environment.IsProduction())
     });
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+
 }
 else
 {

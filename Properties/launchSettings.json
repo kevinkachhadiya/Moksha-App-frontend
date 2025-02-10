@@ -6,6 +6,15 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "LiveApplication": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "externalUrlConfiguration": true, //add this line
+        "applicationUrl": "https://moksha-app-frontend.onrender.com:5001",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Production"
+        }
+      },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5148"
     },
