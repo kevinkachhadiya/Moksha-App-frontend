@@ -19,7 +19,7 @@ namespace Moksha_App.Controllers
         {
             _logger = logger;
             _appsettings = appsettings;
-            var backend_url = _appsettings["connectionstrings:backend_url"];
+            var backend_url = _appsettings["backend_url"];
             Uri baseAddress = new Uri(backend_url);
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;

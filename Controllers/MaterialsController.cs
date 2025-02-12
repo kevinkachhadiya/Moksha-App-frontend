@@ -18,7 +18,7 @@ namespace Moksha_App.Controllers
         public MaterialsController(IConfiguration ic)
         {
             _appsettings = ic;
-            var backend_url = _appsettings["connectionstrings:backend_url"];
+            var backend_url = _appsettings["backend_url"];
             Uri baseAddress = new Uri(backend_url);
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;

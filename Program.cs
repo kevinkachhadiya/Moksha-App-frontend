@@ -23,10 +23,11 @@ var env = builder.Environment;
 if (!env.IsDevelopment())
 {
     var backendUrl = Environment.GetEnvironmentVariable("backend_url");
+
     if (!string.IsNullOrWhiteSpace(backendUrl))
     {
         // Ensure the key name here matches what you use later.
-        builder.Configuration["connectionstrings:backend_url"] = backendUrl;
+        builder.Configuration["backend_url"] = backendUrl;
     }
 }
 
@@ -82,7 +83,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // 5. JWT & Global Filter Configuration
 // --------------------------------------------------------------------
 var jwtConfig = builder.Configuration.GetSection("Jwt");
-var connectionStrings = builder.Configuration.GetSection("connectionstrings");
+var connectionStrings = builder.Configuration["backend_url"];
 
 builder.Services.AddControllersWithViews(options =>
 {
@@ -92,7 +93,7 @@ builder.Services.AddControllersWithViews(options =>
         jwtConfig["Key"] ?? throw new ArgumentNullException("Jwt:Key"),
         jwtConfig["Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer"),
         jwtConfig["Audience"] ?? throw new ArgumentNullException("Jwt:Audience"),
-        connectionStrings["backend_url"] ?? throw new ArgumentNullException("connectionstrings:backend_url")
+        builder.Configuration["backend_url"] ?? throw new ArgumentNullException("connectionstrings:backend_url")
     ));
 });
 
@@ -104,7 +105,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("RenderPolicy", policy =>
     {
         // Ensure that your production frontend URL is included.
-        policy.WithOrigins("https://moksha-app-frontend.onrender.com", "http://localhost")
+        policy.WithOrigins("https://moksha-app-frontend.onrender.com", "http://localhost", "https://moksha-app-backend.onrender.com")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
