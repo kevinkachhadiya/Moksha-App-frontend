@@ -79,7 +79,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
 
     });
-
 // --------------------------------------------------------------------
 // 5. JWT & Global Filter Configuration
 // --------------------------------------------------------------------
