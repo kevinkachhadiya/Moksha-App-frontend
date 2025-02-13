@@ -90,9 +90,6 @@ builder.Services.AddControllersWithViews(options =>
 {
     // IMPORTANT: Your GlobalTokenAuthorizationFilter should check for [AllowAnonymous]
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
-        jwtConfig["Key"] ?? throw new ArgumentNullException("Jwt:Key"),
-        jwtConfig["Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer"),
-        jwtConfig["Audience"] ?? throw new ArgumentNullException("Jwt:Audience"),
         builder.Configuration["backend_url"] ?? throw new ArgumentNullException("connectionstrings:backend_url")
     ));
 });

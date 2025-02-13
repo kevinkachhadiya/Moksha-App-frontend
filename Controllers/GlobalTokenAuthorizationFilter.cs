@@ -8,17 +8,13 @@ namespace Moksha_App.Controllers
 {
     public class GlobalTokenAuthorizationFilter : IAuthorizationFilter
     {
-        private readonly string _jwtKey;
-        private readonly string _jwtIssuer;
-        private readonly string _jwtAudience;
+        
         private readonly HttpClient _client;
-        public GlobalTokenAuthorizationFilter(string jwtKey, string jwtIssuer, string jwtAudience,string backend_url)
+        public GlobalTokenAuthorizationFilter(string backend_url)
         {
             _client = new HttpClient();
           
-            _jwtKey = jwtKey;
-            _jwtIssuer = jwtIssuer;
-            _jwtAudience = jwtAudience;
+            
             Uri baseAddress = new Uri(backend_url);
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
