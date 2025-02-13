@@ -39,7 +39,7 @@ if (!env.IsDevelopment())
     // In production, persist keys to a folder.
     // (Make sure that the directory is persistent. On Render, you might mount a volume at /app/keys.)
     var keysDirectory = Environment.GetEnvironmentVariable("KEYS_DIRECTORY") ?? "/app/keys";
-    Directory.CreateDirectory(keysDirectory); // Ensure directory exists
+    Directory.CreateDirectory(keysDirectory);
     builder.Services.AddDataProtection()
         .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory))
         .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration
@@ -74,9 +74,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Auth/Login";
         options.LogoutPath = "/Auth/Logout";
         options.AccessDeniedPath = "/Auth/AccessDenied";
-        // If your app is behind a reverse proxy, you might try CookieSecurePolicy.SameAsRequest if issues occur.
+        options.Cookie.SameSite = SameSiteMode.None; // Needed for cross-site cookies
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.HttpOnly = true;
+
     });
 
 // --------------------------------------------------------------------
@@ -122,8 +123,11 @@ if (app.Environment.IsProduction())
     // Process forwarded headers from the reverse proxy (e.g. X-Forwarded-For, X-Forwarded-Proto)
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
-        ForwardedHeaders = ForwardedHeaders.All
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        RequireHeaderSymmetry = false,
+        ForwardLimit = null
     });
+
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
@@ -158,6 +162,7 @@ if (!app.Environment.IsDevelopment())
     // Render provides a PORT environment variable.
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
     app.Urls.Add($"http://0.0.0.0:{port}");
+    app.UseHttpsRedirection();
     Console.WriteLine($"[INFO] Running on port {port}");
 }
 
