@@ -89,7 +89,6 @@ var connectionStrings = builder.Configuration["backend_url"];
 builder.Services.AddControllersWithViews(options =>
 {
     // IMPORTANT: Your GlobalTokenAuthorizationFilter should check for [AllowAnonymous]
-    // on endpoints to avoid intercepting public actions.
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
         jwtConfig["Key"] ?? throw new ArgumentNullException("Jwt:Key"),
         jwtConfig["Issuer"] ?? throw new ArgumentNullException("Jwt:Issuer"),
@@ -142,7 +141,6 @@ app.UseStaticFiles();
 // Routing must come before authentication/authorization
 app.UseRouting();
 
-app.UseCors("RenderPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -159,6 +157,7 @@ app.MapControllerRoute(
 // --------------------------------------------------------------------
 if (!app.Environment.IsDevelopment())
 {
+    app.UseCors("RenderPolicy");
     // Render provides a PORT environment variable.
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
     app.Urls.Add($"http://0.0.0.0:{port}");
