@@ -93,9 +93,10 @@ namespace Moksha_App.Controllers
             else
             {
                 ViewBag.Error = "Error occurred while creating the material.";
+                return RedirectToAction("All_Materials"); // Default redirect in case of failure            
             }
 
-            return RedirectToAction("All_Materials"); // Default redirect in case of failure
+            
 
         }
         [HttpDelete]
