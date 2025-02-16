@@ -44,9 +44,9 @@ namespace Moksha_App.Controllers
                     // Store the token securely (e.g., in a cookie or session)
                     Response.Cookies.Append("AuthToken", token, new CookieOptions
                     {
-                        HttpOnly = false,
-                        Secure = true, // Set to true if using HTTPS
-                        SameSite = SameSiteMode.Strict
+                        HttpOnly = true, // Prevent JavaScript access
+                        Secure = false,  // Change to 'true' if using HTTPS
+                        SameSite = SameSiteMode.Lax // Prevent cookie deletion on cross-site navigation
                     });
                     TempData["message"] = true;
                     return RedirectToAction("Dash_Board", "DashBoard");
