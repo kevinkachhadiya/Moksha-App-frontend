@@ -10,62 +10,18 @@ using Moksha_App.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // --------------------------------------------------------------------
-// 0. Load Environment Variables (explicit, though by default they load)
+// 1. Load Environment Variables (explicit, though by default they load)
 // --------------------------------------------------------------------
 builder.Configuration.AddEnvironmentVariables();
 var env = builder.Environment;
 
 // --------------------------------------------------------------------
-// 1. Update Configuration from Environment Variables (Early)
-// --------------------------------------------------------------------
-// In production, update the backend URL from an environment variable.
-// This ensures the GlobalTokenAuthorizationFilter receives the correct value.
-if (!env.IsDevelopment())
-{
-    var backendUrl = Environment.GetEnvironmentVariable("backend_url");
-
-    if (!string.IsNullOrWhiteSpace(backendUrl))
-    {
-        // Ensure the key name here matches what you use later.
-        builder.Configuration["backend_url"] = backendUrl;
-    }
-}
-
-// --------------------------------------------------------------------
-// 2. Data Protection Configuration
-// --------------------------------------------------------------------
-if (!env.IsDevelopment())
-{
-    // In production, persist keys to a folder.
-    // (Make sure that the directory is persistent. On Render, you might mount a volume at /app/keys.)
-    var keysDirectory = Environment.GetEnvironmentVariable("KEYS_DIRECTORY") ?? "/app/keys";
-    Directory.CreateDirectory(keysDirectory);
-    builder.Services.AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(keysDirectory))
-        .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration
-        {
-            EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-            ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-        });
-}
-else
-{
-    // In development, keys are kept in memory.
-    builder.Services.AddDataProtection()
-        .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration
-        {
-            EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-            ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-        });
-}
-
-// --------------------------------------------------------------------
-// 3. KeepAlive Service Configuration
+// 1. KeepAlive Service Configuration
 // --------------------------------------------------------------------
 builder.Services.AddHostedService<KeepAliveService>();
 
 // --------------------------------------------------------------------
-// 4. Cookie Authentication Configuration
+// 2. Cookie Authentication Configuration
 // --------------------------------------------------------------------
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -81,16 +37,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
     });
 // --------------------------------------------------------------------
-// 5. JWT & Global Filter Configuration
+// 3. JWT & Global Filter Configuration
 // --------------------------------------------------------------------
 var jwtConfig = builder.Configuration.GetSection("Jwt");
-var connectionStrings = builder.Configuration["backend_url"];
+var backendUrl = Environment.GetEnvironmentVariable("backend_url")?? "http://localhost:45753/api";
+
+// Store in Configuration for Global Access
+builder.Configuration["BackendUrl"] = backendUrl;
 
 builder.Services.AddControllersWithViews(options =>
 {
     // IMPORTANT: Your GlobalTokenAuthorizationFilter should check for [AllowAnonymous]
     options.Filters.Add(new GlobalTokenAuthorizationFilter(
-        builder.Configuration["backend_url"] ?? throw new ArgumentNullException("connectionstrings:backend_url")
+        builder.Configuration["BackendUrl"] ?? throw new ArgumentNullException("backend_url")
     ));
 });
 

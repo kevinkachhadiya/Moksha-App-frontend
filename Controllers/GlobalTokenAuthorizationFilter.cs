@@ -29,7 +29,7 @@ namespace Moksha_App.Controllers
                 return;
             }
             var request = context.HttpContext.Request;
-            var token = request.Cookies["AuthToken"]; // Retrieve the token from cookies
+            var token = request.Cookies["AuthToken"]??""; // Retrieve the token from cookies
             // Decode the token if it is JSON encoded
             try
             {

@@ -12,13 +12,12 @@ namespace Moksha_App.Controllers
     public class MaterialsController : Controller
     {
         private readonly HttpClient _httpClient;
-        Uri baseAddress = new Uri("http://localhost:45753/api");
         private readonly IConfiguration _appsettings;
 
         public MaterialsController(IConfiguration ic)
         {
             _appsettings = ic;
-            var backend_url = _appsettings["backend_url"];
+            var backend_url = _appsettings["BackendUrl"] ?? "";
             Uri baseAddress = new Uri(backend_url);
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
@@ -29,9 +28,9 @@ namespace Moksha_App.Controllers
         public async Task<IActionResult> All_Materials()
         {
             List<Material> materials = new List<Material>();
-            string baseAdd = baseAddress + "/Materials";
-             var token = Request.Cookies["AuthToken"];
-            token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
+            string baseAdd = _httpClient.BaseAddress + "/Materials";
+             var token = Request.Cookies["AuthToken"] ?? "";
+            token = System.Text.Json.JsonDocument.Parse(token??"").RootElement.GetProperty("token").GetString();
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try
             {
@@ -64,8 +63,8 @@ namespace Moksha_App.Controllers
         }
         public async Task<IActionResult> Create(Material material)
         {
-            string baseAdd = baseAddress + "/Materials/CreateMaterial";
-            var token = Request.Cookies["AuthToken"];
+            string baseAdd = _httpClient.BaseAddress + "/Materials/CreateMaterial";
+            var token = Request.Cookies["AuthToken"]?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
 
             // Set up headers for the request (e.g., application/json)
@@ -103,8 +102,8 @@ namespace Moksha_App.Controllers
         [Route("Delete_material")]
         public async Task<IActionResult> Delete_material(string Id)
         {
-            string baseAdd = baseAddress + "/Materials/"; // Include id in the URL
-            var token = Request.Cookies["AuthToken"];
+            string baseAdd = _httpClient.BaseAddress + "/Materials/"; // Include id in the URL
+            var token = Request.Cookies["AuthToken"] ?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
 
          
@@ -136,8 +135,8 @@ namespace Moksha_App.Controllers
                 return BadRequest("Invalid input data.");
             }
 
-            string baseAdd = baseAddress + "/Materials/Modify/"; // Ensure baseAddress is correctly set.
-            var tokenCookie = Request.Cookies["AuthToken"];
+            string baseAdd = _httpClient.BaseAddress + "/Materials/Modify/"; // Ensure baseAddress is correctly set.
+            var tokenCookie = Request.Cookies["AuthToken"] ?? "";
 
             if (string.IsNullOrEmpty(tokenCookie))
             {
@@ -184,15 +183,15 @@ namespace Moksha_App.Controllers
             catch (Exception ex)
             {
                 
-                return StatusCode(500, "An error occurred while communicating with the external API.");
+                return StatusCode(500, $"An error occurred while communicating with the external API.\n{ex}");
             }
         }
         [HttpGet("all_list")]
         public async Task<IActionResult> all_list()
         {
             List<Material> materials = new List<Material>();
-            string baseAdd = baseAddress + "/Materials";
-            var token = Request.Cookies["AuthToken"];
+            string baseAdd = _httpClient.BaseAddress + "/Materials";
+            var token = Request.Cookies["AuthToken"] ?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try

@@ -8,13 +8,12 @@ namespace Moksha_App.Controllers
     {
 
         private readonly HttpClient _httpClient;
-        Uri baseAddress = new Uri("http://localhost:45753/api");
         private readonly IConfiguration _appsettings;
         public BuyerBillingController(IConfiguration appsettings)
         {
            
             _appsettings = appsettings;
-            var backend_url = _appsettings["backend_url"];
+            var backend_url = _appsettings["BackendUrl"]??"";
             Uri baseAddress = new Uri(backend_url);
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
@@ -25,8 +24,8 @@ namespace Moksha_App.Controllers
         {
 
             List<B_Bill> materials = new List<B_Bill>();
-            string baseAdd = baseAddress + "/BuyerBilling";
-            var token = Request.Cookies["AuthToken"];
+            string baseAdd = _httpClient.BaseAddress + "/BuyerBilling";
+            var token = Request.Cookies["AuthToken"]??"";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try
