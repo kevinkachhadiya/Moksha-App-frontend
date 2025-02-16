@@ -116,6 +116,8 @@ if (!app.Environment.IsDevelopment())
     app.UseCors("RenderPolicy");
     // Render provides a PORT environment variable.
     var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+    builder.Configuration["Kestrel:Endpoints:Http:Url"] = $"http://0.0.0.0:{port}";
+
     app.Urls.Add($"http://0.0.0.0:{port}");
     Console.WriteLine($"[INFO] Running on port {port}");
 }
