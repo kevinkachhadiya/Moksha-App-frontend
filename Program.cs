@@ -79,18 +79,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Logging.AddConsole();
-// Set the default culture
-var supportedCultures = new[] { new CultureInfo("en-US") };
-var localizationOptions = new RequestLocalizationOptions
-{
-    DefaultRequestCulture = new RequestCulture("en-US"),
-    SupportedCultures = supportedCultures,
-    SupportedUICultures = supportedCultures
-};
 
 var app = builder.Build();
-
-app.UseRequestLocalization(localizationOptions);
 
 // --------------------------------------------------------------------
 // 7. Middleware Pipeline Configuration
