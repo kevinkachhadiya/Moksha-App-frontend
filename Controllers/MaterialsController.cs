@@ -17,10 +17,16 @@ namespace Moksha_App.Controllers
         public MaterialsController(IConfiguration ic)
         {
             _appsettings = ic;
+
             var backend_url = _appsettings["BackendUrl"] ?? "";
-            Uri baseAddress = new Uri(backend_url);
+            // If BackendUrl is empty, application will fail
+            if (string.IsNullOrEmpty(backend_url))
+            {
+                throw new Exception("Backend URL is not set. Check your environment variables.");
+            }
+
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = baseAddress;
+            _httpClient.BaseAddress = new Uri(backend_url);
 
         }
         // GET: All Materials
