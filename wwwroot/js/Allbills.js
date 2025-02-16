@@ -37,17 +37,24 @@
             const buyerNameError = document.getElementById("buyerNameError");
             const buyerNameRegex = /^[A-Za-z\s]+$/;
 
-            if (!buyerName.value.trim() || !buyerNameRegex.test(buyerName.value)) {
-                buyerName.classList.add("is-invalid");
-                buyerNameError.textContent = "❌ Please enter a valid buyer name (no numbers allowed).";
-                buyerNameError.style.display = "block";
-                isValid = false;
-            } else {
-                buyerName.classList.remove("is-invalid");
-                buyerName.classList.add("is-valid");
-                buyerNameError.textContent = "";
-                buyerNameError.style.display = "none";
-            }
+                if (!buyerName.value.trim() || !buyerNameRegex.test(buyerName.value)) {
+                    buyerName.classList.add("is-invalid");
+
+                    if (buyerNameError) {
+                        buyerNameError.textContent = "❌ Please enter a valid buyer name (no numbers allowed).";
+                        buyerNameError.style.display = "block";
+                    }
+
+                    isValid = false;
+                } else {
+                    buyerName.classList.remove("is-invalid");
+                    buyerName.classList.add("is-valid");
+
+                    if (buyerNameError) {
+                        buyerNameError.style.display = "none";
+                    }
+                }
+
 
             // Materials Validation
             const materialsContainer = document.getElementById("materialsContainer");
