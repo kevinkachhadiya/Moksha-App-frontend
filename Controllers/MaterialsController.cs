@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using Azure.Core;
@@ -13,28 +14,23 @@ namespace Moksha_App.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _appsettings;
+        Uri uri;
 
         public MaterialsController(IConfiguration ic)
         {
             _appsettings = ic;
             var backend_url = Environment.GetEnvironmentVariable("backend_url")
                  ?? _appsettings["BackendUrl"] ?? "";
-            // If BackendUrl is empty, application will fail
-            if (string.IsNullOrEmpty(backend_url))
-            {
-                throw new Exception("Backend URL is not set. Check your environment variables.");
-            }
 
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(backend_url);
-
+             uri = new Uri(backend_url);
         }
         // GET: All Materials
         [HttpGet]
         public async Task<IActionResult> All_Materials()
         {
             List<Material> materials = new List<Material>();
-            string baseAdd = _httpClient.BaseAddress + "/Materials";
+            string baseAdd = uri + "/Materials";
              var token = Request.Cookies["AuthToken"] ?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -69,7 +65,7 @@ namespace Moksha_App.Controllers
         }
         public async Task<IActionResult> Create(Material material)
         {
-            string baseAdd = _httpClient.BaseAddress + "/Materials/CreateMaterial";
+            string baseAdd = uri + "/Materials/CreateMaterial";
             var token = Request.Cookies["AuthToken"]?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
 
@@ -108,7 +104,7 @@ namespace Moksha_App.Controllers
         [Route("Delete_material")]
         public async Task<IActionResult> Delete_material(string Id)
         {
-            string baseAdd = _httpClient.BaseAddress + "/Materials/"; // Include id in the URL
+            string baseAdd = uri + "/Materials/"; // Include id in the URL
             var token = Request.Cookies["AuthToken"] ?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
 
@@ -141,7 +137,7 @@ namespace Moksha_App.Controllers
                 return BadRequest("Invalid input data.");
             }
 
-            string baseAdd = _httpClient.BaseAddress + "/Materials/Modify/"; // Ensure baseAddress is correctly set.
+            string baseAdd = uri + "/Materials/Modify/"; // Ensure baseAddress is correctly set.
             var tokenCookie = Request.Cookies["AuthToken"] ?? "";
 
             if (string.IsNullOrEmpty(tokenCookie))
@@ -196,7 +192,7 @@ namespace Moksha_App.Controllers
         public async Task<IActionResult> all_list()
         {
             List<Material> materials = new List<Material>();
-            string baseAdd = _httpClient.BaseAddress + "/Materials";
+            string baseAdd = uri + "/Materials";
             var token = Request.Cookies["AuthToken"] ?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
