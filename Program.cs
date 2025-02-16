@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Moksha_App.Controllers;
 using Moksha_App.Models;
 
@@ -77,8 +79,18 @@ builder.Services.AddCors(options =>
 });
 
 builder.Logging.AddConsole();
+// Set the default culture
+var supportedCultures = new[] { new CultureInfo("en-US") };
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+};
 
 var app = builder.Build();
+
+app.UseRequestLocalization(localizationOptions);
 
 // --------------------------------------------------------------------
 // 7. Middleware Pipeline Configuration
