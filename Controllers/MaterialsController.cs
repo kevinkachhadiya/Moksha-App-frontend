@@ -32,7 +32,20 @@ namespace Moksha_App.Controllers
             List<Material> materials = new List<Material>();
             string baseAdd = uri + "/Materials";
              var token = Request.Cookies["AuthToken"] ?? "";
-            token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
+            if (!string.IsNullOrEmpty(token))
+            {
+                try
+                {
+                    token = JsonDocument.Parse(token).RootElement.TryGetProperty("token", out JsonElement tokenElement)
+                        ? tokenElement.GetString()
+                        : throw new Exception("Invalid token structure.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Token parsing error: {ex.Message}");
+                }
+            }
+
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try
             {
