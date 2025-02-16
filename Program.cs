@@ -1,13 +1,7 @@
-﻿using System.Globalization;
-using System.IO;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Localization;
 using Moksha_App.Controllers;
-using Moksha_App.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 var env = builder.Environment;
 
-// --------------------------------------------------------------------
-// 1. KeepAlive Service Configuration
-// --------------------------------------------------------------------
-builder.Services.AddHostedService<KeepAliveService>();
 
 // --------------------------------------------------------------------
 // 2. Cookie Authentication Configuration
