@@ -1,4 +1,4 @@
-﻿cousing Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Moksha_App.Controllers
 {
