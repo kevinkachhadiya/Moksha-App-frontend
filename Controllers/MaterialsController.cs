@@ -60,12 +60,15 @@ namespace Moksha_App.Controllers
                     materials = System.Text.Json.JsonSerializer.Deserialize<List<Material>>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
-                    });             }
+                    });}
+
                 else
                 {
-                    // Handle API errors
-                    ViewBag.Error = "Failed to retrieve materials. Status Code: " + response.StatusCode;
+                    // Log actual response body for debugging
+                    string errorResponse = await response.Content.ReadAsStringAsync();
+                    ViewBag.Error = $"Failed to retrieve materials. Status: {response.StatusCode}. Error: {errorResponse}";
                 }
+
             }
             catch (Exception ex)
             {
