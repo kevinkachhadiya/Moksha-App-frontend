@@ -52,7 +52,7 @@ builder.Configuration["BackendUrl"] = backendUrl;
 
 
 // Log Backend URL for debugging
-Console.WriteLine($"Using Backend URL: {backendUrl}");
+Console.WriteLine($"Using Backend URL: {builder.Configuration["BackendUrl"]}");
 
 builder.Services.AddControllersWithViews(options =>
 {
