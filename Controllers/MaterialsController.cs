@@ -36,7 +36,7 @@ namespace Moksha_App.Controllers
             List<Material> materials = new List<Material>();
             string baseAdd = _httpClient.BaseAddress + "/Materials";
              var token = Request.Cookies["AuthToken"] ?? "";
-            token = System.Text.Json.JsonDocument.Parse(token??"").RootElement.GetProperty("token").GetString();
+            token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try
             {
