@@ -40,18 +40,25 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // 3. JWT & Global Filter Configuration
 // --------------------------------------------------------------------
 var jwtConfig = builder.Configuration.GetSection("Jwt");
-var backendUrl = Environment.GetEnvironmentVariable("backend_url")?? "http://localhost:45753/api";
+
+// Fetch Backend URL from Environment Variable (for Render) or appsettings.json (for local)
+var backendUrl = Environment.GetEnvironmentVariable("backend_url") 
+                 ?? builder.Configuration["BackendUrl"]  
+                 ?? throw new ArgumentNullException("BackendUrl is not set.");
 
 // Store in Configuration for Global Access
+// Store in Configuration (in-memory, not modifying appsettings.json)
 builder.Configuration["BackendUrl"] = backendUrl;
+
+
+// Log Backend URL for debugging
+Console.WriteLine($"Using Backend URL: {backendUrl}");
 
 builder.Services.AddControllersWithViews(options =>
 {
-    // IMPORTANT: Your GlobalTokenAuthorizationFilter should check for [AllowAnonymous]
-    options.Filters.Add(new GlobalTokenAuthorizationFilter(
-        builder.Configuration["BackendUrl"] ?? throw new ArgumentNullException("backend_url")
-    ));
+    options.Filters.Add(new GlobalTokenAuthorizationFilter(backendUrl));
 });
+
 
 // --------------------------------------------------------------------
 // 6. CORS Configuration
