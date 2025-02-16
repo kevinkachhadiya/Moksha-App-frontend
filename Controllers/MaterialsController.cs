@@ -17,8 +17,8 @@ namespace Moksha_App.Controllers
         public MaterialsController(IConfiguration ic)
         {
             _appsettings = ic;
-
-            var backend_url = _appsettings["BackendUrl"] ?? "";
+            var backend_url = Environment.GetEnvironmentVariable("backend_url")
+                 ?? _appsettings["BackendUrl"] ?? "";
             // If BackendUrl is empty, application will fail
             if (string.IsNullOrEmpty(backend_url))
             {

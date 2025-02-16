@@ -13,7 +13,8 @@ namespace Moksha_App.Controllers
         {
            
             _appsettings = appsettings;
-            var backend_url = _appsettings["BackendUrl"]??"";
+            var backend_url = Environment.GetEnvironmentVariable("backend_url")
+                 ?? _appsettings["BackendUrl"] ?? "";
             Uri baseAddress = new Uri(backend_url);
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = baseAddress;
