@@ -76,6 +76,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Logging.AddConsole();
+
 var app = builder.Build();
 
 // --------------------------------------------------------------------
