@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moksha_App.Models;
 using System.Diagnostics;
@@ -15,15 +14,16 @@ namespace Moksha_App.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly HttpClient _client;
         private readonly IConfiguration _appsettings;
+
         public AuthController(ILogger<AuthController> logger, IConfiguration appsettings)
         {
             _logger = logger;
             _appsettings = appsettings;
-            var backend_url = _appsettings["BackendUrl"]??"";
+            var backend_url = Environment.GetEnvironmentVariable("backend_url") ??_appsettings["BackendUrl"] ?? throw new ArgumentNullException("BackendUrl is not set.");
             Uri baseAddress = new Uri(backend_url);
-            _client = new HttpClient();
-            _client.BaseAddress = baseAddress;
-        }        
+            _client = new HttpClient { BaseAddress = baseAddress };
+        }
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -38,20 +38,20 @@ namespace Moksha_App.Controllers
                 string baseAdd = _client.BaseAddress + "/Auth/authenticate";
                 var response = await _client.PostAsJsonAsync(baseAdd, model);
 
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (response.IsSuccessStatusCode)
                 {
                     var token = await response.Content.ReadAsStringAsync();
 
-                    // Set an expiration time for the cookie (1 hour, for example)
-                    var cookieExpirationTime = DateTime.UtcNow.AddHours(24); // Cookie will expire in 1 hour
+                    // Set a 24-hour expiration time
+                    var cookieExpirationTime = DateTime.UtcNow.AddHours(24);
 
                     // Store the token securely in the cookie
                     Response.Cookies.Append("AuthToken", token, new CookieOptions
                     {
                         HttpOnly = true,  // Prevent JavaScript access
-                        Secure = Request.IsHttps,  // Only use Secure cookies on HTTPS connections
-                        SameSite = SameSiteMode.Lax,  // Allows cross-site cookie access on same-site requests
-                        Expires = cookieExpirationTime  // Set cookie expiration
+                        Secure = true,  // Always use Secure in production
+                        SameSite = SameSiteMode.None,// cross site
+                        Expires = cookieExpirationTime, // expire after 24 hours
                     });
 
                     TempData["message"] = true;
@@ -75,38 +75,33 @@ namespace Moksha_App.Controllers
                 return Unauthorized("No token found in cookies.");
             }
 
-            // Decode the token if it is JSON encoded
-            token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
-
-            string baseAdd = _client.BaseAddress + "/Auth/ValidateToken";
-
-            // Create a new HttpRequestMessage
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, baseAdd)
+            // **FIX**: Do not assume token is JSON
+            if (token.StartsWith("{"))
             {
-                // Set Authorization header with Bearer token
+                try
+                {
+                    token = System.Text.Json.JsonDocument.Parse(token)
+                        .RootElement.GetProperty("token").GetString();
+                }
+                catch
+                {
+                    return Unauthorized("Invalid token format.");
+                }
+            }
 
-                Headers = { { "Authorization", $"Bearer {token}" } }
-            };
+            string baseAdd = _client.BaseAddress + "Auth/ValidateToken";
 
-            // Send the request and get the response
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, baseAdd);
+            requestMessage.Headers.Add("Authorization", $"Bearer {token}");
+
             var response = await _client.SendAsync(requestMessage);
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                return Ok("Token is valid");
-
-            }
-            else
-            {
-                return Unauthorized("Token is invalid or expired");
-            }
+            return response.IsSuccessStatusCode ? Ok("Token is valid") : Unauthorized("Token is invalid or expired");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
     }
-   
-   }
 }
