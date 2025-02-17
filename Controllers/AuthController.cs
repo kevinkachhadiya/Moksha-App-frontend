@@ -89,7 +89,7 @@ namespace Moksha_App.Controllers
                 }
             }
 
-            string baseAdd = _client.BaseAddress + "Auth/ValidateToken";
+            string baseAdd = _client.BaseAddress + "/Auth/ValidateToken";
 
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, baseAdd);
             requestMessage.Headers.Add("Authorization", $"Bearer {token}");

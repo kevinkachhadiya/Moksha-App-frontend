@@ -109,100 +109,102 @@
                 let materialIndex = materialRows.length + 1; // Get the correct material index
                 newRow.classList.add('materialRow', 'row', 'g-3', 'pl-4', 'ml-4', 'mb-4');
                 newRow.innerHTML = `
-                    <div class="materialRow row g-3  align-items-center p-4 border rounded-4 bg-white shadow-sm position-relative">
+<div class="materialRow row g-3 align-items-center p-4 border rounded-4 bg-white shadow-sm position-relative" style="transition: all 0.2s ease;">
 
-        <!-- Header Section -->
-        <div class="col-12 d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold text-primary mb-0">
-                <i class="bi bi-box-seam me-2"></i>Material <span class="materialIndex">${materialIndex}</span>
-            </h6>
-            <button type="button" class="btn btn-sm btn-outline-danger removeMaterialBtn rounded-circle shadow-sm" title="Remove">
-                <i class="bi bi-trash3"></i>
-            </button>
-        </div>
+    <!-- Header Section -->
+    <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
+            <i class="bi bi-box-seam me-2 fs-5"></i>Material <span class="materialIndex badge bg-primary-subtle text-primary ms-2">${materialIndex}</span>
+        </h6>
+        <button type="button" class="btn btn-sm btn-outline-danger removeMaterialBtn rounded-circle p-1 shadow-sm" 
+                style="width: 32px; height: 32px;" title="Remove"
+                onmouseover="this.style.transform='scale(1.1)'" 
+                onmouseout="this.style.transform='scale(1)'">
+            <i class="bi bi-trash3 fs-6"></i>
+        </button>
+    </div>
 
-        <!-- Material Details Section -->
-        <div class="row g-3 align-items-end">
+    <!-- Material Details Section -->
+    <div class="row g-4 align-items-end">
 
-            <!-- Material Dropdown -->
-            <div class="col-md-5"> <!-- Increased to col-md-5 for more space -->
-                <label class="form-label small fw-semibold text-secondary mb-2" for="MaterialId_${materialIndex}">
-                    <i class="bi bi-box me-2"></i>Material
-                </label>
-                <select class="form-select form-select-lg shadow-sm rounded-3" id="MaterialId_${materialIndex}" name="MaterialId[]" required>
+        <!-- Material Dropdown -->
+        <div class="col-lg-5">
+            <div class="form-floating">
+                <select class="form-select shadow-sm rounded-3 py-3" 
+                        id="MaterialId_${materialIndex}" 
+                        name="MaterialId[]" 
+                        style="padding-top: 1.625rem; padding-bottom: 1.625rem;">
                     <option value="" selected disabled>Select Material</option>
                     <!-- Dynamic options go here -->
                 </select>
-            </div>
-
-            <!-- Quantity and Total Quantity Section -->
-            <div class="col-md-4">
-                <label class="form-label small fw-semibold text-secondary mb-2" for="Quantity_${materialIndex}">
-                    <i class="bi bi-calculator me-2"></i>Quantity
+                <label for="MaterialId_${materialIndex}" class="small fw-semibold text-secondary">
+                    <i class="bi bi-box me-2"></i>Select Material
                 </label>
-                <div class="input-group input-group-lg shadow-sm rounded-3">
-                    <!-- Quantity Input -->
+            </div>
+        </div>
+
+        <!-- Quantity and Total Quantity Section -->
+        <div class="col-lg-4">
+            <div class="form-floating">
+                <div class="input-group shadow-sm rounded-3">
                     <input type="text"
-                           class="form-control quantityInput rounded-start-3"
+                           class="form-control quantityInput border-end-0 rounded-start-3 py-3"
                            id="Quantity_${materialIndex}"
                            name="Quantity[]"
-                           placeholder="Qty"
+                           placeholder="0"
                            required
-                           style="font-size: 1.0rem; padding: 8px 12px; flex: 5;">
-
-                    <!-- Equals Sign -->
-                    <span class="input-group-text bg-light d-flex align-items-center justify-content-center"
-                          style="font-size: 1.1rem; flex: 0.8; padding: 0 4px;">=</span>
-
-                    <!-- Total Quantity Group -->
-                    <div class="d-flex flex-column" style="flex: 2;">
-                        <!-- Total Kg Label -->
-                        <small class="form-text text-muted text-center mb-1" style="font-size: 0.75rem;">
-                            Total Kg
-                        </small>
-
-                        <!-- Total Quantity Input -->
+                           style="padding-top: 1.625rem; padding-bottom: 1.625rem;">
+                    <span class="input-group-text bg-white border-start-0 border-end-0 px-2 fw-bold text-muted">=</span>
+                    <div class="form-floating flex-grow-1">
                         <input type="text"
-                               class="form-control totalQuantity text-dark bg-light border-0 py-2"
+                               class="form-control totalQuantity bg-light-subtle border-start-0 rounded-end-3 py-3"
                                id="totalQuantity_${materialIndex}"
                                name="TotalQuantity[]"
                                value="0"
                                readonly
-                               style="font-size: 1.1rem; padding: 8px 10px;">
+                               style="padding-top: 1.625rem; padding-bottom: 1.625rem;">
+                        <label for="totalQuantity_${materialIndex}" class="small fw-semibold text-secondary">Total (Kg)</label>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Price Section -->
-            <div class="col-md-2">
-                <label class="form-label small fw-semibold text-secondary mb-2" for="Price_${materialIndex}">
-                    <i class="bi bi-currency-rupee me-2"></i>Price (₹/Kg)
-                </label>
+        <!-- Price Section -->
+        <div class="col-lg-2">
+            <div class="form-floating">
                 <input type="number"
-                       class="form-control form-control-lg shadow-sm rounded-3"
+                       class="form-control shadow-sm rounded-3 py-3"
                        id="Price_${materialIndex}"
                        name="Price[]"
-                       placeholder="Price"
+                       placeholder="0.00"
                        step="0.01"
                        required
-                       oninput="calculateTotal(${materialIndex})">
-            </div>
-
-            <!-- Total Price Section -->
-            <div class="col-md-1"> <!-- Reduced to col-md-1 for better spacing -->
-                <label class="form-label small fw-semibold text-secondary mb-2" for="TotalPrice_${materialIndex}">
-                    <i class="bi bi-cash-stack me-2"></i>Total
+                       style="padding-top: 1.625rem; padding-bottom: 1.625rem;">
+                <label for="Price_${materialIndex}" class="small fw-semibold text-secondary">
+                    <i class="bi bi-currency-rupee me-2"></i>Price/Kg
                 </label>
+            </div>
+        </div>
+
+        <!-- Total Price Section -->
+        <div class="col-lg-1">
+            <div class="form-floating">
                 <input type="text"
-                       class="form-control form-control-lg totalPrice shadow-sm rounded-3 bg-light"
+                       class="form-control totalPrice bg-light-subtle shadow-sm rounded-3 py-3"
                        id="TotalPrice_${materialIndex}"
                        name="TotalPrice[]"
                        value="0"
-                       readonly>
+                       readonly
+                       style="padding-top: 1.625rem; padding-bottom: 1.625rem;">
+                <label for="TotalPrice_${materialIndex}" class="small fw-semibold text-secondary">
+                    <i class="bi bi-cash-stack me-2"></i>Total
+                </label>
             </div>
         </div>
     </div>
-                `;
+</div>
+`;
+
 
                 // Append the new row to the container
                 materialsContainer.appendChild(newRow);
@@ -234,8 +236,8 @@
             });
 
             // Fetch materials from server
-            async function fetchMaterials() {
-                try {
+            async function fetchMaterials()
+
                     const response = await fetch('/Materials/all_list');
                     if (response.ok) {
                         materials = await response.json(); // Save materials globally
@@ -279,53 +281,57 @@
                     priceInput.value = ''; // Reset price if no material selected
                 }
 
+
             updateGrandTotal(); // Recalculate the total amount
             }
-     });
+});
 
-    function evaluateExpression(expression) {
-        try {
-            const sanitized = expression.replace(/[^0-9+\-*/().]/g, "");
 
-            // Corrected regex patterns
-            if (!sanitized ||
-                /^[+*\/.]/.test(sanitized) || // Hyphen removed from start check
-                /[+*\/.-]{2,}/.test(sanitized) || // Hyphen moved to end
-                /[+*\/.-]$/.test(sanitized) // Hyphen moved to end
-            ) {
-                return NaN;
-            }
+function evaluateExpression(expression) {
+    try {
+        // Allow only numbers, +, -, *, /, (, and )
+        const sanitized = expression.replace(/[^0-9+\-*/().]/g, "");
 
-            const result = new Function(`return ${sanitized}`)();
-            return typeof result === "number" && isFinite(result) ? result : NaN;
-        } catch (error) {
+        // Prevent invalid sequences like "**", "//", or leading/trailing operators
+        if (!/^\d|^\(|\)$/.test(sanitized) || /[*\/+.-]{2,}/.test(sanitized) || /[*\/+]$/.test(sanitized)) {
             return NaN;
         }
+
+        // Evaluate expression safely
+        const result = new Function(`return ${sanitized}`)();
+
+        // Ensure result is a number, finite, and greater than 0
+        return typeof result === "number" && isFinite(result) && result > 0 ? result : NaN;
+    } catch (error) {
+        return NaN;
+    }
+}
+
+
+function updateQuantity(inputField) {
+    const row = inputField.closest('.materialRow');
+    const totalQuantityField = row.querySelector('.totalQuantity');
+    const priceInput = row.querySelector('input[name="Price[]"]');
+    const totalPriceField = row.querySelector('.totalPrice');
+
+    const expression = inputField.value.trim();
+    const quantity = expression ? evaluateExpression(expression) : 0;
+
+    if (!isNaN(quantity) && quantity > 0) {  // Ensure quantity > 0
+        totalQuantityField.value = quantity.toFixed(2);
+        inputField.setCustomValidity("");
+
+        const price = parseFloat(priceInput.value) || 0;
+        totalPriceField.value = (quantity * price).toFixed(2);
+    } else {
+        totalQuantityField.value = "0.00";
+        totalPriceField.value = "0.00";
+        inputField.setCustomValidity("Invalid expression. Use numbers and + - * /, and ensure result is > 0");
     }
 
-    function updateQuantity(inputField) {
-        const row = inputField.closest('.materialRow');
-        const totalQuantityField = row.querySelector('.totalQuantity');
-        const priceInput = row.querySelector('input[name="Price[]"]');
-        const totalPriceField = row.querySelector('.totalPrice');
+    updateGrandTotal();
+}
 
-        const expression = inputField.value.trim();
-        const quantity = expression ? evaluateExpression(expression) : 0;
-
-        if (!isNaN(quantity) && quantity >= 0) {
-            totalQuantityField.value = quantity.toFixed(2);
-            inputField.setCustomValidity("");
-
-            const price = parseFloat(priceInput.value) || 0;
-            totalPriceField.value = (quantity * price).toFixed(2);
-        } else {
-            totalQuantityField.value = "0.00";
-            totalPriceField.value = "0.00";
-            inputField.setCustomValidity("Invalid expression. Use numbers and + - * /");
-        }
-
-        updateGrandTotal();
-    }
 
     // Calculate grand total for all materials
     function updateGrandTotal() {
@@ -394,6 +400,7 @@
                 errorFeedback.style.display = 'block'; // Show error message
                 isValid = false;
             }
+            
 
 
             // Price validation (must be greater than 0)

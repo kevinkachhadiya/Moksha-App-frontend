@@ -20,14 +20,36 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         // Ensure that your AuthController's Login action is decorated with [AllowAnonymous]
+        options.LoginPath = "/Auth/Login"; // Redirect to login page if unauthorized
+        options.LogoutPath = "/Auth/Logout"; // Redirect to logout page
+        options.AccessDeniedPath = "/Auth/AccessDenied"; // Redirect to access denied page
 
-        options.LoginPath = "/Auth/Login";
-        options.LogoutPath = "/Auth/Logout";
-        options.AccessDeniedPath = "/Auth/AccessDenied";
-        options.Cookie.SameSite = SameSiteMode.None; // Needed for cross-site cookies
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.HttpOnly = true;
+        // Cookie settings
+        options.Cookie.SameSite = SameSiteMode.None; // Required for cross-site cookies
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are only sent over HTTPS
+        options.Cookie.HttpOnly = true; // Prevent client-side JavaScript from accessing the cookie
+        options.Cookie.Name = "AuthToken"; // Give the cookie a unique name
 
+        // Expiration settings
+        options.ExpireTimeSpan = TimeSpan.FromHours(24); // Cookie expires after 24 hours
+        options.SlidingExpiration = true; // Renew the cookie if more than half the time has passed
+
+        // Additional options
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                // Custom behavior for redirecting to login (e.g., return 401 for API requests)
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                // Custom behavior for redirecting to access denied (e.g., return 403 for API requests)
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return Task.CompletedTask;
+            }
+        };
     });
 // --------------------------------------------------------------------
 // 3. JWT & Global Filter Configuration
