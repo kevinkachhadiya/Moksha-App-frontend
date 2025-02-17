@@ -41,13 +41,19 @@ namespace Moksha_App.Controllers
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var token = await response.Content.ReadAsStringAsync();
-                    // Store the token securely (e.g., in a cookie or session)
+
+                    // Set an expiration time for the cookie (1 hour, for example)
+                    var cookieExpirationTime = DateTime.UtcNow.AddHours(1); // Cookie will expire in 1 hour
+
+                    // Store the token securely in the cookie
                     Response.Cookies.Append("AuthToken", token, new CookieOptions
                     {
-                        HttpOnly = true, // Prevent JavaScript access
-                        Secure = false,  // Change to 'true' if using HTTPS
-                        SameSite = SameSiteMode.Lax // Prevent cookie deletion on cross-site navigation
+                        HttpOnly = true,  // Prevent JavaScript access
+                        Secure = Request.IsHttps,  // Only use Secure cookies on HTTPS connections
+                        SameSite = SameSiteMode.Lax,  // Allows cross-site cookie access on same-site requests
+                        Expires = cookieExpirationTime  // Set cookie expiration
                     });
+
                     TempData["message"] = true;
                     return RedirectToAction("Dash_Board", "DashBoard");
                 }
@@ -59,6 +65,7 @@ namespace Moksha_App.Controllers
             }
             return View(model);
         }
+
         [HttpGet]
         public async Task<IActionResult> ValidateToken()
         {
