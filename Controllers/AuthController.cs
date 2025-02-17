@@ -43,7 +43,7 @@ namespace Moksha_App.Controllers
                     var token = await response.Content.ReadAsStringAsync();
 
                     // Set an expiration time for the cookie (1 hour, for example)
-                    var cookieExpirationTime = DateTime.UtcNow.AddHours(1); // Cookie will expire in 1 hour
+                    var cookieExpirationTime = DateTime.UtcNow.AddHours(24); // Cookie will expire in 1 hour
 
                     // Store the token securely in the cookie
                     Response.Cookies.Append("AuthToken", token, new CookieOptions
