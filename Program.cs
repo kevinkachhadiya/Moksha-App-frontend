@@ -16,7 +16,7 @@ var env = builder.Environment;
 // --------------------------------------------------------------------
 // 2. Cookie Authentication Configuration
 // --------------------------------------------------------------------
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+ /*builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         // Ensure that your AuthController's Login action is decorated with [AllowAnonymous]
@@ -34,23 +34,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromHours(24); // Cookie expires after 24 hours
         options.SlidingExpiration = true; // Renew the cookie if more than half the time has passed
 
-        // Additional options
-        options.Events = new CookieAuthenticationEvents
-        {
-            OnRedirectToLogin = context =>
-            {
-                // Custom behavior for redirecting to login (e.g., return 401 for API requests)
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return Task.CompletedTask;
-            },
-            OnRedirectToAccessDenied = context =>
-            {
-                // Custom behavior for redirecting to access denied (e.g., return 403 for API requests)
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                return Task.CompletedTask;
-            }
-        };
-    });
+    });*/
 // --------------------------------------------------------------------
 // 3. JWT & Global Filter Configuration
 // --------------------------------------------------------------------
