@@ -50,7 +50,7 @@ namespace Moksha_App.Controllers
                     {
                         HttpOnly = true,  // Prevent JavaScript access
                         Secure = true,  // Always use Secure in production
-                        SameSite = SameSiteMode.None,// cross site
+                        SameSite = SameSiteMode.Lax,// cross site
                         Expires = cookieExpirationTime, // expire after 24 hours
                     });
 
