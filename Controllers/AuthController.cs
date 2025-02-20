@@ -48,10 +48,10 @@ namespace Moksha_App.Controllers
                     // Store the token securely in the cookie
                     Response.Cookies.Append("AuthToken", token, new CookieOptions
                     {
-                        HttpOnly = false,  // Prevent JavaScript access
-                        Secure = true,  // Always use Secure in production
-                        SameSite = SameSiteMode.None,// cross site
-                        Expires = cookieExpirationTime, // expire after 24 hours
+                        HttpOnly = false,  // Ensures it is not accessible via JavaScript
+                        Secure = false,   // Change to true in production (must be served over HTTPS)
+                        SameSite = SameSiteMode.None, // Consider using Lax for better compatibility
+                        Expires = cookieExpirationTime,
                     });
 
                     TempData["message"] = true;
