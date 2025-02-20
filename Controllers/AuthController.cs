@@ -49,7 +49,7 @@ namespace Moksha_App.Controllers
                     Response.Cookies.Append("AuthToken", token, new CookieOptions
                     {
                         HttpOnly = false,  // Ensures it is not accessible via JavaScript
-                        Secure = false,   // Change to true in production (must be served over HTTPS)
+                        Secure = true,   // Change to true in production (must be served over HTTPS)
                         SameSite = SameSiteMode.None, // Consider using Lax for better compatibility
                         Expires = cookieExpirationTime,
                     });
