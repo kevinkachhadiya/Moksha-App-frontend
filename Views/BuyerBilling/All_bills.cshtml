@@ -107,35 +107,32 @@
                                        class="form-control form-control-lg shadow-sm rounded-3"
                                        id="buyerName"
                                        name="BuyerName"
-                                       placeholder=" "
+                                       placeholder=""
+                                       onkeyup="NameChange(this)"
                                        required
                                        autocomplete="off">
                                 <label for="buyerName" class="fw-semibold text-secondary ms-3">
                                     <i class="bi bi-person-badge me-2"></i>Customer Name
                                 </label>
-                                <div class="invalid-feedback animated fadeIn" id="buyerNameError"></div>
+                                <span class="text-danger animated fadeIn" id="buyerNameError"></span>
                             </div>
                         </div>
 
                         <!-- Materials Section -->
                         <div class="col-12">
-                            <div class="card border-0 shadow-sm hover-shadow">
+                            <div class="card border-0 shadow-sm hover-shadow" id="itemContainer">
                                 <div class="card-header bg-transparent border-0 py-3">
-                                    <h6 class="fw-semibold text-primary mb-0 d-flex align-items-center">
-                                        <i class="bi bi-pallet me-2 fs-5"></i>Items
-                                        <span class="badge bg-primary ms-2" id="itemCount">0</span>
-                                    </h6>
+                                    <h5 class="fw-semibold text-primary mb-0 d-flex align-items-center"> <i class="bi bi-pallet me-2 fs-5"></i>Materials </h5>
                                 </div>
                                 <div class="card-body p-3">
                                     <div id="materialsContainer" class="d-grid gap-3">
-                                        <!-- Dynamic Materials Will Be Added Here -->
                                     </div>
                                     <button type="button"
                                             class="btn btn-outline-primary w-100 mt-3 py-3 rounded-3 add-material-btn"
+                                            onclick="Additem();"
                                             id="addMaterialBtn">
                                         <i class="bi bi-plus-circle me-2"></i>Add Item
                                     </button>
-                                    <div class="invalid-feedback animated fadeIn" id="materialsError"></div>
                                 </div>
                             </div>
                         </div>
@@ -200,6 +197,197 @@
     </div>
 </div>
 
-<script src="~/js/Allbills.js"></script>
-
 <link rel="stylesheet" href="~/css/Bills.css">
+
+@section scripts{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+            $(document).ready(function () {
+            $.ajax({
+                url: '@Url.Action("All_Mt", "Materials")', // Constructs the URL to the All_Mt action
+                type: "GET", // HTTP GET request
+                success: function (response) {
+                    if (response.success && response.message) {
+                        materials = response.message; // Store materials data
+                        console.log("Materials data loaded:", materials);
+                    } else {
+                        console.error("No data received or API call failed.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+        });
+
+        function Additem() {
+            const materialsContainer = document.getElementById('materialsContainer');
+            const existingItems = materialsContainer.getElementsByClassName('item-entry');
+            let previousCount = 0;
+
+            if (existingItems.length > 0) {
+                const lastItem = existingItems[existingItems.length - 1];
+                const lastBadge = lastItem.querySelector('.badge');
+                previousCount = parseInt(lastBadge.textContent) || 0;
+            }
+
+            let itemCount = (previousCount >= 1) ? previousCount + 1 : 1;
+
+            // Create new item container
+            const newItem = document.createElement('div');
+            newItem.className = 'item-entry d-flex align-items-center gap-3 mb-3';
+            newItem.id = `item-${itemCount}`;
+
+            // Create item content
+            newItem.innerHTML = `
+                <div class="material-item mb-2 p-3 border rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-semibold text-primary mb-0 d-flex align-items-center">
+                            <i class="bi bi-pallet me-2 fs-5"></i>Items
+                            <span class="badge bg-primary ms-2">${itemCount}</span>
+                        </h6>
+                        <button type="button" class="btn btn-outline-danger delete-item-btn">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </div>
+                    <div class="row g-3">
+                        <!-- Dropdown for item selection -->
+                        <div class="col-md-4">
+                            <label class="form-label">Select Item</label>
+                            <select class="form-select item-dropdown" id="dropdown-${itemCount}" required>
+                                <option value="">Select Item</option>
+                            </select>
+                        </div>
+                        <!-- Input for price (numbers only) -->
+                        <div class="col-md-2">
+                            <label class="form-label">Price</label>
+                            <input type="number" class="form-control price-input" placeholder="Price" aria-label="Price" min="0">
+                        </div>
+                        <!-- Input for quantity (numbers only) -->
+                        <div class="col-md-2">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" class="form-control quantity-input" placeholder="Quantity" aria-label="Quantity" min="0">
+                        </div>
+                        <!-- Display total quantity -->
+                        <div class="col-md-2">
+                            <label class="form-label">Total Quantity</label>
+                            <div class="input-group-text total-quantity">0</div>
+                        </div>
+                        <!-- Display total price -->
+                        <div class="col-md-2">
+                            <label class="form-label">Total Price</label>
+                            <div class="input-group-text total-price">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Append the new item to the container
+            materialsContainer.appendChild(newItem);
+
+            // Access the dropdown within the newly created item
+            const dropdown = newItem.querySelector(`#dropdown-${itemCount}`);
+
+            if (dropdown) {
+                console.log(`Dropdown with ID #dropdown-${itemCount} found.`);
+
+                // Clear existing options
+                dropdown.innerHTML = '';
+
+                // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a material';
+                dropdown.appendChild(defaultOption);
+
+                // Add options from materials array
+                materials.forEach(material => {
+                    const option = document.createElement('option');
+                    option.value = material.id;
+                    option.textContent = `${material.colorName} - ${material.basePrice}`;
+                    dropdown.appendChild(option);
+                });
+            } else {
+                console.error(`Dropdown with ID #dropdown-${itemCount} not found.`);
+            }
+
+            // Add delete functionality
+            const deleteButton = newItem.querySelector('.delete-item-btn');
+            deleteButton.addEventListener('click', function () {
+                newItem.remove();
+
+                // Re-number the badges
+                const existingItems = materialsContainer.getElementsByClassName('item-entry');
+                for (let i = 0; i < existingItems.length; i++) {
+                    const currentItem = existingItems[i];
+                    const badgeElement = currentItem.querySelector('.badge');
+                    if (badgeElement) {
+                        badgeElement.textContent = i + 1;
+                    }
+                }
+            });
+        }
+
+           
+</script>
+    }       
+    
+<style>
+
+
+    #buyerNameError 
+    {
+        margin-left: 14px;
+    }
+
+    .material-item {
+        background-color: #f8f9fa;
+        transition: box-shadow 0.3s ease;
+    }
+
+        .material-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .input-group-text {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .delete-item-btn {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+        .delete-item-btn:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+</style>

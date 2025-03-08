@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.MSIdentity.Shared;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Moksha_App.Models;
 using Newtonsoft.Json;
 
@@ -26,7 +29,7 @@ namespace Moksha_App.Controllers
              uri = new Uri(backend_url);
         }
         // GET: All Materials
-        [HttpGet]
+       /* [HttpGet]
         public async Task<IActionResult> All_Materials()
         {
             List<Material> materials = new List<Material>();
@@ -79,6 +82,50 @@ namespace Moksha_App.Controllers
             // Pass the data to the view
             return View(materials);
         }
+        */
+        [HttpGet]
+        public async Task<JsonResult> All_Mt()
+        {
+            List<Material> materials = new List<Material>();
+            string baseAdd = uri + "/Materials";
+            var token = Request.Cookies["AuthToken"] ?? "";
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            try
+            {
+                // Call the API
+                HttpResponseMessage response = await _httpClient.GetAsync(baseAdd); // Replace with your API route
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Deserialize the JSON response
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                    materials = System.Text.Json.JsonSerializer.Deserialize<List<Material>>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+
+                else
+                {
+                    // Log actual response body for debugging
+                    string errorResponse = await response.Content.ReadAsStringAsync();
+                    ViewBag.Error = $"Failed to retrieve materials. Status: {response.StatusCode}. Error: {errorResponse}";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                ViewBag.Error = "An error occurred while calling the API: " + ex.Message;
+            }
+
+
+            
+            return Json(new { success = true, Message = materials });
+            
+        }
+
         public async Task<IActionResult> Create(Material material)
         {
             string baseAdd = uri + "/Materials/CreateMaterial";
