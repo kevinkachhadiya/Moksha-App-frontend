@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moksha_App.Models;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace Moksha_App.Controllers
@@ -11,7 +12,6 @@ namespace Moksha_App.Controllers
         private readonly IConfiguration _appsettings;
         public BuyerBillingController(IConfiguration appsettings)
         {
-           
             _appsettings = appsettings;
             var backend_url = Environment.GetEnvironmentVariable("backend_url")
                  ?? _appsettings["BackendUrl"] ?? "";
@@ -58,6 +58,12 @@ namespace Moksha_App.Controllers
 
             // Pass the data to the view
             return View(materials);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateBill([FromForm]B_Bill bill)
+        {
+
+            return Json("");
         }
     }
 }

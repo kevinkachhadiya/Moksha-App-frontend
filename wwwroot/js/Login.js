@@ -1,4 +1,6 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿
+
+document.addEventListener("DOMContentLoaded", function () {
     let existingModal = document.getElementById("uniqueLoginModal");
     if (existingModal) {
         existingModal.remove(); // Remove duplicate modals before appending a new one

@@ -70,8 +70,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("https://moksha-app-frontend.onrender.com", "http://localhost", "https://moksha-app-backend.onrender.com/api")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials()
-              .SetIsOriginAllowed(origin => true); // ✅ Add this to handle credentials correctly
+              .AllowCredentials();
+              
     });
 });
 

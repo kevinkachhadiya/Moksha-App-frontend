@@ -1,5 +1,5 @@
-﻿<div class="modal fade" id="uniqueLoginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
+﻿<div class="modal" id="uniqueLoginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content rounded-3 shadow-lg">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title fs-5 fw-bold text-primary">Welcome Back</h5>
@@ -25,11 +25,14 @@
                                 <i class="bi bi-lock-fill text-secondary"></i>
                             </span>
                             <input type="password"
-                                   class="form-control rounded-end"
+                                   class="form-control"
                                    id="passwordLogin_@Guid.NewGuid()"
                                    name="password"
                                    placeholder="Enter password"
                                    required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye-fill"></i>
+                            </button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 fw-bold py-2">
@@ -40,3 +43,20 @@
         </div>
     </div>
 </div>
+<script>
+        document.querySelectorAll('.toggle-password').forEach(button => {
+        button.addEventListener('click', function() {
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+
+            // Toggle input type
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            // Toggle icon
+            icon.classList.toggle('bi-eye-fill');
+            icon.classList.toggle('bi-eye-slash-fill');
+        });
+    });   
+
+</script>

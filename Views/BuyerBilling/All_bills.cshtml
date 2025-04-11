@@ -81,7 +81,7 @@
 </div>
 
 <!-- Add Bill Modal -->
-<div class="modal" id="addBillModal" tabindex="-1" aria-labelledby="addBillModalLabel">
+<div class="modal fade" id="addBillModal" tabindex="-1" aria-labelledby="addBillModalLabel" data-bs-backdrop="static" >
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <!-- Modal Header -->
@@ -111,7 +111,7 @@
                                        onkeyup="NameChange(this)"
                                        required
                                        autocomplete="off">
-                                <label for="buyerName" class="fw-semibold text-secondary ms-3">
+                                <label for="buyerName" class="fw-semibold text-secondary ps-2">
                                     <i class="bi bi-person-badge me-2"></i>Customer Name
                                 </label>
                                 <div class="valid-feedback"> Looks good! </div>
@@ -139,7 +139,7 @@
 
                         <!-- Total Amount -->
                         <div class="col-12">
-                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 border">
+                            <div class="d-flex p-3 bg-light rounded-3 border">
                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
                                     <i class="bi bi-calculator me-2 fs-4"></i>Total Amount
                                 </h5>
@@ -165,13 +165,17 @@
                         </div>
 
                         <!-- Payment Status -->
-                        <div class="col-md-6">
-                            <div class="form-check form-switch form-switch-lg bg-light rounded-pill p-3 h-100 d-flex align-items-center">
-                                <input class="form-check-input shadow-sm" type="checkbox" id="isPaid" name="IsPaid" required>
-                                <label class="form-check-label fw-semibold text-secondary ms-4" for="isPaid" style="margin-left: 1.5rem!important;">
-                                    <i class="bi bi-receipt me-2"></i>Mark as Paid
-                                </label>
-                                <div class="invalid-feedback animated fadeIn" id="isPaidError"></div>
+                        <div class="d-flex p-3 bg-light rounded-3 border">
+                            <input class="form-check custom-large-checkbox"
+                                   type="checkbox"
+                                   id="isPaid"
+                                   name="IsPaid"
+                                   required>
+                            <label class="form-check" for="isPaid">
+                                <i class="bi bi-receipt me-2"></i>Mark as Paid
+                            </label>
+                            <div class="invalid-feedback" style=" max-width: 40%; margin-left: 30px;">
+                                Please confirm payment status
                             </div>
                         </div>
 
@@ -199,51 +203,15 @@
 </div>
 
 <link rel="stylesheet" href="~/css/Bills.css">
+<!-- Include math.js for safe expression evaluation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.min.js"></script>
 
 @section scripts{
            <script>
         $(document).ready(function() {
-            // 1. Initialize modal first
-            let addBillModal;
-            try {
-                const modalEl = document.getElementById('addBillModal');
-                if (modalEl) {
-                    addBillModal = new bootstrap.Modal(modalEl);
-                    console.log('Modal initialized successfully');
-                } else {
-                    console.error('Could not find modal element');
-                }
-            } catch (e) {
-                console.error('Modal initialization failed:', e);
-            }
 
-            // 2. Safe click handler for modal button
-            $('[data-bs-target="#addBillModal"]').off('click').on('click', function(e) {
-                e.preventDefault();
 
-                // Debug checks
-                console.log('Modal exists:', $('#addBillModal').length > 0);
-                console.log('Bootstrap loaded:', typeof bootstrap !== 'undefined');
-
-                // Show modal with error handling
-                try {
-                    if (addBillModal) {
-                        addBillModal.show();
-                    } else {
-                        // Fallback initialization
-                        addBillModal = new bootstrap.Modal('#addBillModal');
-                        addBillModal.show();
-                    }
-                } catch (error) {
-                    console.error('Modal show error:', error);
-                    // Ultimate fallback
-                    $('#addBillModal').addClass('show');
-                    $('#addBillModal').css('display', 'block');
-                    $('body').addClass('modal-open');
-                }
-            });
-
-            // 3. Load materials data
+            // 1. Load materials data
             let materials = [];
 
             $.ajax({
@@ -262,98 +230,398 @@
                 }
             });
 
-            // 4. Add item function
-            window.Additem = function() {
-                const $materialsContainer = $('#materialsContainer');
-                const itemCount = $materialsContainer.find('.item-entry').length + 1;
+           //2 validate and calulation
+                    window.Additem = function() {
+            const $materialsContainer = $('#materialsContainer');
+            const itemCount = $materialsContainer.find('.item-entry').length + 1;
 
-                const $newItem = $(`
-                    <div class="item-entry d-flex align-items-center gap-3 mb-3" id="item-${itemCount}">
-                        <div class="material-item mb-2 p-3 border rounded">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="fw-semibold text-primary mb-0 d-flex align-items-center">
-                                    <i class="bi bi-pallet me-2 fs-5"></i>Items
-                                    <span class="badge bg-primary ms-2">${itemCount}</span>
-                                </h6>
-                                <button type="button" class="btn btn-outline-danger delete-item-btn">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
+            const $newItem = $(`
+                <div class="item-entry d-flex align-items-center gap-3 mb-3" id="item-${itemCount}" data-valid="false">
+                    <div class="material-item mb-2 p-3 border rounded needs-validation" novalidate>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-semibold text-primary mb-0 d-flex align-items-center">
+                                <i class="bi bi-pallet me-2 fs-5"></i>Items
+                                <span class="badge bg-primary ms-2">${itemCount}</span>
+                            </h6>
+                            <button type="button" class="btn btn-outline-danger delete-item-btn">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Select Item</label>
+                                <select class="form-select item-dropdown is-validatable" id="dropdown-${itemCount}" required>
+                                    <option value="">Select Item</option>
+                                </select>
+                                <div class="invalid-feedback">Please select an item</div>
+                                <div class="valid-feedback d-none">Looks good!</div>
                             </div>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label">Select Item</label>
-                                    <select class="form-select item-dropdown" id="dropdown-${itemCount}" required>
-                                        <option value="">Select Item</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Price</label>
-                                    <input type="number" class="form-control price-input" placeholder="Price" min="0">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Quantity</label>
-                                    <input type="number" class="form-control quantity-input" placeholder="Quantity" min="0">
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Total Quantity</label>
-                                    <div class="input-group-text total-quantity">0</div>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">Total Price</label>
-                                    <div class="input-group-text total-price">₹0.00</div>
-                                </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Price</label>
+                                <input type="text" class="form-control price-input calc-trigger" placeholder="Price" required>
+                                <div class="invalid-feedback">Enter a valid price (≥ ₹0.01)</div>
+                                <div class="valid-feedback d-none">Looks good!</div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Quantity</label>
+                                <input type="text" class="form-control quantity-input calc-trigger" placeholder="Quantity" required>
+                                <div class="invalid-feedback">Enter quantity (≥ 1)</div>
+                                <div class="valid-feedback d-none">Looks good!</div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Total Quantity</label>
+                                <div class="input-group-text total-quantity">0.00</div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Total Price</label>
+                                <div class="input-group-text total-price">₹0.00</div>
                             </div>
                         </div>
                     </div>
-                `);
+                </div>
+            `);
 
-                $materialsContainer.append($newItem);
+            $materialsContainer.append($newItem);
 
-                // Populate dropdown
-                const $dropdown = $newItem.find('.item-dropdown');
-                $dropdown.empty().append('<option value="">Select a material</option>');
-
-                materials.forEach(material => {
-                    $dropdown.append($('<option>', {
-                        value: material.id,
-                        text: `${material.colorName} - ${material.basePrice}`
-                    }));
-                });
-
-                // Delete handler
-                $newItem.find('.delete-item-btn').click(function() {
-                    $newItem.remove();
-                    // Renumber remaining items
-                    $('#materialsContainer .item-entry').each(function(index) {
-                        $(this).find('.badge').text(index + 1);
-                    });
-                });
-            };
-
-            // 5. Form submission handler
-            $('#addBillForm').submit(function(e) {
-                e.preventDefault();
-                // Add your form submission logic here
-                console.log('Form submitted');
-            });
-
-            // 6. Name change handler
-            window.NameChange = function(input) {
-                // Your implementation
-                console.log('Name changed:', $(input).val());
-            };
+                    // 1. First modify the dropdown population to include the price in the option's data attribute
+        const $dropdown = $newItem.find('.item-dropdown');
+        $dropdown.empty().append('<option value="">Select a material</option>');
+        materials.forEach(material => {
+            $dropdown.append($('<option>', {
+                value: material.id,
+                text: `${material.colorName} - ₹${material.basePrice.toFixed(2)}`,
+                'data-price': material.basePrice  // Add this line to store the price
+            }));
         });
 
-        // 7. Check if Bootstrap loaded properly
-        if (typeof bootstrap === 'undefined') {
-            console.error('Bootstrap not loaded! Loading fallback...');
-            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"><\/script>');
+        // 2. Then update the change handler to extract and use this price
+        $dropdown.on('change', function() {
+            const $this = $(this);
+            const $priceInput = $this.closest('.row').find('.price-input');
+            const selectedOption = $this.find('option:selected');
+            const selectedText = selectedOption.text();
+
+            if (selectedOption.val()) {
+                // Extract price from the option text (format: "ColorName - ₹123.45")
+                const priceMatch = selectedText.match(/₹(\d+\.\d{2})$/);
+                const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
+
+                // Alternative: Use the data-price attribute we stored
+                // const price = selectedOption.data('price');
+
+                $priceInput.val(price.toFixed(2)).data('evaluated', price);
+                $priceInput.removeClass('is-invalid').addClass('is-valid');
+            } else {
+                // Clear all values if no item selected
+                $priceInput.val('').data('evaluated', null);
+                $this.closest('.row').find('.quantity-input').val('').data('evaluated', null);
+                $this.closest('.row').find('.total-quantity').text('0.00');
+                $this.closest('.row').find('.total-price').text('₹0.00');
+                $priceInput.removeClass('is-valid is-invalid');
+            }
+
+            validateItem($newItem);
+            calculateGrandTotal();
+        });
+
+            // Add event handlers
+            $newItem.find('.calc-trigger').on('input change', function() {
+                validateInput($(this));
+                validateItem($newItem);
+                calculateItemTotal($newItem);
+                calculateGrandTotal();
+            });
+
+            $newItem.find('.is-validatable').on('change', function() {
+                validateInput($(this));
+                validateItem($newItem);
+                calculateGrandTotal();
+            });
+
+            $newItem.find('.delete-item-btn').click(function() {
+                $newItem.fadeOut(300, function() {
+                    $(this).remove();
+                    renumberItems();
+                    validateAllItems();
+                    calculateGrandTotal();
+                });
+            });
+
+            validateItem($newItem);
+        };
+
+        // Helper Functions
+        function validateInput($input) {
+            let isValid = false;
+            let evaluatedValue = null;
+
+            try {
+                const value = $input.val().trim();
+                if (!value) {
+                    throw new Error('Empty input');
+                }
+
+                // For dropdowns, just check if something is selected
+                if ($input.is('select')) {
+                    isValid = value !== "";
+                    $input.data('evaluated', value);
+                }
+                // For number inputs, evaluate mathematical expressions
+                else {
+                    evaluatedValue = math.evaluate(value);
+                    if (typeof evaluatedValue !== 'number' || isNaN(evaluatedValue)) {
+                        throw new Error('Invalid number');
+                    }
+
+                    const min = $input.hasClass('quantity-input') ? 1 : 0.01;
+                    isValid = evaluatedValue >= min;
+                    $input.data('evaluated', isValid ? evaluatedValue : null);
+                }
+            } catch (e) {
+                isValid = false;
+                evaluatedValue = null;
+                $input.data('evaluated', null);
+            }
+
+            // Update validation classes and feedback messages
+            $input.toggleClass('is-invalid', !isValid);
+            $input.toggleClass('is-valid', isValid);
+            $input.siblings('.invalid-feedback').toggle(!isValid);
+            $input.siblings('.valid-feedback').toggle(isValid);
+
+            return isValid ? evaluatedValue || $input.val() : false;
         }
+
+        function calculateItemTotal($item) {
+            const price = parseFloat($item.find('.price-input').data('evaluated')) || 0;
+            const quantity = parseFloat($item.find('.quantity-input').data('evaluated')) || 0;
+            const total = price * quantity;
+
+            $item.find('.total-price').text(`₹${total.toFixed(2)}`);
+            $item.find('.total-quantity').text(quantity.toFixed(2));
+
+            return total;
+        }
+
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            let totalQuantity = 0;
+            let ru = "₹"
+
+            $('#materialsContainer .item-entry').each(function() {
+                const $item = $(this);
+                const itemTotal = calculateItemTotal($item);
+                grandTotal += itemTotal;
+                const quantity = parseFloat($item.find('.quantity-input').data('evaluated')) || 0;
+                totalQuantity += quantity;
+            });
+
+            $('#totalValue').text( grandTotal.toFixed(2));
+            
+        }
+
+        function renumberItems() {
+            $('#materialsContainer .item-entry').each(function(index) {
+                const newCount = index + 1;
+                const $item = $(this);
+                $item.attr('id', `item-${newCount}`)
+                     .find('.badge').text(newCount)
+                     .end()
+                     .find('.item-dropdown').attr('id', `dropdown-${newCount}`);
+            });
+        }
+
+        function validateItem($item) {
+            let isValid = true;
+
+            $item.find('[required]').each(function() {
+                isValid = validateInput($(this)) !== false && isValid;
+            });
+
+            $item.attr('data-valid', isValid.toString());
+            return isValid;
+        }
+
+        function validateAllItems() {
+            let allValid = true;
+            $('#materialsContainer .item-entry').each(function() {
+                if (!validateItem($(this))) {
+                    allValid = false;
+                }
+            });
+            return allValid;
+        }
+
+
+         $('#isPaid').change(function() {
+            const isValid = $(this).is(':checked');
+            $(this).toggleClass('is-invalid', !isValid);
+            $(this).toggleClass('is-valid', isValid);
+            $(this).siblings('.invalid-feedback').toggle(!isValid);
+            $(this).siblings('.valid-feedback').toggle(isValid);
+        });
+
+
+       // 3. Form submission handler
+        $('#addBillForm').submit(function(e) {
+            e.preventDefault();
+          
+
+        // Validate form first
+        if (!validateAllItems() || !this.checkValidity()) {
+            $(this).addClass('was-validated');
+            return false;
+        }
+
+                const formData = new FormData();
+        formData.append("BuyerName", $('#buyerName').val().trim());
+        formData.append("IsPaid", $('#isPaid').is(':checked'));
+        formData.append("PaymentMethod", $('#paymentMethod').val()); // Ensure value is "Cash", "CreditCard", or "BankTransfer"
+         formData.append("TotalBillPrice", 0); // Map grandTotal to TotalBillPrice
+
+        // Append items
+        $('#materialsContainer .item-entry').each(function(index) {
+            const $item = $(this);
+            formData.append(`Items[${index}].MaterialId`, $item.find('.item-dropdown').val());
+            formData.append(`Items[${index}].ColorName`, $item.find('.item-dropdown option:selected').text().split(' - ')[0]);
+            formData.append(`Items[${index}].Price`, parseFloat($item.find('.price-input').data('evaluated')) || 0);
+            formData.append(`Items[${index}].Quantity`, parseFloat($item.find('.quantity-input').data('evaluated')) || 0);
+            formData.append(`Items[${index}].TotalPrice`, parseFloat($item.find('.total-price').text().replace('₹','')) || 0);
+        });
+
+           console.log(formData);
+      
+            const BuyerName = formData.buyerName;
+            const formControl = $('#buyerName').closest('.form-floating');
+            const feedback = formControl.find('.valid-feedback, .invalid-feedback');
+
+            // Correct jQuery way to remove classes
+            $('#buyerName').removeClass('is-valid is-invalid');
+
+            if(!BuyerName) {
+                // Correct jQuery way to add class
+                $('#buyerName').addClass('is-invalid');
+
+                if (feedback.length === 0) {
+                    formControl.append('<div class="invalid-feedback">Customer name is required</div>');
+                } else {
+                    feedback.text('Customer name is required')
+                           .removeClass('valid-feedback')
+                           .addClass('invalid-feedback');
+                }
+            } 
+            else {
+                // Add success state if valid
+                $('#buyerName').addClass('is-valid');
+                if (feedback.length === 0) {
+                    formControl.append('<div class="valid-feedback">Looks good!</div>');
+                } else {
+                    feedback.text('Looks good!')
+                           .removeClass('invalid-feedback')
+                           .addClass('valid-feedback');
+                }
+            }
+            $.ajax({
+                 url:'@Url.Action("CreateBill", "BuyerBilling")',
+                type:"POST",
+                data: formData,
+                processData:false,
+                contentType:false,
+                success:function(response)
+                { 
+                     if(response.success)
+                     {
+                           $("#addBillModal").hide();
+                         customAlert("",0.25)
+                            showAlert("Buying bill Generated Successfully","success", 1900);
+
+                                     setTimeout(() => { window.location.reload(); // $("#loader_").css("display","none");
+                            
+                                     },2000);
+                     }
+     
+                },
+                 error: function (xhr, status, error) {
+                 // Corrected: Pass the type parameter directly
+                 showAlert("An error occurred: " + error, "danger", 3000);
+                           //$("#loader_").css("display","none");
+             }
+
+                 
+
+            });
+        
+        });
+
+
+        //4. Name change handler
+        window.NameChange = function(input) 
+        {
+
+        const value = input.value.trim();
+        const formControl = $(input).closest('.form-floating');
+        const feedback = formControl.find('.valid-feedback, .invalid-feedback');
+
+        // Clear previous validation classes
+        input.classList.remove('is-valid', 'is-invalid');
+
+        if (!value) 
+        {
+            // Empty field case
+            input.classList.add('is-invalid');
+            if (feedback.length === 0)
+            {
+                formControl.append('<div class="invalid-feedback">Customer name is required</div>');
+            } 
+            else 
+            {
+                feedback.text('Customer name is required').removeClass('valid-feedback').addClass('invalid-feedback');
+            }
+        } 
+        else if (value.length < 3) 
+        {
+            // Minimum length check
+            input.classList.add('is-invalid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="invalid-feedback">Name must be at least 3 characters</div>');
+            } else {
+                feedback.text('Name must be at least 3 characters').removeClass('valid-feedback').addClass('invalid-feedback');
+            }
+        } 
+        else if (!/^[a-zA-Z\u00C0-\u017F\s'-]+$/.test(value)) 
+        {
+            // Character validation (letters, accents, spaces, hyphens, apostrophes)
+            input.classList.add('is-invalid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="invalid-feedback">Only letters and basic punctuation allowed</div>');
+            } else {
+                feedback.text('Only letters and basic punctuation allowed').removeClass('valid-feedback').addClass('invalid-feedback');
+            }
+        } 
+        else 
+        {
+            // Valid input
+            input.classList.add('is-valid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="valid-feedback">Looks good!</div>');
+            } else {
+                feedback.text('Looks good!').removeClass('invalid-feedback').addClass('valid-feedback');
+            }
+        }
+
+        // Enable/disable submit button based on validity (optional)
+        const form = $(input).closest('form');
+        form.find('[type="submit"]').prop('disabled', form.find('.is-invalid').length > 0);
+            };
+        });
+       
     </script>
             }       
     
 <style>
-
+    #isPaid{
+        margin-left:0.5em
+    }
 
     #buyerNameError 
     {
@@ -385,7 +653,8 @@
         transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-        .delete-item-btn:hover {
+        .delete-item-btn:hover 
+        {
             background-color: #dc3545;
             color: #fff;
         }
@@ -409,4 +678,27 @@
             border-color: #86b7fe;
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
         }
+        #totalAmount{
+          padding-left:1rem;
+
+        }
+
+    .custom-large-checkbox {
+        width: 1rem;
+        height: 1rem;
+        margin-top: 0;
+        transform: scale(1.3);
+    }
+
+    .is-valid {
+        border-color: #198754 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") !important;
+    }
+
+    .invalid-feedback {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
 </style>
