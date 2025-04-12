@@ -25,10 +25,10 @@
             <thead class="table-light sticky-top">
                 <tr>
                     <th class="text-nowrap">#</th>
-                    <th class="text-nowrap">Bill No</th>
                     <th class="text-nowrap">Buyer Name</th>
                     <th class="text-nowrap">Total Amount</th>
                     <th class="text-nowrap">Payment Method</th>
+                    <th class="text-nowrap">Date</th>
                     <th class="text-nowrap">Actions</th>
                 </tr>
             </thead>
@@ -40,12 +40,13 @@
                     {
                         <tr class="transition-all">
                             <td>@bill_no</td>
-                            <td>@bill.BillNo</td>
+                            
                             <td>@bill.BuyerName</td>
                             <td class="text-success fw-bold">
                                 @string.Format(new System.Globalization.CultureInfo("hi-IN"), "{0:C}", bill.TotalBillPrice)
                             </td>
                             <td>@bill.PaymentMethod</td>
+                            <td>@bill.CreatedAt.ToString("yyyy-MM-dd")</td>
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
                                     <button class="btn btn-warning btn-sm edit-bill-btn d-flex align-items-center"
@@ -60,6 +61,14 @@
                                         <i class="bi bi-trash me-1"></i>
                                         <span class="d-none d-md-inline">Delete</span>
                                     </button>
+                                    <button class="btn btn-primary btn-sm print-bill-btn d-flex align-items-center"
+                                            data-id="@bill.B_Id"
+                                            title="Print Bill"
+                                            onclick="P_bill(this.dataset.id)">
+                                        <i class="bi bi-printer me-1"></i>
+                                        <span class="d-none d-md-inline">Print</span>
+                                    </button>
+
                                 </div>
                             </td>
                         </tr>
@@ -180,7 +189,6 @@
                         </div>
 
                     </div>
-
                     <!-- Modal Footer -->
                     <div class="modal-footer mt-4 px-0 pb-0">
                         <div class="w-100 d-flex justify-content-between border-top pt-4">
@@ -190,7 +198,9 @@
                                 <i class="bi bi-x-lg me-2"></i>Cancel
                             </button>
                             <button type="submit"
-                                    class="btn btn-lg btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center">
+                                    id="createInvoiceBtn"
+                                    class="btn btn-lg btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center"
+                                    disabled>
                                 <i class="bi bi-file-earmark-check me-2"></i>Create Invoice
                             </button>
                         </div>
@@ -205,10 +215,14 @@
 <link rel="stylesheet" href="~/css/Bills.css">
 <!-- Include math.js for safe expression evaluation -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.min.js"></script>
-
+<script src="~/js/site.js"></script>
 @section scripts{
            <script>
+
         $(document).ready(function() {
+
+             document.body.appendChild(globalAlertContainer);
+              toggleSubmitButtonState();
 
 
             // 1. Load materials data
@@ -231,7 +245,7 @@
             });
 
            //2 validate and calulation
-                    window.Additem = function() {
+           window.Additem = function() {
             const $materialsContainer = $('#materialsContainer');
             const itemCount = $materialsContainer.find('.item-entry').length + 1;
 
@@ -265,17 +279,22 @@
                             <div class="col-md-2">
                                 <label class="form-label">Quantity</label>
                                 <input type="text" class="form-control quantity-input calc-trigger" placeholder="Quantity" required>
-                                <div class="invalid-feedback">Enter quantity (≥ 1)</div>
+                                <div class="invalid-feedback ">Enter quantity (≥ 1)</div>
                                 <div class="valid-feedback d-none">Looks good!</div>
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Total Quantity</label>
-                                <div class="input-group-text total-quantity">0.00</div>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Total Price</label>
-                                <div class="input-group-text total-price">₹0.00</div>
-                            </div>
+                               <label class="form-label">Total Quantity</label>
+                               <div class="input-group-text text-truncate w-100" style="overflow: hidden;">
+                               <span class="total-quantity">0.00</span>
+                           </div>
+                         </div>
+
+                        <div class="col-md-2">
+                          <label class="form-label">Total Price</label>
+                          <div class="input-group-text text-truncate w-100" style="overflow: hidden;">
+                          <span class="total-price">₹0.00</span>
+                       </div>
+                     </div>
                         </div>
                     </div>
                 </div>
@@ -351,7 +370,8 @@
         };
 
         // Helper Functions
-        function validateInput($input) {
+        function validateInput($input) 
+        {
             let isValid = false;
             let evaluatedValue = null;
 
@@ -388,6 +408,7 @@
             $input.toggleClass('is-valid', isValid);
             $input.siblings('.invalid-feedback').toggle(!isValid);
             $input.siblings('.valid-feedback').toggle(isValid);
+             toggleSubmitButtonState();
 
             return isValid ? evaluatedValue || $input.val() : false;
         }
@@ -417,7 +438,6 @@
             });
 
             $('#totalValue').text( grandTotal.toFixed(2));
-            
         }
 
         function renumberItems() {
@@ -439,6 +459,8 @@
             });
 
             $item.attr('data-valid', isValid.toString());
+             toggleSubmitButtonState();
+
             return isValid;
         }
 
@@ -449,6 +471,8 @@
                     allValid = false;
                 }
             });
+             toggleSubmitButtonState();
+
             return allValid;
         }
 
@@ -459,6 +483,7 @@
             $(this).toggleClass('is-valid', isValid);
             $(this).siblings('.invalid-feedback').toggle(!isValid);
             $(this).siblings('.valid-feedback').toggle(isValid);
+               toggleSubmitButtonState();
         });
 
 
@@ -473,20 +498,16 @@
             return false;
         }
 
-                const formData = new FormData();
+        const formData = new FormData();
         formData.append("BuyerName", $('#buyerName').val().trim());
         formData.append("IsPaid", $('#isPaid').is(':checked'));
-        formData.append("PaymentMethod", $('#paymentMethod').val()); // Ensure value is "Cash", "CreditCard", or "BankTransfer"
-         formData.append("TotalBillPrice", 0); // Map grandTotal to TotalBillPrice
-
+        formData.append("PaymentMethod", $('#paymentMethod').val());
         // Append items
         $('#materialsContainer .item-entry').each(function(index) {
             const $item = $(this);
             formData.append(`Items[${index}].MaterialId`, $item.find('.item-dropdown').val());
-            formData.append(`Items[${index}].ColorName`, $item.find('.item-dropdown option:selected').text().split(' - ')[0]);
             formData.append(`Items[${index}].Price`, parseFloat($item.find('.price-input').data('evaluated')) || 0);
             formData.append(`Items[${index}].Quantity`, parseFloat($item.find('.quantity-input').data('evaluated')) || 0);
-            formData.append(`Items[${index}].TotalPrice`, parseFloat($item.find('.total-price').text().replace('₹','')) || 0);
         });
 
            console.log(formData);
@@ -522,7 +543,7 @@
                 }
             }
             $.ajax({
-                 url:'@Url.Action("CreateBill", "BuyerBilling")',
+                url:'@Url.Action("CreateBill", "BuyerBilling")',
                 type:"POST",
                 data: formData,
                 processData:false,
@@ -531,8 +552,9 @@
                 { 
                      if(response.success)
                      {
-                           $("#addBillModal").hide();
-                         customAlert("",0.25)
+
+                          $(addBillModal).hide();
+
                             showAlert("Buying bill Generated Successfully","success", 1900);
 
                                      setTimeout(() => { window.location.reload(); // $("#loader_").css("display","none");
@@ -613,9 +635,35 @@
         const form = $(input).closest('form');
         form.find('[type="submit"]').prop('disabled', form.find('.is-invalid').length > 0);
             };
+
         });
-       
-    </script>
+
+                       function toggleSubmitButtonState() {
+            const isPaidChecked = $('#isPaid').is(':checked');
+            const isValid = isPaidChecked;
+
+            // Toggle validation UI
+            $('#isPaid').toggleClass('is-valid', isValid);
+            $('#isPaid').toggleClass('is-invalid', !isValid);
+
+            // Show or hide feedback
+            $('#isPaid').siblings('.invalid-feedback').toggle(!isValid);
+
+            // Enable or disable submit button
+            const hasInvalid = $('.is-invalid').length > 0;
+            $('#addBillForm [type="submit"]').prop('disabled', hasInvalid);
+        }
+
+        function P_bill(B_Id)
+         {
+              const b_id = parseInt(B_Id, 10);
+               window.location.href = `/BuyerBilling/PrintBill?b_id=${b_id}`
+
+             
+             
+         }
+
+    </script>       
             }       
     
 <style>
