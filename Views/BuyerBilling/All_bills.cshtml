@@ -10,6 +10,7 @@
             <i class="bi bi-receipt-cutoff text-primary fs-3 me-3"></i>
             <h2 class="text-primary fw-semibold mb-0 fs-3">Buying Billing</h2>
         </div>
+
         <button class="btn btn-gradient btn-lg d-flex align-items-center shadow-sm transition-all"
                 data-bs-toggle="modal"
                 data-bs-target="#addBillModal"
@@ -18,7 +19,6 @@
             <span>Add Bill</span>
         </button>
     </div>
-
     <!-- Bills Table -->
     <div class="table-responsive shadow-sm rounded-0 flex-grow-1" style="overflow-y: auto;">
         <table class="table table-bordered table-hover align-middle text-center mb-0">
@@ -51,8 +51,7 @@
                                 <div class="d-flex justify-content-center gap-2">
                                     <button class="btn btn-warning btn-sm edit-bill-btn d-flex align-items-center"
                                             data-id="@bill.B_Id"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editBillModal"
+                                            onclick="E_bill(this.dataset.id)"
                                             title="Edit Bill"
                                            >
                                         <i class="bi bi-pencil-square me-1"></i>
@@ -93,7 +92,7 @@
 </div>
 
 <!-- Add Bill Modal -->
-<div class="modal fade" id="addBillModal" tabindex="-1" aria-labelledby="addBillModalLabel" data-bs-backdrop="static" >
+<div class="modal fade" id="addBillModal" tabindex="-1" aria-labelledby="addBillModalLabel" data-bs-backdrop="static" data-id="">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <!-- Modal Header -->
@@ -155,7 +154,7 @@
                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
                                     <i class="bi bi-calculator me-2 fs-4"></i>Total Amount
                                 </h5>
-                                <h3 id="totalAmount" class="text-success fw-bold mb-0">
+                                <h3 id="totalAmount" class="text-success fw-bold mb-0 ms-2">
                                     <span class="fs-4">₹</span><span id="totalValue">0.00</span>
                                 </h3>
                             </div>
@@ -193,7 +192,7 @@
 
                     </div>
                     <!-- Modal Footer -->
-                    <div class="modal-footer mt-4 px-0 pb-0">
+                    <div class="mt-4 px-0 pb-0">
                         <div class="w-100 d-flex justify-content-between border-top pt-4">
                             <button type="button"
                                     class="btn btn-lg btn-outline-secondary rounded-pill px-4 shadow-sm d-flex align-items-center"
@@ -246,7 +245,7 @@
                                        onkeyup="NameChange(this)"
                                        required
                                        autocomplete="off">
-                                <label for="ebuyerName" class="fw-semibold text-secondary ps-2">
+                                <label for="buyerName" class="fw-semibold text-secondary ps-2">
                                     <i class="bi bi-person-badge me-2"></i>Customer Name
                                 </label>
                                 <div class="valid-feedback"> Looks good! </div>
@@ -260,12 +259,12 @@
                                     <h5 class="fw-semibold text-primary mb-0 d-flex align-items-center"> <i class="bi bi-pallet me-2 fs-5"></i>Materials </h5>
                                 </div>
                                 <div class="card-body p-3">
-                                    <div id="editMaterialsContainer" class="d-grid gap-3">
+                                    <div id="ematerialsContainer" class="d-grid gap-3">
                                     </div>
                                     <button type="button"
                                             class="btn btn-outline-primary w-100 mt-3 py-3 rounded-3 edit-material-btn"
-                                            onclick="EditItem();"
-                                            id="editMaterialBtn">
+                                            onclick="eAddItem()"
+                                            id="addMaterialBtn">
                                         <i class="bi bi-plus-circle me-2"></i>Edit Item
                                     </button>
                                 </div>
@@ -278,7 +277,7 @@
                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
                                     <i class="bi bi-calculator me-2 fs-4"></i>Total Amount
                                 </h5>
-                                <h3 id="editTotalAmount" class="text-success fw-bold mb-0">
+                                <h3 id="editTotalAmount" class="text-success fw-bold mb-0 ms-2">
                                     <span class="fs-4">₹</span><span id="editTotalValue">0.00</span>
                                 </h3>
                             </div>
@@ -298,25 +297,27 @@
                                 </label>
                             </div>
                         </div>
-
                         <!-- Payment Status -->
-                        <div class="d-flex p-3 bg-light rounded-3 border">
-                            <input class="form-check custom-large-checkbox"
-                                   type="checkbox"
-                                   id="editIsPaid"
-                                   name="IsPaid"
-                                   required>
-                            <label class="form-check" for="editIsPaid">
-                                <i class="bi bi-receipt me-2"></i>Mark as Paid
-                            </label>
-                            <div class="invalid-feedback" style=" max-width: 40%; margin-left: 30px;">
-                                Please confirm payment status
+                        <div class="col-md-12">
+                            <div class="d-flex p-3 bg-light rounded-3 border">
+                                <input class="form-check custom-large-checkbox"
+                                       type="checkbox"
+                                       id="editIsPaid"
+                                       name="IsPaid"
+                                       required>
+                                <label class="form-check" for="editIsPaid">
+                                    <i class="bi bi-receipt me-2"></i>Mark as Paid
+                                </label>
+                                <div class="invalid-feedback" style=" max-width: 40%; margin-left: 30px;">
+                                    Please confirm payment status
+                                </div>
                             </div>
                         </div>
+                      </div>
 
-                    </div>
+                      
                     <!-- Modal Footer -->
-                    <div class="modal-footer mt-4 px-0 pb-0">
+                    <div class="mt-4 px-0 pb-0">
                         <div class="w-100 d-flex justify-content-between border-top pt-4">
                             <button type="button"
                                     class="btn btn-lg btn-outline-secondary rounded-pill px-4 shadow-sm d-flex align-items-center"
@@ -348,6 +349,7 @@
 
              document.body.appendChild(globalAlertContainer);
               toggleSubmitButtonState();
+              //etoggleSubmitButtonState();
 
 
             // 1. Load materials data
@@ -368,8 +370,134 @@
                     console.error("AJAX error:", error);
                 }
             });
+            //add materials in EditItem bill
+              // for edit in add material
+            window.eAddItem = function()
+           {
 
-           //2 validate and calulation
+             const $materialsContainer = $('#ematerialsContainer');
+             const itemCount = $materialsContainer.find('.item-entry').length + 1;
+
+             const $newItem = $(`
+                 <div class="item-entry d-flex align-items-center gap-3 mb-3" id="item-${itemCount}" data-valid="false">
+                     <div class="material-item mb-2 p-3 border rounded needs-validation" novalidate>
+                         <div class="d-flex justify-content-between align-items-center mb-3">
+                             <h6 class="fw-semibold text-primary mb-0 d-flex align-items-center">
+                                 <i class="bi bi-pallet me-2 fs-5"></i>Items
+                                 <span class="badge bg-primary ms-2">${itemCount}</span>
+                             </h6>
+                             <button type="button" class="btn btn-outline-danger delete-item-btn">
+                                 <i class="bi bi-trash"></i> Delete
+                             </button>
+                         </div>
+                         <div class="row g-3">
+                             <div class="col-md-4">
+                                 <label class="form-label">Select Item</label>
+                                 <select class="form-select item-dropdown is-validatable" id="dropdown-${itemCount}" required>
+                                     <option value="">Select Item</option>
+                                 </select>
+                                 <div class="invalid-feedback">Please select an item</div>
+                                 <div class="valid-feedback d-none">Looks good!</div>
+                             </div>
+                             <div class="col-md-2">
+                                 <label class="form-label">Price</label>
+                                 <input type="text" class="form-control price-input calc-trigger" placeholder="Price" required>
+                                 <div class="invalid-feedback">Enter a valid price (≥ ₹0.01)</div>
+                                 <div class="valid-feedback d-none">Looks good!</div>
+                             </div>
+                             <div class="col-md-2">
+                                 <label class="form-label">Quantity</label>
+                                 <input type="text" class="form-control quantity-input calc-trigger" placeholder="Quantity" required>
+                                 <div class="invalid-feedback ">Enter quantity (≥ 1)</div>
+                                 <div class="valid-feedback d-none">Looks good!</div>
+                             </div>
+                             <div class="col-md-2">
+                                <label class="form-label">Total Quantity</label>
+                                <div class="input-group-text text-truncate w-100" style="overflow: hidden;">
+                                <span class="total-quantity">0.00</span>
+                            </div>
+                          </div>
+
+                         <div class="col-md-2">
+                           <label class="form-label">Total Price</label>
+                           <div class="input-group-text text-truncate w-100" style="overflow: hidden;">
+                           <span class="total-price">₹0.00</span>
+                        </div>
+                      </div>
+                         </div>
+                     </div>
+                 </div>
+             `);
+
+             $materialsContainer.append($newItem);
+
+                     // 1. First modify the dropdown population to include the price in the option's data attribute
+         const $dropdown = $newItem.find('.item-dropdown');
+         $dropdown.empty().append('<option value="">Select a material</option>');
+         materials.forEach(material => {
+             $dropdown.append($('<option>', {
+                 value: material.id,
+                 text: `${material.colorName} - ₹${material.basePrice.toFixed(2)}`,
+                 'data-price': material.basePrice  // Add this line to store the price
+             }));
+         });
+
+         // 2. Then update the change handler to extract and use this price
+         $dropdown.on('change', function() {
+             const $this = $(this);
+             const $priceInput = $this.closest('.row').find('.price-input');
+             const selectedOption = $this.find('option:selected');
+             const selectedText = selectedOption.text();
+
+             if (selectedOption.val()) {
+               
+                 const priceMatch = selectedText.match(/₹(\d+\.\d{2})$/);
+                 const price = priceMatch ? parseFloat(priceMatch[1]) : 0;
+                 $priceInput.val(price.toFixed(2)).data('evaluated', price);
+                 $priceInput.removeClass('is-invalid').addClass('is-valid');
+             } else {
+                 // Clear all values if no item selected
+                 $priceInput.val('').data('evaluated', null);
+                 $this.closest('.row').find('.quantity-input').val('').data('evaluated', null);
+                 $this.closest('.row').find('.total-quantity').text('0.00');
+                 $this.closest('.row').find('.total-price').text('₹0.00');
+                 $priceInput.removeClass('is-valid is-invalid');
+             }
+
+             validateItem($newItem);
+             ecalculateGrandTotal();
+         });
+
+             // Add event handlers
+             $newItem.find('.calc-trigger').on('input change', function() {
+                 validateInput($(this));
+                 validateItem($newItem);
+                 calculateItemTotal($newItem);
+                 ecalculateGrandTotal();
+             });
+
+             $newItem.find('.is-validatable').on('change', function() {
+                 validateInput($(this));
+                 validateItem($newItem);
+                 ecalculateGrandTotal();
+             });
+
+             $newItem.find('.delete-item-btn').click(function() {
+                 $newItem.fadeOut(300, function() {
+                     $(this).remove();
+                     erenumberItems();
+                     evalidateAllItems();
+                     ecalculateGrandTotal();
+                 });
+             });
+
+             validateItem($newItem);
+         };
+
+
+            
+
+           //2 add material in create bill 
            window.Additem = function() {
             const $materialsContainer = $('#materialsContainer');
             const itemCount = $materialsContainer.find('.item-entry').length + 1;
@@ -493,7 +621,7 @@
 
             validateItem($newItem);
         };
-
+ 
         // Helper Functions
         function validateInput($input) 
         {
@@ -534,6 +662,7 @@
             $input.siblings('.invalid-feedback').toggle(!isValid);
             $input.siblings('.valid-feedback').toggle(isValid);
              toggleSubmitButtonState();
+             etoggleSubmitButtonState();
 
             return isValid ? evaluatedValue || $input.val() : false;
         }
@@ -548,6 +677,35 @@
 
             return total;
         }
+        function ecalculateGrandTotal() {
+            let grandTotal = 0;
+            let totalQuantity = 0;
+            let ru = "₹"
+
+            $('#ematerialsContainer .item-entry').each(function() {
+                const $item = $(this);
+                const itemTotal = calculateItemTotal($item);
+                grandTotal += itemTotal;
+                const quantity = parseFloat($item.find('.quantity-input').data('evaluated')) || 0;
+                totalQuantity += quantity;
+            });
+
+             $('#editTotalValue').text( grandTotal.toFixed(2));
+        }
+
+         function erenumberItems() {
+             $('#ematerialsContainer .item-entry').each(function(index) {
+                 const newCount = index + 1;
+                 const $item = $(this);
+                 $item.attr('id', `item-${newCount}`)
+                      .find('.badge').text(newCount)
+                      .end()
+                      .find('.item-dropdown').attr('id', `dropdown-${newCount}`);
+             });
+         }
+
+
+
 
         function calculateGrandTotal() {
             let grandTotal = 0;
@@ -585,6 +743,7 @@
 
             $item.attr('data-valid', isValid.toString());
              toggleSubmitButtonState();
+             etoggleSubmitButtonState();
 
             return isValid;
         }
@@ -597,10 +756,22 @@
                 }
             });
              toggleSubmitButtonState();
+             
 
             return allValid;
         }
+           function evalidateAllItems() {
+              let allValid = true;
+              $('#ematerialsContainer .item-entry').each(function() {
+                  if (!validateItem($(this))) {
+                      allValid = false;
+                  }
+              });
+               etoggleSubmitButtonState();
 
+
+              return allValid;
+          }
 
          $('#isPaid').change(function() {
             const isValid = $(this).is(':checked');
@@ -763,7 +934,7 @@
 
         });
 
-                       function toggleSubmitButtonState() {
+      function toggleSubmitButtonState() {
             const isPaidChecked = $('#isPaid').is(':checked');
             const isValid = isPaidChecked;
 
@@ -775,8 +946,24 @@
             $('#isPaid').siblings('.invalid-feedback').toggle(!isValid);
 
             // Enable or disable submit button
-            const hasInvalid = $('.is-invalid').length > 0;
+              const hasInvalid = $('#addBillForm .is-invalid').length > 0;
             $('#addBillForm [type="submit"]').prop('disabled', hasInvalid);
+        }
+
+        function etoggleSubmitButtonState() {
+            const isPaidChecked = $('#editIsPaid').is(':checked');
+            const isValid = isPaidChecked;
+
+            // Toggle validation UI
+                $('#editIsPaid').toggleClass('is-valid', isValid);
+                $('#editIsPaid').toggleClass('is-invalid', !isValid);
+
+            // Show or hide feedback
+                $('#editIsPaid').siblings('.invalid-feedback').toggle(!isValid);
+
+            // Enable or disable submit button
+              const hasInvalid = $('#editBillForm .is-invalid').length > 0;
+              $('#editBillForm [type="submit"]').prop('disabled', hasInvalid);
         }
 
         function P_bill(B_Id)
@@ -784,9 +971,124 @@
               const b_id = parseInt(B_Id, 10);
                window.location.href = `/BuyerBilling/PrintBill?b_id=${b_id}`
 
-             
-             
          }
+
+         $('#editIsPaid').change(function() {
+            const isValid = $(this).is(':checked');
+            $(this).toggleClass('is-invalid', !isValid);
+            $(this).toggleClass('is-valid', isValid);
+            $(this).siblings('.invalid-feedback').toggle(!isValid);
+            $(this).siblings('.valid-feedback').toggle(isValid);
+               etoggleSubmitButtonState();
+        });
+
+          function E_bill(B_Id)
+          {
+             const b_id = parseInt(B_Id, 10);
+                 $('#editBillModal').attr('data-id', b_id);
+
+          
+                $.ajax({
+                 url:'@Url.Action("GetBillById", "BuyerBilling")',
+                 type:"GET",
+                 data: {B_id:b_id }, 
+                 processData:true,
+                 success:function(response)
+                 {
+                      if(response.success)
+                      {
+
+                               $('#editBillModal').modal('show');
+                              
+                               $('input[id="ebuyerName"]').val(response.message.buyerName);
+                               NameChange($('input[id="ebuyerName"]')[0]);
+                               $('#editPaymentMethod').val(response.message.paymentMethod);
+                               $('#editIsPaid').prop('checked', response.message.isPaid);
+                               $('#ematerialsContainer').empty();
+
+     
+                                  response.message.items.forEach((item, index) => {
+                                     eAddItem();
+                                     const $item = $('#ematerialsContainer').find('.item-entry').last();
+
+                                 
+                                     $item.find('.item-dropdown').val(item.materialId);
+                                     $item.find('.price-input').val(item.price);
+                                     $item.find('.quantity-input').val(item.quantity);
+
+                                     $item.find('.calc-trigger').trigger('input');
+                                       etoggleSubmitButtonState();
+
+                                     setTimeout(() => { 
+                                     $('#editBillModal').modal('show'); }, 100);
+
+                                 
+                               });
+
+
+                            
+
+
+                      }
+                 },
+                  error: function (xhr, status, error) {
+                 
+                  showAlert("An error occurred: " + error, "danger", 3000);
+              }
+             });
+          }
+
+             // 3. Form submission handler
+          $('#editBillForm').submit(function(e) {
+              e.preventDefault();
+
+          const modalId = $('#editBillModal').data('id');
+          const formData = new FormData();
+
+          formData.append("Id", modalId);
+          formData.append("BuyerName", $('#ebuyerName').val().trim());
+          formData.append("IsPaid", $('#editIsPaid').is(':checked'));
+          formData.append("PaymentMethod", $('#editPaymentMethod').val());
+
+          $('#ematerialsContainer .item-entry').each(function(index) {
+              const $item = $(this);
+              formData.append(`Items[${index}].MaterialId`, $item.find('.item-dropdown').val());
+              formData.append(`Items[${index}].Price`, parseFloat($item.find('.price-input').data('evaluated')) || 0);
+              formData.append(`Items[${index}].Quantity`, parseFloat($item.find('.quantity-input').data('evaluated')) || 0);
+          });
+
+              $.ajax({
+                    url:'@Url.Action("Updatedbuyingbill", "BuyerBilling")',
+                  type:"PUT",
+                  data: formData,
+                  processData:false,
+                  contentType:false,
+                  success:function(response)
+                  {
+                       if(response.success)
+                       {
+
+                            $(editBillModal).hide();
+
+                              showAlert("Bill updated successfully!","warning", 1900);
+
+                                       setTimeout(() => { window.location.reload(); // $("#loader_").css("display","none");
+
+                                       },2000);
+                       }
+
+                  },
+                   error: function (xhr, status, error) {
+                   // Corrected: Pass the type parameter directly
+                   showAlert("An error occurred: " + error, "danger", 3000);
+                             //$("#loader_").css("display","none");
+               }
+
+
+
+              });
+
+          });
 
     </script>       
             }       

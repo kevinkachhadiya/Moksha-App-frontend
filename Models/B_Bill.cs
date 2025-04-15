@@ -76,7 +76,7 @@ namespace Moksha_App.Models
 
     public class Create_B_Bill_Dto
     {
-        public string BuyerName { get; set; }
+        public string BuyerName { get; set; } = "";
         public bool IsPaid { get; set; }
         public PaymentMethodType PaymentMethod { get; set; }
         public List<B_BillItemDto> Items { get; set; }
@@ -87,5 +87,14 @@ namespace Moksha_App.Models
         public int MaterialId { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
+    }
+
+    public class Edit_B_Bill_Dto
+    {
+        public int id { get; set; }
+        public string? BuyerName { get; set; }
+        public bool IsPaid { get; set; }
+        public PaymentMethodType PaymentMethod { get; set; }
+        public List<B_BillItemDto>? Items { get; set; }
     }
 }

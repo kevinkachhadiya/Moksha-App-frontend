@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moksha_App.Models;
+using NuGet.Protocol;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
@@ -68,8 +69,8 @@ namespace Moksha_App.Controllers
         public async Task<IActionResult> CreateBill([FromForm] Create_B_Bill_Dto bill)
         {
           
-            string jsonContent = JsonSerializer.Serialize(bill);
-            HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+               string jsonContent = JsonSerializer.Serialize(bill);
+               HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
                 string baseAdd = _httpClient.BaseAddress + "/BuyerBilling";
                 var response = await _httpClient.PostAsync(baseAdd, content);
@@ -103,14 +104,13 @@ namespace Moksha_App.Controllers
             string baseAdd = _httpClient.BaseAddress + $"/BuyerBilling/print_buying_bile?billId={B_id}";
             var response = await _httpClient.GetAsync(baseAdd);
             if (response.IsSuccessStatusCode)
-
             {
+
                 var fileBytes = await response.Content.ReadAsByteArrayAsync();
                 var contentType = response.Content.Headers.ContentType?.ToString() ?? "application/pdf";
                 var fileName = response.Content.Headers.ContentDisposition?.FileName?.Trim('\"') ?? "invoice.pdf";
-
                 return File(fileBytes, contentType, fileName);
-            
+
             }
             else
             {
@@ -134,8 +134,13 @@ namespace Moksha_App.Controllers
                 PropertyNameCaseInsensitive = true
             });
 
+           // Debug.WriteLine(B_id);
+
             if (response.IsSuccessStatusCode)
             {
+
+               // Debug.WriteLine(result.BuyerName);
+
                 return Ok(new
                 {
                     success = true,
@@ -147,6 +152,27 @@ namespace Moksha_App.Controllers
 
                 return Json(new { redirect = "Dash_Board" }); // Fix: Use a single object
             }       
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Updatedbuyingbill([FromForm] Edit_B_Bill_Dto bill)
+        {
+
+
+            string jsonContent = JsonSerializer.Serialize(bill);
+            HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            string baseAdd = _httpClient.BaseAddress + "/BuyerBilling/UpdateBill";
+            var response = await _httpClient.PutAsync(baseAdd, content);
+
+            Debug.WriteLine(response);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok(new { success = true, message = "Bill updated successfully" });
+            }
+
+            return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
     }
 }
