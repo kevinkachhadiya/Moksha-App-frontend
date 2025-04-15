@@ -119,5 +119,34 @@ namespace Moksha_App.Controllers
             }
         }
 
+        [HttpGet("GetBillById")]
+        public async Task<IActionResult> GetBillById(int B_id)
+        {
+
+            string baseAdd = _httpClient.BaseAddress + $"/BuyerBilling/GetBillByid?billId={B_id}";
+
+            var response = await _httpClient.GetAsync(baseAdd);
+
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<Create_B_Bill_Dto>(jsonResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok(new
+                {
+                    success = true,
+                    message = result
+                });
+            }
+            else
+            {
+
+                return Json(new { redirect = "Dash_Board" }); // Fix: Use a single object
+            }       
+        }
     }
 }
