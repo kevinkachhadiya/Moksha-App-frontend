@@ -25,43 +25,84 @@ namespace Moksha_App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> All_bills()
+        public async Task<IActionResult> All_bills(
+             string searchTerm = "",
+             string sortColumn = "CreatedAt",
+             string sortDirection = "desc",
+             int page = 1,
+             int pageSize = 10)
         {
-
-            List<B_Bill> materials = new List<B_Bill>();
             string baseAdd = _httpClient.BaseAddress + "/BuyerBilling";
-            var token = Request.Cookies["AuthToken"] ?? "";
-            token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            try
-            {
-                // Call the API
-                HttpResponseMessage response = await _httpClient.GetAsync(baseAdd); // Replace with your API route
 
-                if (response.IsSuccessStatusCode)
-                {
-                    // Deserialize the JSON response
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                    materials = System.Text.Json.JsonSerializer.Deserialize<List<B_Bill>>(jsonResponse, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-                }
-                else
-                {
-                    // Handle API errors
-                    ViewBag.Error = "Failed to retrieve materials. Status Code: " + response.StatusCode;
-                }
-            }
-            catch (Exception ex)
-            {
-                // Handle exceptions
-                ViewBag.Error = "An error occurred while calling the API: " + ex.Message;
-            }
+            var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            queryParams["searchTerm"] = searchTerm;
+            queryParams["sortColumn"] = sortColumn;
+            queryParams["sortDirection"] = sortDirection;
+            queryParams["page"] = page.ToString();
+            queryParams["pageSize"] = pageSize.ToString();
 
-            // Pass the data to the view
-            return View(materials);
+            string fullUrl = $"{baseAdd}?{queryParams}";
+
+            HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
+
+            if (response.IsSuccessStatusCode)
+            {
+                
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                
+                
+                var viewModel = System.Text.Json.JsonSerializer.Deserialize<BillListViewModel>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                return View(viewModel);
+            }
+            else
+            {
+                // Handle API errors
+                ViewBag.Error = "Failed to retrieve materials. Status Code: " + response.StatusCode;
+                return View();
+            }
+        
+
+
+           
+
+            /* List<B_Bill> materials = new List<B_Bill>();
+
+             var token = Request.Cookies["AuthToken"] ?? "";
+             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
+             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+             try
+             {
+                 // Call the API
+                 HttpResponseMessage response = await _httpClient.GetAsync(baseAdd); // Replace with your API route
+
+                 if (response.IsSuccessStatusCode)
+                 {
+                     // Deserialize the JSON response
+                     string jsonResponse = await response.Content.ReadAsStringAsync();
+ #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                     materials = System.Text.Json.JsonSerializer.Deserialize<List<B_Bill>>(jsonResponse, new JsonSerializerOptions
+                     {
+                         PropertyNameCaseInsensitive = true
+                     });
+                 }
+                 else
+                 {
+                     // Handle API errors
+                     ViewBag.Error = "Failed to retrieve materials. Status Code: " + response.StatusCode;
+                 }
+             }
+             catch (Exception ex)
+             {
+                 // Handle exceptions
+                 ViewBag.Error = "An error occurred while calling the API: " + ex.Message;
+             }
+
+             // Pass the data to the view
+             return View(materials);*/
         }
 
     
@@ -134,13 +175,8 @@ namespace Moksha_App.Controllers
                 PropertyNameCaseInsensitive = true
             });
 
-           // Debug.WriteLine(B_id);
-
             if (response.IsSuccessStatusCode)
             {
-
-               // Debug.WriteLine(result.BuyerName);
-
                 return Ok(new
                 {
                     success = true,
@@ -149,7 +185,6 @@ namespace Moksha_App.Controllers
             }
             else
             {
-
                 return Json(new { redirect = "Dash_Board" }); // Fix: Use a single object
             }       
         }
@@ -157,22 +192,27 @@ namespace Moksha_App.Controllers
         [HttpPut]
         public async Task<IActionResult> Updatedbuyingbill([FromForm] Edit_B_Bill_Dto bill)
         {
-
-
             string jsonContent = JsonSerializer.Serialize(bill);
             HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             string baseAdd = _httpClient.BaseAddress + "/BuyerBilling/UpdateBill";
             var response = await _httpClient.PutAsync(baseAdd, content);
 
-            Debug.WriteLine(response);
-
             if (response.IsSuccessStatusCode)
             {
                 return Ok(new { success = true, message = "Bill updated successfully" });
             }
-
             return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBill(int B_id)
+        {
+            string baseAdd = _httpClient.BaseAddress + $"/BuyerBilling/Deletebill?billId={B_id}";
+            var response = await _httpClient.DeleteAsync(baseAdd);
+
+            return Ok(new { success = true, message = "Bill Deleted successfully" });
+        }
+    
     }
 }
