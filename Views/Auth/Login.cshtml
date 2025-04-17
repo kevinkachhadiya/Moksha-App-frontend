@@ -1,15 +1,18 @@
 ﻿@{
-
+    <script src="~/js/site.js"></script>
     if (TempData["message"] != null && (bool)TempData["message"] == false)
-    {
-        <script>
+            {
+
+        <script src="~/js/site.js"></script>
+            <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.body.appendChild(globalAlertContainer);
-                showAlert("❌ Login Failed", "danger");
-            });
-        </script>
+                 showAlert("❌ Login Failed", "error",2000);
 
-    }
+    });
+    </script>
+
+            }
 }
 
 @Html.Partial("_LoginPartial")

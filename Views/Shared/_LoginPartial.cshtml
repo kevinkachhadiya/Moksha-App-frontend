@@ -1,25 +1,33 @@
-﻿<div class="modal" id="uniqueLoginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+﻿<div class="modal" id="uniqueLoginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"> 
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content rounded-3 shadow-lg">
             <div class="modal-header border-bottom-0 pb-0">
                 <h5 class="modal-title fs-5 fw-bold text-primary">Welcome Back</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body pt-1">
+                <p class="text-muted mb-3 small">Please enter your credentials to continue</p>
+
                 <form id="loginForm_@Guid.NewGuid()" method="post" action="@Url.Action("Login", "Auth")">
                     <div class="mb-3">
+                        <label for="usernameLogin_@Guid.NewGuid()" class="form-label small fw-medium visually-hidden">Username</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0">
                                 <i class="bi bi-person-fill text-secondary"></i>
                             </span>
                             <input type="text"
-                                   class="form-control rounded-end"  
-                                   id="usernameLogin_@Guid.NewGuid()"
+                                   class="form-control rounded-end"
+                                   id="usernameLogin@Guid.NewGuid()"
                                    name="username"
                                    placeholder="Enter username"
                                    required>
                         </div>
                     </div>
                     <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-1">
+                            <label for="passwordLogin_@Guid.NewGuid()" class="form-label small fw-medium visually-hidden">Password</label>
+                            <a href="#" class="small text-decoration-none ms-auto">Forgot password?</a>
+                        </div>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0">
                                 <i class="bi bi-lock-fill text-secondary"></i>
@@ -35,28 +43,34 @@
                             </button>
                         </div>
                     </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                        <label class="form-check-label small" for="rememberMe">Remember me</label>
+                    </div>
                     <button type="submit" class="btn btn-primary w-100 fw-bold py-2">
                         Sign In
                     </button>
+                    <div class="text-center mt-3 pt-1">
+                        <span class="text-muted small">Don't have an account?</span>
+                        <a href="#" class="small text-decoration-none ms-1">Sign Up</a>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <script>
         document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function() {
             const input = this.previousElementSibling;
             const icon = this.querySelector('i');
-
             // Toggle input type
             const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
             input.setAttribute('type', type);
-
             // Toggle icon
             icon.classList.toggle('bi-eye-fill');
             icon.classList.toggle('bi-eye-slash-fill');
         });
-    });   
-
+    });
 </script>

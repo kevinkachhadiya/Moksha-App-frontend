@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Moksha_App.Models.Material>
+﻿@model Moksha_App.Models.MaterialsListViewModel
 
 @{
     // Check if TempData contains a success message
@@ -36,121 +36,384 @@
         });
     </script>
 }
-
-<h2>Material Management</h2>
-
 @if (ViewBag.Error != null)
 {
     <p style="color:red">@ViewBag.Error</p>
 }
 else
 {
-    <div class="container mt-4">
-        <!-- Header Section -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="text-primary fw-bold">Materials List</h2>
-            <button class="btn btn-success shadow-sm px-4 py-2 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
-                <i class="bi bi-plus-circle me-2"></i> Add Material
-            </button>
-        </div>
+  <div class="container-fluid vh-100 d-flex flex-column p-0">
+    <!-- Header Section -->
+    <div class="header-container mb-4">
+        <!-- Decorative top accent bar -->
+        <div class="accent-bar"></div>
 
-        <!-- Materials Table -->
-        <div class="table-responsive rounded shadow-sm">
-            <table class="table table-bordered table-hover align-middle text-center">
-                <thead class="table-primary">
-                    <tr class="text-uppercase text-dark">
-                        <th scope="col" class="fw-semibold">#</th>
-                        <th scope="col" class="fw-semibold">Color Name</th>
-                        <th scope="col" class="fw-semibold">Base Price</th>
-                        <th scope="col" class="fw-semibold">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-light">
-                    @if (Model != null && Model.Any())
-                    {
-                        int material_no = 1;
-
-                        foreach (var material in Model)
-                        {
-                            <tr class="table-row-hover">
-                                <td class="fw-bold">@material_no</td>
-                                <td>@material.ColorName</td>
-                                <td class="text-success fw-bold">₹@material.BasePrice.ToString("N2", System.Globalization.CultureInfo.InvariantCulture)</td>
-                                <td class="d-flex justify-content-center gap-2">
-                                    <!-- Modify Button -->
-                                    <button class="btn btn-warning btn-sm details-btn shadow-sm d-flex align-items-center"
-                                            data-id="@material.Id"
-                                            data-material-no="@material_no"
-                                            data-color="@material.ColorName"
-                                            data-base-price="@material.BasePrice">
-                                        <i class="bi bi-pencil-square me-1"></i> Modify
-                                    </button>
-
-                                    <!-- Delete Button -->
-                                    <button class="btn btn-danger btn-sm delete-btn shadow-sm d-flex align-items-center"
-                                            data-id="@material.Id">
-                                        <i class="bi bi-trash me-1"></i> Delete
-                                    </button>
-                                </td>
-                            </tr>
-                            material_no++;
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="4" class="text-center text-muted py-4 fw-semibold">
-                                <i class="bi bi-exclamation-circle me-2"></i> No materials found. Click "Add Material" to create one.
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <!-- Main header content -->
+        <div class="d-flex justify-content-between align-items-center p-4 bg-white rounded-lg shadow-sm position-relative">
+            <!-- Left side with title and breadcrumb -->
+            <div class="d-flex flex-column">
+                <div class="d-flex align-items-center mb-1">
+                    <div class="icon-container me-3">
+                            <i class="bi bi-box-seam text-primary"></i>  
+                    </div>
+                    <h2 class="text-primary fw-bold mb-0">Materials Management</h2>
+                </div>
+                <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                    <ol class="breadcrumb mb-0">
+       
+                        <li class="breadcrumb-item active" aria-current="page"> Materials</li>
+                    </ol>
+                </nav>
+            </div>
         </div>
     </div>
+     
+        <div class="search-filter-container mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <form id="searchForm" method="get" asp-action="All_Materials">
+                        <div class="d-flex flex-column flex-lg-row p-3 gap-3"
+                             style="align-items: flex-end;">
+                            <!-- Search Field with Icon -->
+                            <div class="search-wrapper flex-grow-1 position-relative">
+                                <i class="bi bi-search search-icon text-muted"></i>
+                                <input type="text"
+                                       name="searchTerm"
+                                       class="form-control search-input ps-5"
+                                       placeholder="Search material by material name, amount.."
+                                       value="@Context.Request.Query["searchTerm"]">
+                                @if (!string.IsNullOrEmpty(Context.Request.Query["searchTerm"]))
+                                {
+                                    <button type="button" class="btn-clear" onclick="clearSearch()">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                }
+                            </div>
+                            <!-- Filters Group -->
+                            <div class="filters-group d-flex  align-items-end gap-2">
+                                <!-- Sort By Dropdown -->
+                                <div class="dropdown-wrapper position-relative">
+                                    <label for="sortColumn" class="form-label text-muted small mb-1 d-none d-sm-block">Sort By</label>
+                                    <div class="select-container">
+                                        <select id="sortColumn" name="sortColumn" class="form-select">
+                                            <option value="ColorName" selected="@(Context.Request.Query["sortColumn"] == "ColorName")">Color Name</option>
+                                            <option value="BasePrice" selected="@(Context.Request.Query["sortColumn"] == "BasePrice")">Base Price</option>
+                                        </select>
+                                        <i class="bi bi-chevron-down select-icon"></i>
+                                    </div>
+                                </div>
+                                <!-- Sort Direction Dropdown -->
+                                <div class="dropdown-wrapper position-relative">
+                                    <label for="sortDirection" class="form-label text-mufted small mb-1 d-none d-sm-block">Order</label>
+                                    <div class="select-container">
+                                        <select id="sortDirection" name="sortDirection" class="form-select">
+                                            <option value="asc" selected="@(Context.Request.Query["sortDirection"] == "asc")">Ascending</option>
+                                            <option value="desc" selected="@(Context.Request.Query["sortDirection"] == "desc")">Descending</option>
+                                        </select>
+                                        <i class="bi bi-chevron-down select-icon"></i>
+                                    </div>
+                                </div>
+                                <!-- Action Buttons -->
+                                <div class="action-buttons d-flex gap-2 ms-auto">
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="bi bi-filter me-2"></i>Apply
+                                    </button>
+                                    <a href="@Url.Action("All_Materials")" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="container py-4">
+            <div class="card shadow-sm border-0 rounded-3">
+                <!-- Header Section -->
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                    <div class="d-flex align-items-center">
+                        <h5 class="mb-0 fw-bold me-3">Materials Library</h5>
+                        <div class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2">
+                            <span id="billCount">@(Model?.Materials.Count() ?? 0)</span> items
+                        </div>
+                    </div>
+                    <!-- Add search functionality -->
+                    <div class="d-flex gap-3">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" placeholder="Search materials..."
+                                   value="@Context.Request.Query["searchTerm"]" id="searchInput">
+                            <button class="btn btn-outline-primary" type="button" id="searchButton">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+                            <i class="bi bi-plus-lg me-1"></i> Add Material
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Section -->
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th scope="col" class="py-3 ps-4" width="5%">#</th>
+                                    <th scope="col" class="py-3" width="45%">
+                                        <a href="@Url.Action("All_Materials", new {
+                                    searchTerm = Context.Request.Query["searchTerm"],
+                                    sortColumn = "ColorName",
+                                    sortDirection = Context.Request.Query["sortColumn"] == "ColorName" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
+                                })" class="text-decoration-none text-dark d-flex align-items-center">
+                                            <span>Color Name</span>
+                                            <div class="ms-2">
+                                                @if (Context.Request.Query["sortColumn"] == "ColorName")
+                                                {
+                                                    <i class="bi @(Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt" : "bi-sort-down-alt") text-primary"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-filter text-muted opacity-50"></i>
+                                                }
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th scope="col" class="py-3" width="30%">
+                                        <a href="@Url.Action("All_Materials", new {
+                                    searchTerm = Context.Request.Query["searchTerm"],
+                                    sortColumn = "BasePrice",
+                                    sortDirection = Context.Request.Query["sortColumn"] == "BasePrice" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
+                                })" class="text-decoration-none text-dark d-flex align-items-center">
+                                            <span>Base Price</span>
+                                            <div class="ms-2">
+                                                @if (Context.Request.Query["sortColumn"] == "BasePrice")
+                                                {
+                                                    <i class="bi @(Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt" : "bi-sort-down-alt") text-primary"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-filter text-muted opacity-50"></i>
+                                                }
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <th scope="col" class="py-3 text-end pe-4" width="20%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Materials.Any())
+                                {
+                                    int material_no = (Model.CurrentPage - 1) * 10 == 0 ? material_no = 1 : ((Model.CurrentPage - 1) * 10) + 1;
+                                    foreach (var material in Model.Materials)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">@material_no</td>
+                                            <td class="fw-medium">@material.ColorName</td>
+                                            <td class="text-success fw-semibold">₹@material.BasePrice.ToString("N2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                            <td class="text-end pe-4">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-outline-primary btn-sm details-btn"
+                                                            data-id="@material.Id"
+                                                            data-material-no="@material_no"
+                                                            data-color="@material.ColorName"
+                                                            data-base-price="@material.BasePrice">
+                                                        <i class="bi bi-pencil me-1"></i> Edit
+                                                    </button>
+                                                    <button class="btn btn-outline-danger btn-sm delete-btn"
+                                                            data-id="@material.Id"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-title="Delete">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        material_no++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-5">
+                                            <div class="py-4">
+                                                <i class="bi bi-inbox display-5 text-secondary"></i>
+                                                <p class="text-muted mt-3 mb-3">No materials found in your library</p>
+                                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+                                                    <i class="bi bi-plus-circle me-2"></i> Add Your First Material
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination Section -->
+                    <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center border-top">
+                        <div class="text-muted">
+                            Showing <span class="fw-semibold">@(Model?.Materials.Count() ?? 0)</span> of <span class="fw-semibold">@(Model?.TotalItems ?? 0)</span> materials
+                        </div>
+
+                        @if (Model?.TotalPages > 1)
+                        {
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <!-- First Page -->
+                                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("All_Materials", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                page = 1
+                            })" aria-label="First">
+                                            <i class="bi bi-chevron-double-left"></i>
+                                        </a>
+                                    </li>
+
+                                    <!-- Previous Page -->
+                                    <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("All_Materials", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                page = Model.CurrentPage - 1
+                            })" aria-label="Previous">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+
+                                    <!-- Dynamic Page Numbers -->
+                                    @{
+                                        int startPage = Math.Max(1, Model.CurrentPage - 2);
+                                        int endPage = Math.Min(Model.TotalPages, startPage + 4);
+
+                                        if (endPage - startPage < 4 && startPage > 1)
+                                        {
+                                            startPage = Math.Max(1, endPage - 4);
+                                        }
+                                    }
+
+                                    @for (int i = startPage; i <= endPage; i++)
+                                    {
+                                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                            <a class="page-link" href="@Url.Action("All_Materials", new {
+                                    searchTerm = Context.Request.Query["searchTerm"],
+                                    sortColumn = Context.Request.Query["sortColumn"],
+                                    sortDirection = Context.Request.Query["sortDirection"],
+                                    page = i
+                                })">@i</a>
+                                        </li>
+                                    }
+
+                                    @if (endPage < Model.TotalPages)
+                                    {
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="@Url.Action("All_Materials", new {
+                                    searchTerm = Context.Request.Query["searchTerm"],
+                                    sortColumn = Context.Request.Query["sortColumn"],
+                                    sortDirection = Context.Request.Query["sortDirection"],
+                                    page = Model.TotalPages
+                                })">@Model.TotalPages</a>
+                                        </li>
+                                    }
+
+                                    <!-- Next Page -->
+                                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("All_Materials", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                page = Model.CurrentPage + 1
+                            })" aria-label="Next">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+
+                                    <!-- Last Page -->
+                                    <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                        <a class="page-link" href="@Url.Action("All_Materials", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                page = Model.TotalPages
+                            })" aria-label="Last">
+                                            <i class="bi bi-chevron-double-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+ 
+
+</div>
 
     <!-- Enhanced Modify Material Modal -->
     <div class="modal fade" id="modifyModal" tabindex="-1" aria-labelledby="modifyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content shadow-lg rounded-3">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
                 <!-- Modal Header -->
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold" id="modifyModalLabel">
-                        <i class="bi bi-pencil-square me-2"></i> Modify Material
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold text-primary" id="modifyModalLabel">
+                        <i class="bi bi-pencil-square me-2"></i>Edit Material
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Modal Body -->
-                <div class="modal-body bg-light">
+                <div class="modal-body px-4 py-4">
                     <form id="modifyMaterialForm" novalidate>
-                        <!-- Material Number (Disabled) -->
-                        <div class="mb-3">
-                            <label for="materialNo" class="form-label fw-semibold">Material Number</label>
-                            <input type="text" class="form-control bg-secondary text-white fw-bold border-0" id="materialNo" disabled>
+                        <!-- Material Number (Read-only) -->
+                        <div class="mb-3 row align-items-center">
+                            <label for="materialNo" class="col-sm-4 col-form-label">Material Number</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control-plaintext fw-semibold" id="materialNo" readonly>
+                            </div>
                         </div>
 
                         <!-- Color Name -->
                         <div class="mb-3">
-                            <label for="colorName" class="form-label fw-semibold">Color Name</label>
-                            <input type="text" class="form-control" id="colorName" placeholder="Enter color name" required>
-                            <div class="form-text">E.g., Red, Blue, Green</div>
+                            <label for="colorName" class="form-label">Color Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-palette"></i>
+                                </span>
+                                <input type="text" class="form-control" id="colorName" placeholder="Enter color name" required>
+                            </div>
+                            <div class="form-text small">Use standard color names (e.g., Crimson, Navy Blue, Forest Green)</div>
                         </div>
 
                         <!-- Base Price -->
-                        <div class="mb-3">
-                            <label for="basePrice" class="form-label fw-semibold">Base Price</label>
-                            <input type="number" class="form-control" id="basePrice" placeholder="Enter base price" step="any" required>
-                            <div class="form-text">Enter the price in your local currency.</div>
+                        <div class="mb-4">
+                            <label for="basePrice" class="form-label">Base Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">₹</span>
+                                <input type="number" class="form-control" id="basePrice" placeholder="0.00" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-text small">Price per unit in your local currency</div>
                         </div>
 
+                        <!-- Hidden ID field for form submission -->
+                        <input type="hidden" id="materialId">
+
                         <!-- Action Buttons -->
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                <i class="bi bi-x-circle"></i> Cancel
+                        <div class="d-flex justify-content-end gap-2 pt-2">
+                            <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">
+                                Cancel
                             </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Save Changes
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check2 me-1"></i> Save Changes
                             </button>
                         </div>
                     </form>
@@ -161,82 +424,303 @@ else
 
     <!-- Optimized Confirm Deletion Modal -->
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content shadow-lg rounded-3">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
                 <!-- Modal Header -->
-                <div class="modal-header bg-danger text-white border-0">
-                    <h5 class="modal-title fw-bold" id="deleteConfirmModalLabel">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Deletion
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Modal Body -->
-                <div class="modal-body text-center py-4">
-                    <p class="fw-semibold fs-5 text-dark mb-2">Are you sure you want to delete this item?</p>
-                    <p class="text-muted small">This action cannot be undone.</p>
-                </div>
+                <div class="modal-body text-center px-4 pt-0 pb-4">
+                    <div class="mb-3">
+                        <span class="badge rounded-circle bg-danger p-3 mb-3">
+                            <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-3" id="deleteConfirmModalLabel">Delete Material</h5>
+                    </div>
 
-                <!-- Modal Footer -->
-                <div class="modal-footer border-0 d-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </button>
-                    <button type="button" class="btn btn-danger px-4" id="confirmDeleteBtn">
-                        <i class="bi bi-trash"></i> Delete
-                    </button>
+                    <p class="text-dark mb-1">Are you sure you want to delete this material?</p>
+                    <p class="text-muted small mb-4">This action cannot be undone.</p>
+
+                    <div class="d-flex justify-content-center gap-2 pt-2">
+                        <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger px-4" id="confirmDeleteBtn">
+                            Delete
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-
+    
     <!-- Optimized Add Material Modal -->
     <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content shadow-lg rounded-3">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
                 <!-- Modal Header -->
-                <div class="modal-header bg-primary text-white border-0">
-                    <h5 class="modal-title fw-bold" id="addMaterialModalLabel">
-                        <i class="bi bi-plus-circle me-2"></i> Add New Material
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold text-primary" id="addMaterialModalLabel">
+                        <i class="bi bi-plus-circle me-2"></i>Add New Material
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
                 <!-- Modal Body -->
-                <div class="modal-body py-4">
+                <div class="modal-body px-4 py-4">
                     <form id="addMaterialForm" method="post" action="@Url.Action("Create", "Materials")" novalidate>
                         <!-- Color Name Field -->
                         <div class="mb-4">
-                            <label for="ColorName" class="form-label fw-semibold">Color Name</label>
-                            <input type="text" class="form-control form-control-lg" id="ColorName" name="ColorName" placeholder="Enter color name" required>
-                            <div class="form-text text-muted">Example: Red, Blue, Green</div>
+                            <label for="ColorName" class="form-label">Color Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-palette"></i>
+                                </span>
+                                <input type="text" class="form-control" id="ColorName" name="ColorName" placeholder="Enter color name" required>
+                            </div>
+                            <div class="form-text small">Use standard color names (e.g., Crimson, Navy Blue, Forest Green)</div>
                         </div>
 
                         <!-- Base Price Field -->
                         <div class="mb-4">
-                            <label for="BasePrice" class="form-label fw-semibold">Base Price (₹)</label>
-                            <input type="number" class="form-control form-control-lg" id="BasePrice" name="BasePrice" placeholder="Enter base price" required min="0" step="any">
-                            <div class="form-text text-muted">Enter the price in Indian Rupees (₹).</div>
+                            <label for="BasePrice" class="form-label">Base Price <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">₹</span>
+                                <input type="number" class="form-control" id="BasePrice" name="BasePrice" placeholder="0.00" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-text small">Price per unit in Indian Rupees</div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-end gap-2 pt-2">
+                            <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button type="submit" form="addMaterialForm" class="btn btn-primary px-4">
+                                <i class="bi bi-check2 me-1"></i> Save Material
+                            </button>
                         </div>
                     </form>
-                </div>
-
-                <!-- Modal Footer -->
-                <div class="modal-footer border-0 d-flex justify-content-center gap-2">
-                    <button type="button" class="btn btn-outline-secondary px-4 py-2" data-bs-dismiss="modal">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </button>
-                    <button type="submit" form="addMaterialForm" class="btn btn-primary px-4 py-2">
-                        <i class="bi bi-save"></i> Save Material
-                    </button>
                 </div>
             </div>
         </div>
     </div>
-
-
 }
 
 <script src="~/js/Material.js"></script>
 <link rel="stylesheet" href="~/css/materials.css">
+
+<script>
+     function clearSearch() {
+        document.querySelector('input[name="searchTerm"]').value = '';
+        document.getElementById('searchForm').submit();
+    }
+
+     document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchButton = document.getElementById('searchButton');
+        const searchInput = document.getElementById('searchInput');
+
+        searchButton.addEventListener('click', function() {
+            window.location.href = '@Url.Action("All_Materials")' + '?searchTerm=' + encodeURIComponent(searchInput.value);
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+
+
+</script>
+<style>
+    .table-container {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .action-btn {
+        transition: all 0.2s;
+    }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+    .card {
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+      .header-container {
+        position: relative;
+    }
+
+    .accent-bar {
+        height: 4px;
+        background: linear-gradient(90deg, #4361ee, #3a0ca3);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        background-color: rgba(67, 97, 238, 0.12);
+        border-radius: 12px;
+    }
+
+        .icon-container i {
+            font-size: 22px;
+        }
+
+    .breadcrumb-nav {
+        margin-left: 60px;
+    }
+
+    .breadcrumb {
+        font-size: 0.85rem;
+    }
+
+    .breadcrumb-item a {
+        color: #6c757d;
+    }
+
+    .breadcrumb-item.active {
+        color: #3a0ca3;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "•";
+        color: #6c757d;
+    }
+
+    .add-bill-btn {
+        background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .add-bill-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .add-bill-btn i {
+            font-size: 18px;
+        }
+
+    .search-filter-container {
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+
+    .search-input {
+        height: 48px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+            border-color: #4361ee;
+        }
+
+    .btn-clear {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+        .btn-clear:hover {
+            color: #dc3545;
+        }
+
+    .select-container {
+        position: relative;
+    }
+
+    .select-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: #6c757d;
+    }
+
+    .form-select {
+        appearance: none;
+        height: 48px;
+        padding-right: 40px;
+        background-image: none;
+        border-radius: 8px;
+        min-width: 140px;
+    }
+
+    .action-buttons .btn {
+        height: 48px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-buttons .btn-primary {
+        background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .action-buttons .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+    .advanced-filters {
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    @@media (max-width: 992px) {
+        .filters-group
+
+    {
+        margin-top: 1rem;
+    }
+
+    }
+
+
+</style>

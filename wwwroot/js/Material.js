@@ -63,7 +63,7 @@
                     }
                 });
             }
-        }
+    }
 
     // Alert box behavior
     const alertBox = document.getElementById('alertBox');
@@ -149,9 +149,9 @@
                 const basePrice = this.getAttribute('data-base-price');
 
                 // Set modal fields with material data
-                document.getElementById('materialNo').value = materialNo; // material number
-                document.getElementById('colorName').value = colorName;   // color name
-                document.getElementById('basePrice').value = basePrice;   // base price
+                document.getElementById('materialNo').value = materialNo;
+                document.getElementById('colorName').value = colorName;
+                document.getElementById('basePrice').value = basePrice;
 
                 // Show the modal
                 const modifyModal = new bootstrap.Modal(document.getElementById('modifyModal'));

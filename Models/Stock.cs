@@ -62,4 +62,32 @@ namespace Moksha_App.Models
             AvailableStock += TotalWeight;
         }
     }
+
+    public class StockModel
+    {
+        // Existing stock properties
+        public int TotalBags { get; set; }
+        public decimal Weight { get; set; }
+        public decimal AvailableStock { get; set; }
+        public Material Material { get; set; }
+
+        // New properties for charts/table
+        public List<BuyingRecord> BuyingHistory { get; set; }
+        public List<MonthlyTrend> MonthlyTrends { get; set; }
+    }
+
+    public class BuyingRecord
+    {
+        public DateTime Date { get; set; }
+        public Material Material { get; set; }
+        public decimal Weight { get; set; }
+        public decimal Cost { get; set; }
+    }
+
+    public class MonthlyTrend
+    {
+        public string Month { get; set; } // e.g., "Jan 2023"
+        public decimal TotalWeight { get; set; }
+        public decimal TotalCost { get; set; }
+    }
 }

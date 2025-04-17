@@ -29,48 +29,49 @@ namespace Moksha_App.Controllers
              uri = new Uri(backend_url);
         }
         // GET: All Materials
-       /* [HttpGet]
-        public async Task<IActionResult> All_Materials()
+       [HttpGet]
+        public async Task<IActionResult> All_Materials(
+             string searchTerm = "",
+             string sortColumn = "ColorName",
+             string sortDirection = "asc",
+             int page = 1,
+             int pageSize = 10)
         {
-            List<Material> materials = new List<Material>();
             string baseAdd = uri + "/Materials";
-             var token = Request.Cookies["AuthToken"] ?? "";
-            if (!string.IsNullOrEmpty(token))
-            {
-                try
-                {
-                    token = JsonDocument.Parse(token).RootElement.TryGetProperty("token", out JsonElement tokenElement)
-                        ? tokenElement.GetString()
-                        : throw new Exception("Invalid token structure.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Token parsing error: {ex.Message}");
-                }
-            }
 
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            queryParams["searchTerm"] = searchTerm;
+            queryParams["sortColumn"] = sortColumn;
+            queryParams["sortDirection"] = sortDirection;
+            queryParams["page"] = page.ToString();
+            queryParams["pageSize"] = pageSize.ToString();
+
+            string fullUrl = $"{baseAdd}?{queryParams}";
+            //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try
             {
-                // Call the API
-                HttpResponseMessage response = await _httpClient.GetAsync(baseAdd); // Replace with your API route
+                HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
 
                 if (response.IsSuccessStatusCode)
                 {
                     // Deserialize the JSON response
                     string jsonResponse = await response.Content.ReadAsStringAsync();
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                    materials = System.Text.Json.JsonSerializer.Deserialize<List<Material>>(jsonResponse, new JsonSerializerOptions
+                    var materials = System.Text.Json.JsonSerializer.Deserialize<MaterialsListViewModel>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
-                    });}
+                    });
+                    return View(materials);
+                }
 
                 else
                 {
                     // Log actual response body for debugging
                     string errorResponse = await response.Content.ReadAsStringAsync();
                     ViewBag.Error = $"Failed to retrieve materials. Status: {response.StatusCode}. Error: {errorResponse}";
+                    return View();
+
                 }
+
 
             }
             catch (Exception ex)
@@ -79,31 +80,42 @@ namespace Moksha_App.Controllers
                 ViewBag.Error = "An error occurred while calling the API: " + ex.Message;
             }
 
-            // Pass the data to the view
-            return View(materials);
+            return View();
+
         }
-        */
-        [HttpGet]
+
+    
+      [HttpGet("All_Mt")]
         public async Task<JsonResult> All_Mt()
         {
             List<Material> materials = new List<Material>();
             string baseAdd = uri + "/Materials";
-            var token = Request.Cookies["AuthToken"] ?? "";
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             try
             {
-                // Call the API
-                HttpResponseMessage response = await _httpClient.GetAsync(baseAdd); // Replace with your API route
+
+                var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                queryParams["searchTerm"] = "";
+                queryParams["sortColumn"] = "ColorName";
+                queryParams["sortDirection"] = "asc";
+                queryParams["page"] = "1";
+                queryParams["pageSize"] = "10";
+
+                string fullUrl = $"{baseAdd}?{queryParams}";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(fullUrl); 
 
                 if (response.IsSuccessStatusCode)
                 {
                     // Deserialize the JSON response
                     string jsonResponse = await response.Content.ReadAsStringAsync();
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                    materials = System.Text.Json.JsonSerializer.Deserialize<List<Material>>(jsonResponse, new JsonSerializerOptions
+
+                    var Materials = System.Text.Json.JsonSerializer.Deserialize<MaterialsListViewModel>(jsonResponse, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
+
+                    return Json(new { success = true, Message = Materials?.Materials });
+
                 }
 
                 else
@@ -121,13 +133,14 @@ namespace Moksha_App.Controllers
             }
 
 
+            return Json(new { success = false, Message = "Some Error accure" });
             
-            return Json(new { success = true, Message = materials });
-            
-        }
+        }   
 
-        public async Task<IActionResult> Create(Material material)
+    public async Task<IActionResult> Create(Material material)
         {
+            material.IsActive = true;
+
             string baseAdd = uri + "/Materials/CreateMaterial";
             var token = Request.Cookies["AuthToken"]?? "";
             token = System.Text.Json.JsonDocument.Parse(token).RootElement.GetProperty("token").GetString();
@@ -163,6 +176,7 @@ namespace Moksha_App.Controllers
             
 
         }
+        
         [HttpDelete]
         [Route("Delete_material")]
         public async Task<IActionResult> Delete_material(string Id)
@@ -190,10 +204,13 @@ namespace Moksha_App.Controllers
                 return NotFound();               
             }
         }
+       
+        
         [HttpPut]
         [Route("Modify/{id}")]
         public async Task<IActionResult> Modify(string id, [FromBody] Material material)
         {
+            material.IsActive = true;
             // Validate input
             if (string.IsNullOrEmpty(id) || material == null)
             {
@@ -251,7 +268,9 @@ namespace Moksha_App.Controllers
                 return StatusCode(500, $"An error occurred while communicating with the external API.\n{ex}");
             }
         }
-        [HttpGet("all_list")]
+      
+        
+       /* [HttpGet("all_list")]
         public async Task<IActionResult> all_list()
         {
             List<Material> materials = new List<Material>();
@@ -288,6 +307,6 @@ namespace Moksha_App.Controllers
 
             // Pass the data to the view
             return Ok(materials);
-        }
+        }  */
     }
 }
