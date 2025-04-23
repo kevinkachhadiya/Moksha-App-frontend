@@ -3,9 +3,9 @@
     ViewData["Title"] = "All_bills";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container-fluid vh-100 d-flex flex-column pb-1">
+<div class="">
     <!-- Header Section -->
-    <div class="header-container mb-1">
+    <div class="header-container mb-1 mt-1">
         <!-- Decorative top accent bar -->
         <div class="accent-bar"></div>
 
@@ -148,7 +148,7 @@
         </div>
     </div>
 
-  <div class="bills-table-container mb-4">
+  <div class="bills-table-container mb-4 mt-4">
         <div class="card shadow-sm border-0">
             <!-- Table Header with Stats and Actions -->
             <div class="card-header bg-white p-2 border-bottom">
@@ -205,7 +205,7 @@
             </div>
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <div class="table-responsive" style="max-height: 560px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0" >
 
                         <thead class="sticky-top">
@@ -268,11 +268,12 @@
                                 </th>
                             </tr>
                         </thead>
-                           
+
                             <tbody>
                                 @if (Model != null && Model.Bills.Any())
                                 {
-                                    int bill_no = (Model.CurrentPage - 1) * 10 == 0 ? bill_no = 1 : ((Model.CurrentPage - 1) * 10) + 1;
+
+                                    int bill_no = (Model.CurrentPage - 1) * Model.PageSize + 1;
                                     foreach (var bill in Model.Bills)
                                     {
                                         <tr class="bill-row border-bottom">
@@ -390,7 +391,7 @@
             </div>
 
             <!-- Table Footer with Pagination -->
-            <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center border-top">
+            <div class="card-footer bg-white py-1 d-flex justify-content-between align-items-center border-top">
                 <div class="text-muted">
                     Showing <span class="fw-semibold">@(Model?.Bills.Count() ?? 0)</span> of <span class="fw-semibold">@(Model?.TotalItems ?? 0)</span> materials
                 </div>
@@ -405,6 +406,7 @@
                                 searchTerm = Context.Request.Query["searchTerm"],
                                 sortColumn = Context.Request.Query["sortColumn"],
                                 sortDirection = Context.Request.Query["sortDirection"],
+                                pageSize = Context.Request.Query["pageSize"],
                                 page = 1
                             })" aria-label="First">
                                     <i class="bi bi-chevron-double-left"></i>
@@ -417,7 +419,8 @@
                                 searchTerm = Context.Request.Query["searchTerm"],
                                 sortColumn = Context.Request.Query["sortColumn"],
                                 sortDirection = Context.Request.Query["sortDirection"],
-                                page = Model.CurrentPage - 1
+                                page = Model.CurrentPage - 1,
+                                pageSize = Context.Request.Query["pageSize"]
                             })" aria-label="Previous">
                                     <i class="bi bi-chevron-left"></i>
                                 </a>
@@ -441,6 +444,7 @@
                                     searchTerm = Context.Request.Query["searchTerm"],
                                     sortColumn = Context.Request.Query["sortColumn"],
                                     sortDirection = Context.Request.Query["sortDirection"],
+                                    pageSize = Context.Request.Query["pageSize"],
                                     page = i
                                 })">@i</a>
                                 </li>
@@ -456,6 +460,7 @@
                                     searchTerm = Context.Request.Query["searchTerm"],
                                     sortColumn = Context.Request.Query["sortColumn"],
                                     sortDirection = Context.Request.Query["sortDirection"],
+                                    pageSize = Context.Request.Query["pageSize"],
                                     page = Model.TotalPages
                                 })">@Model.TotalPages</a>
                                 </li>
@@ -466,6 +471,7 @@
                                 searchTerm = Context.Request.Query["searchTerm"],
                                 sortColumn = Context.Request.Query["sortColumn"],
                                 sortDirection = Context.Request.Query["sortDirection"],
+                                pageSize = Context.Request.Query["pageSize"],
                                 page = Model.CurrentPage + 1
                             })" aria-label="Next">
                                     <i class="bi bi-chevron-right"></i>
@@ -477,6 +483,7 @@
                                 searchTerm = Context.Request.Query["searchTerm"],
                                 sortColumn = Context.Request.Query["sortColumn"],
                                 sortDirection = Context.Request.Query["sortDirection"],
+                                pageSize = Context.Request.Query["pageSize"],
                                 page = Model.TotalPages
                             })" aria-label="Last">
                                     <i class="bi bi-chevron-double-right"></i>
@@ -820,8 +827,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 1. Load materials data
             let materials = [];
-            
-
+  
 
             $.ajax({
                url: `@Url.Action("All_Mt", "Materials")`,
@@ -1694,12 +1700,7 @@ document.addEventListener('DOMContentLoaded', function() {
         overflow: hidden;
     }
 
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-        color: white;
-        border-bottom: none;
-        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
-    }
+ 
 
     .hover-shadow {
         transition: all 0.3s ease;
@@ -1913,25 +1914,8 @@ document.addEventListener('DOMContentLoaded', function() {
         position: relative;
     }
 
-    .accent-bar {
-        height: 4px;
-        background: linear-gradient(90deg, #4361ee, #3a0ca3);
-        border-radius: 3px 3px 0 0;
-    }
 
-    .icon-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 46px;
-        height: 46px;
-        background-color: rgba(67, 97, 238, 0.12);
-        border-radius: 12px;
-    }
-
-        .icon-container i {
-            font-size: 22px;
-        }
+   
 
     .breadcrumb-nav {
         margin-left: 60px;

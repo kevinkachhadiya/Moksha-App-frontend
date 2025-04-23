@@ -27,9 +27,6 @@ namespace Moksha_App.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal AvailableStock { get; set; }  // Track how much stock is available
 
-        // Navigation property to Material
-        public Material Material { get; set; }
-
 
         // Method to update available stock (e.g., after a sale)
         public void removeStock(decimal quantitySold)
@@ -51,7 +48,6 @@ namespace Moksha_App.Models
             {
                 throw new ArgumentException("Weight per bag must be greater than zero.");
             }
-
             // Update the weight per bag for this stock entry
             Weight = Weightperbag;
 
@@ -61,11 +57,42 @@ namespace Moksha_App.Models
             // Update the AvailableStock based on the weight of the new bags
             AvailableStock += TotalWeight;
         }
+        public bool isActive { get; set; }
+    }
+    public class Stock_
+    {
+
+        public int StockId { get; set; }
+
+        public int MaterialId { get; set; }
+
+        public string ColorName { get; set; }
+
+        public int TotalBags { get; set; }
+
+        public decimal Weight { get; set; }
+
+        public decimal TotalWeight => TotalBags * Weight;
+
+        public decimal AvailableStock { get; set; }
+
+        public bool isActive { get; set; }
     }
 
+    public class stockListViewModel
+    {
+        public IEnumerable<Stock_> Stock { get; set; }
+        public string SearchTerm { get; set; }
+        public string SortColumn { get; set; }
+        public string SortDirection { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; }
+        public int TotalItems { get; set; }
+    }
     public class StockModel
     {
-        // Existing stock properties
+
         public int TotalBags { get; set; }
         public decimal Weight { get; set; }
         public decimal AvailableStock { get; set; }

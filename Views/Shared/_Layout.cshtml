@@ -27,7 +27,6 @@
 
     <!-- Custom JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     <style>
         /* Sidebar styling */
         .sidebar {
@@ -91,7 +90,6 @@
         /* Main content area */
         .main-content {
             margin-left: 250px;
-            padding: 10px;
             transition: all 0.3s;
         }
 
@@ -114,67 +112,69 @@
 
         }
     </style>
-
 </head>
 
 <body>
 
+   
     <div class="container-fluid">
         <div class="row">
-            <!-- Standard Desktop Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar">
+            <!-- Sidebar with Toggle Functionality -->
+            <div id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar">
                 <div class="sidebar-sticky d-flex flex-column">
-                    <!-- Logo and Brand 
-                    <div class="sidebar-header d-flex align-items-center">
-                        <img src="/logo.png" alt="Moksha Plastic Logo" class="img-fluid me-2" style="max-height: 35px;">
-                        <h5 class="mb-0 fw-bold">Moksha Plastic</h5>
-                    </div> -->
+                    <!-- Toggle Button -->
+                    <div class="sidebar-header d-flex justify-content-between align-items-center pb-3 pt-2">
+                        <span class="d-md-none fw-bold text-primary ps-3">Menu</span>
+                        <button id="sidebarToggle" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left-circle"></i>
+                        </button>
+                    </div>
 
                     <!-- Navigation Menu -->
-                    <ul class="nav flex-column mt-4">
+                    <ul class="nav flex-column mt-2">
                         <li class="nav-item">
-                            <a class="nav-link active" href="@Url.Action("Dash_Board", "DashBoard")">
-                                <i class="bi bi-speedometer2"></i> Dashboard
+                            <a class="nav-link" href="@Url.Action("Dash_Board", "DashBoard")" data-controller="DashBoard" data-action="Dash_Board">
+                                <i class="bi bi-speedometer2"></i> <span class="nav-text">Dashboard</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("All_Materials", "Materials")">
-                                <i class="bi bi-box-seam"></i> Materials
+                            <a class="nav-link" href="@Url.Action("All_Materials", "Materials")" data-controller="Materials" data-action="All_Materials">
+                                <i class="bi bi-box-seam"></i> <span class="nav-text">Materials</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("All_bills", "BuyerBilling")">
-                                <i class="bi bi-receipt"></i> Buying Billing
+                            <a class="nav-link" href="@Url.Action("All_bills", "BuyerBilling")" data-controller="BuyerBilling" data-action="All_bills">
+                                <i class="bi bi-receipt"></i> <span class="nav-text">Buying Billing</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-people"></i> Suppliers
+                            <a class="nav-link" href="@Url.Action("GetAllStocks", "Stock_Management_")" data-controller="Stock_Management_" data-action="GetAllStocks">
+                                <i class="bi bi-boxes"></i> <span class="nav-text">Stock Management</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-shop"></i> Inventory
+                            <a class="nav-link" href="#" data-controller="Inventory" data-action="Index">
+                                <i class="bi bi-shop"></i> <span class="nav-text">Inventory</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-graph-up"></i> Reports
+                            <a class="nav-link" href="#" data-controller="Reports" data-action="Index">
+                                <i class="bi bi-graph-up"></i> <span class="nav-text">Reports</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="bi bi-gear"></i> Settings
+                            <a class="nav-link" href="#" data-controller="Settings" data-action="Index">
+                                <i class="bi bi-gear"></i> <span class="nav-text">Settings</span>
                             </a>
                         </li>
                     </ul>
 
                     <!-- Footer Menu with User Profile -->
-                    <div class="sidebar-footer mt-auto">
+                    <div class="sidebar-footer mt-auto mb-3">
                         <div class="dropdown">
                             <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="/api/placeholder/32/32" alt="User" width="32" height="32" class="rounded-circle me-2">
-                                <span class="fw-semibold">Admin User</span>
+                                <span class="fw-semibold user-name">Admin User</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
                                 <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
@@ -187,15 +187,22 @@
                 </div>
             </div>
 
+            <!-- Mobile Toggle Button (Outside the sidebar) -->
+            <div class="mobile-toggle-button d-md-none position-fixed" style="z-index: 1030; top: 10px; left: 10px;">
+                <button class="btn btn-primary shadow-sm" id="mobileSidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
             <!-- Main Content Area -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 main-content">
                 <!-- Page Content Placeholder -->
-                <div class="container-fluid">
+                <div class="container-fluid ">
                     @RenderBody()
                 </div>
             </main>
         </div>
     </div>
+
 
   <style>
       .sidebar {
@@ -389,7 +396,74 @@ html, body {
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            // Function to set active navigation link
+            function setActiveNavLink() {
+                // Get current URL parts
+                let currentUrl = window.location.pathname;
+                let urlParts = currentUrl.split('/');
+
+                // Extract controller and action from URL
+                // ASP.NET MVC typical URL format: /{controller}/{action}/{id?}
+                let controller = urlParts.length > 1 ? urlParts[1] : '';
+                let action = urlParts.length > 2 ? urlParts[2] : '';
+
+                // If URL is empty or just '/', activate Dashboard
+                if (currentUrl === '/' || currentUrl === '') {
+                    controller = 'DashBoard';
+                    action = 'Dash_Board';
+                }
+
+                // Remove 'active' class from all nav links
+                document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Find matching link and add 'active' class
+                // First try to match both controller and action
+                let navLinks = document.querySelectorAll('.sidebar .nav-link');
+                let exactMatch = false;
+
+                navLinks.forEach(link => {
+                    let linkController = link.getAttribute('data-controller');
+                    let linkAction = link.getAttribute('data-action');
+
+                    // Case-insensitive comparison
+                    if (linkController && linkAction &&
+                        linkController.toLowerCase() === controller.toLowerCase() &&
+                        linkAction.toLowerCase() === action.toLowerCase()) {
+                        link.classList.add('active');
+                        exactMatch = true;
+                    }
+                });
+
+                // If no exact match found, try matching just the controller
+                if (!exactMatch) {
+                    navLinks.forEach(link => {
+                        let linkController = link.getAttribute('data-controller');
+
+                        if (linkController && linkController.toLowerCase() === controller.toLowerCase()) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            }
+
+            // Call the function when page loads
+            setActiveNavLink();
+
+            // Optional: Call it again when clicking on navigation links
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    document.querySelectorAll('.sidebar .nav-link').forEach(l => {
+                        l.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        });
         document.addEventListener("DOMContentLoaded", function () {
+
             document.querySelectorAll('.offcanvas .nav-link').forEach(link => {
                 link.addEventListener('click', () => {
                     const offcanvasElement = document.querySelector('.offcanvas');
@@ -402,7 +476,223 @@ html, body {
                 });
             });
         });
+
+               
+
+    </script>
+
+
+   
+    <!-- JavaScript for toggling functionality -->
+    <script>
+                      document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+            const navTexts = document.querySelectorAll('.nav-text');
+
+            // Function to toggle desktop sidebar (collapse/expand)
+            function toggleDesktopSidebar() {
+                sidebar.classList.toggle('collapsed');
+
+                if (sidebar.classList.contains('collapsed')) {
+                    sidebar.classList.remove('col-md-3', 'col-lg-2');
+                    sidebar.classList.add('col-md-1');
+                    sidebarToggle.innerHTML = '<i class="bi bi-arrow-right-circle"></i>';
+
+                    // Hide text in nav items
+                    navTexts.forEach(text => text.style.display = 'none');
+
+                    // Adjust main content
+                    mainContent.classList.remove('col-md-9', 'col-lg-10');
+                    mainContent.classList.add('col-md-11');
+                } else {
+                    sidebar.classList.remove('col-md-1');
+                    sidebar.classList.add('col-md-3', 'col-lg-2');
+                    sidebarToggle.innerHTML = '<i class="bi bi-arrow-left-circle"></i>';
+
+                    // Show text in nav items
+                    navTexts.forEach(text => text.style.display = 'inline');
+
+                    // Adjust main content
+                    mainContent.classList.remove('col-md-11');
+                    mainContent.classList.add('col-md-9', 'col-lg-10');
+                }
+            }
+
+            // Function to toggle mobile sidebar (show/hide)
+            function toggleMobileSidebar() {
+                sidebar.classList.toggle('mobile-show');
+                document.body.classList.toggle('sidebar-open');
+
+                // Change the icon based on sidebar state
+                if (sidebar.classList.contains('mobile-show')) {
+                    mobileSidebarToggle.innerHTML = '<i class="bi bi-x-lg"></i>';
+                } else {
+                    mobileSidebarToggle.innerHTML = '<i class="bi bi-list"></i>';
+                }
+            }
+
+            // Desktop sidebar toggle
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (window.innerWidth >= 768) {
+                    toggleDesktopSidebar();
+                } else {
+                    toggleMobileSidebar();
+                }
+            });
+
+            // Mobile sidebar toggle
+            mobileSidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                toggleMobileSidebar();
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth < 768 &&
+                    sidebar.classList.contains('mobile-show') &&
+                    !sidebar.contains(e.target) &&
+                    e.target !== mobileSidebarToggle &&
+                    !mobileSidebarToggle.contains(e.target)) {
+                    toggleMobileSidebar();
+                }
+            });
+
+            // Handle resize events for responsiveness
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.remove('mobile-show');
+                    document.body.classList.remove('sidebar-open');
+                    mobileSidebarToggle.innerHTML = '<i class="bi bi-list"></i>';
+                }
+            });
+        });
     </script>
 
 </body>
+
 </html>
+<style>
+    /* Sidebar base styling */
+    .sidebar {
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        padding: 0;
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+        transition: all 0.3s;
+        background-color: #f8f9fa;
+    }
+
+    .sidebar-sticky {
+        height: 100vh;
+        padding-top: 0.5rem;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    /* Collapsed desktop sidebar styling */
+    .sidebar.collapsed {
+        width: auto;
+        text-align: center;
+    }
+
+        .sidebar.collapsed .nav-link {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .sidebar-footer {
+            display: none;
+        }
+
+    /* Mobile sidebar styling */
+    @@media (max-width: 767.98px) {
+        .sidebar
+
+    {
+        width: 75%;
+        max-width: 300px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+    }
+
+    .sidebar.mobile-show {
+        transform: translateX(0);
+    }
+
+    .sidebar-open::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 999;
+    }
+
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding-top: 50px; /* Space for mobile toggle button */
+    }
+
+    .mobile-toggle-button {
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-open .mobile-toggle-button {
+        left: calc(75% - 20px);
+        max-left: 280px;
+    }
+
+    }
+
+    /* Main content styling */
+    .main-content {
+        transition: all 0.3s;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        border-bottom: none;
+        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+    }
+
+</style>
+
+<style>
+
+
+    .accent-bar {
+        height: 4px;
+        background: linear-gradient(90deg, #4361ee, #3a0ca3);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .icon-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        background-color: rgba(67, 97, 238, 0.12);
+        border-radius: 12px;
+    }
+
+        .icon-container i {
+            font-size: 22px;
+        }
+
+
+</style>
+
