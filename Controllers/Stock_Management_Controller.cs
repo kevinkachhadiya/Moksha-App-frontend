@@ -25,12 +25,11 @@ namespace Moksha_App.Controllers
         }
 
         [HttpGet]
-
         public async Task<IActionResult> GetAllStocks(string searchTerm = "",
              string sortColumn = "ColorName",
              string sortDirection = "asc",
              int page = 1,
-             int pageSize = 12)
+             int pageSize = 10)
         {
             string baseAdd = uri + "/Stock_Management/GetAllStocks";
             var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
@@ -38,7 +37,7 @@ namespace Moksha_App.Controllers
             queryParams["sortColumn"] = sortColumn ?? "ColorName";
             queryParams["sortDirection"] = sortDirection ?? "";
             queryParams["page"] = page.ToString() ?? "1";
-            queryParams["pageSize"] = pageSize.ToString() ?? "12";
+            queryParams["pageSize"] = pageSize.ToString() ?? "10";
 
             string fullUrl = $"{baseAdd}?{queryParams}";
 

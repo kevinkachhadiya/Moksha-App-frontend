@@ -794,7 +794,7 @@
 <script src="~/js/site.js"></script>
 @section scripts{
            <script>
-               function changePageSize(size) {
+    function changePageSize(size) {
     // Get current URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -828,12 +828,19 @@ document.addEventListener('DOMContentLoaded', function() {
             // 1. Load materials data
             let materials = [];
   
+             const params = new URLSearchParams({
+            searchTerm: '',
+            sortColumn: 'ColorName',
+            sortDirection: 'asc',
+            page: '1',
+            pageSize: '9999'
+        });
 
             $.ajax({
-               url: `@Url.Action("All_Mt", "Materials")`,
+                       url: `@Url.Action("All_Mt", "Materials")?`+ params.toString(),
                 type: "GET",
                 success: function(response) {
-                    if (response.success && response.message) {
+                    if ( response.message) {
                         materials = response.message;
                         console.log("Materials loaded:", materials.length);
                     } else {

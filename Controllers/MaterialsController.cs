@@ -114,7 +114,8 @@ namespace Moksha_App.Controllers
                         PropertyNameCaseInsensitive = true
                     });
 
-                    return Json(new { success = true, Message = Materials?.Materials });
+                    
+                    return Json(new {Message = Materials?.Materials });
 
                 }
 

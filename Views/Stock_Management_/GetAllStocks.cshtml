@@ -40,124 +40,37 @@
 }
 
 <style>
-    /* Header and accent bar styling */
-    .accent-bar {
-        height: 5px;
-        background: linear-gradient(90deg, #4e73df 0%, #36b9cc 100%);
-        border-radius: 5px 5px 0 0;
+    :root {
+        --primary: #0d6efd;
+        --primary-light: #e6f0ff;
+        --secondary: #6c757d;
+        --border-radius: 0.5rem;
     }
 
-    .header-container {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        border-radius: 5px;
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
-
-    .icon-container {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 10px;
-        background-color: rgba(78, 115, 223, 0.1);
-    }
-
-        .icon-container i {
-            font-size: 1.5rem;
-        }
-
-    /* Button styling */
-    .add-stock-btn {
-        background-color: #4e73df;
-        border: none;
-        transition: all 0.3s;
-    }
-
-        .add-stock-btn:hover {
-            background-color: #2e59d9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-    /* Modal styling */
-    .modal-header {
-        background: linear-gradient(90deg, #4e73df 0%, #36b9cc 100%);
-        color: white;
-        border-radius: 5px 5px 0 0;
-    }
-
-    .form-control:focus {
-        border-color: #4e73df;
-        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-    }
-
-    .modal-footer {
-        border-top: none;
-    }
-
-    /* Calculator preview */
-    .calc-preview {
-        font-size: 14px;
-        color: #6c757d;
-        font-style: italic;
-    }
-
-    /* Validation */
-    .is-invalid {
-        border-color: #e74a3b !important;
-    }
-
-    .invalid-feedback {
-        display: none;
-        color: #e74a3b;
-        font-size: 80%;
-    }
-
-    /* Responsive adjustments */
-    @@media (max-width: 576px) {
-        .add-stock-btn span {
-            display: none;
-        }
-
-        .add-stock-btn i {
-            margin-right: 0 !important;
-        }
-    }
-
-    /* Stock table styling */
-    .stock-table {
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    }
-
-        .stock-table thead {
-            background-color: #f8f9fc;
-        }
-
-        .stock-table th {
-            border-top: none;
-            font-weight: 600;
-            color: #5a5c69;
-        }
-
-    .stock-item-row {
-        transition: background-color 0.2s;
-    }
-
-        .stock-item-row:hover {
-            background-color: #f8f9fc;
-        }
 
     .accent-bar {
         height: 4px;
-        background: linear-gradient(90deg, #4e73df, #36b9cc);
-        border-radius: 3px 3px 0 0;
+        background: linear-gradient(to right, var(--primary), #4dabf7);
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+
+    .card {
+        border-radius: var(--border-radius);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .header-container {
+        margin-top: 1rem;
     }
 
     .stock-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        height: 100%;
+        border-left: 4px solid var(--primary);
+        transition: transform 0.2s ease;
     }
 
         .stock-card:hover {
@@ -165,179 +78,202 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
         }
 
-    .stock-available {
-        font-size: 2rem;
-        font-weight: 700;
-    }
-
-    .stock-weight {
-        font-size: 1.1rem;
+    .add-stock-btn {
+        border-radius: 50px;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
     }
 
     .avatar-circle {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .stock-available {
+        font-size: 1.75rem;
         font-weight: 600;
     }
 
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        border-color: var(--primary);
+    }
+
     .action-btn {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
+        padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
     }
-</style>
 
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .search-wrapper .form-control {
+        height: 48px;
+        border-radius: 24px;
+        padding-left: 3rem;
+    }
+
+    .dropdown-wrapper select {
+        height: 48px;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .pagination .page-link {
+        border-radius: 0.25rem;
+        margin: 0 2px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+</style>
 <div class="container-fluid vh-100 d-flex flex-column pb-1">
-    <!-- Header Section -->
-    <div class="header-container mb-1">
-        <!-- Decorative top accent bar -->
-        <div class="accent-bar"></div>
-        <!-- Main header content -->
-        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded-lg shadow-sm position-relative">
-            <!-- Left side with title and breadcrumb -->
-            <div class="d-flex flex-column">
-                <div class="d-flex align-items-center mb-1">
-                    <div class="icon-container me-3">
-                        <i class="bi bi-box-seam text-primary"></i>
+        <!-- Header Section -->
+    <div class="header-container mb-1 mt-1">
+            <!-- Decorative top accent bar -->
+            <div class="accent-bar"></div>
+            <!-- Main header content -->
+            <div class="d-flex justify-content-between align-items-center p-3 bg-white rounded-bottom shadow-sm position-relative">
+                <!-- Left side with title and breadcrumb -->
+                <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-container me-3">
+                            <i class="bi bi-box-seam text-primary fs-4"></i>
+                        </div>
+                        <h2 class="text-primary fw-bold mb-0">Stock Management</h2>
                     </div>
-                    <h2 class="text-primary fw-bold mb-0">Stock Management</h2>
+                </div>
+                <!-- Right side with action button -->
+                <button class="btn btn-primary d-flex align-items-center shadow-sm add-stock-btn"
+                        onclick="addStock()">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    <span>Add New Stock</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="search-filter-container mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <form id="searchForm" method="get" asp-action="GetAllStocks">
+                        <div class="d-flex flex-column flex-lg-row p-2 gap-2">
+                            <!-- Search Field with Icon -->
+                            <div class="search-wrapper flex-grow-1 position-relative">
+                                <div class="position-relative d-flex align-items-end h-100">
+                                    <!-- Search Icon -->
+                                    <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2;margin-bottom: 12px;"></i>
+
+                                    <!-- Search Input -->
+                                    <input type="text"
+                                           name="searchTerm"
+                                           class="form-control ps-5 pe-5 shadow-sm"
+                                           placeholder="Search by material name, stock ID, or quantity..."
+                                           value=""
+                                           style="border-radius: 24px;">
+
+                                    @if (!string.IsNullOrEmpty(Context.Request.Query["searchTerm"]))
+                                    {
+                                        <button type="button"
+                                                class="btn position-absolute end-0 me-2 p-0"
+                                                style="background: transparent; border: none; z-index: 2; margin-bottom: 10px;"
+                                                onclick="clearSearch()"
+                                                aria-label="Clear search">
+                                            <i class="bi bi-x-circle text-muted fs-5"></i>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Filters Group -->
+                            <div class="filters-group d-flex flex-column flex-md-row align-items-stretch gap-3">
+                                <!-- Sort By Dropdown -->
+                                <div class="dropdown-wrapper position-relative">
+                                    <label for="sortColumn" class="form-label text-muted small mb-1 d-none d-sm-block">Sort By</label>
+                                    <div class="select-container position-relative">
+                                        <select id="sortColumn" name="sortColumn" class="form-select shadow-sm">
+                                            <option value="MaterialName" selected="@(Context.Request.Query["sortColumn"] == "ColorName")">Material Name</option>
+                                            <option value="AvailableStock" selected="@(Context.Request.Query["sortColumn"] == "AvailableStock")">Available Stock</option>
+                                            <option value="TotalBags" selected="@(Context.Request.Query["sortColumn"] == "TotalBags")">Total Bags</option>
+                                            <option value="Weight" selected="@(Context.Request.Query["sortColumn"] == "Weight")">Weight per Bag</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Sort Direction Dropdown -->
+                                <div class="dropdown-wrapper position-relative">
+                                    <label for="sortDirection" class="form-label text-muted small mb-1 d-none d-sm-block">Order</label>
+                                    <div class="select-container position-relative">
+                                        <select id="sortDirection" name="sortDirection" class="form-select shadow-sm">
+                                            <option value="asc" selected="@(Context.Request.Query["sortDirection"] == "asc")">Ascending</option>
+                                            <option value="desc" selected="@(Context.Request.Query["sortDirection"] == "desc")">Descending</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="action-buttons d-flex align-items-end gap-2 ms-md-auto">
+                                    <button type="submit" class="btn btn-primary shadow-sm">
+                                        <i class="bi bi-filter me-2"></i>Apply
+                                    </button>
+                                    <a href="@Url.Action("GetAllStocks")" class="btn btn-outline-secondary shadow-sm">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Filters Toggle -->
+                        <div class="d-flex justify-content-center border-top">
+                            <button type="button" class="btn btn-link text-primary px-4 py-0" onclick="toggleAdvancedFilters()" aria-expanded="false" aria-controls="advancedFilters">
+                                <span id="advancedFiltersText">Advanced Filters</span>
+                                <i class="bi bi-chevron-down ms-1" id="advancedFiltersIcon"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <!-- Right side with action button -->
-            <button class="btn btn-primary d-flex align-items-center px-2 py-2 shadow-sm add-stock-btn"
-                    onclick="addStock()">
-                <i class="bi bi-plus-circle me-2"></i>
-                <span>Add New Stock</span>
-            </button>
         </div>
-    </div>
 
-    <!-- Stock listing will go here -->
-    <div class="search-filter-container mb-1">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-0">
-                <form id="searchForm" method="get" asp-action="GetAllStocks">
-                    <div class="d-flex flex-column flex-lg-row p-3 gap-3">
-                        <!-- Search Field with Icon -->
-                        <div class="search-wrapper flex-grow-1 position-relative">
-                            <div class="position-relative d-flex align-items-end h-100">
-                                <!-- Search Icon -->
-                                <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2;margin-bottom: 10px;"></i>
-
-                                <!-- Search Input -->
-                                <input type="text"
-                                       name="searchTerm"
-                                       class="form-control ps-5 pe-5 shadow-sm"
-                                       placeholder="Search stocks by material name, stock ID, or quantity..."
-                                       value=""
-                                       style="border-radius: 8px; height: 50px;">
-
-                                @if (!string.IsNullOrEmpty(Context.Request.Query["searchTerm"]))
-                                {
-                                    <button type="button"
-                                            class="btn position-absolute end-0 me-2 p-0"
-                                            style="background: transparent; border: none; z-index: 2; margin-bottom: 10px;"
-                                            onclick="clearSearch()"
-                                            aria-label="Clear search">
-                                        <i class="bi bi-x-circle text-muted fs-5"></i>
-                                    </button>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Filters Group -->
-                        <div class="filters-group d-flex flex-column flex-md-row align-items-stretch gap-3">
-                            <!-- Sort By Dropdown -->
-                            <div class="dropdown-wrapper position-relative">
-                                <label for="sortColumn" class="form-label text-muted small mb-1 d-none d-sm-block">Sort By</label>
-                                <div class="select-container position-relative">
-                                    <select id="sortColumn" name="sortColumn" class="form-select shadow-sm" style="border-radius: 6px; padding-right: 2rem;">
-                                        <option value="MaterialName" selected="@(Context.Request.Query["sortColumn"] == "ColorName")">Material Name</option>
-                                        <option value="AvailableStock" selected="@(Context.Request.Query["sortColumn"] == "AvailableStock")">Available Stock</option>
-                                        <option value="TotalBags" selected="@(Context.Request.Query["sortColumn"] == "TotalBags")">Total Bags</option>
-                                        <option value="Weight" selected="@(Context.Request.Query["sortColumn"] == "Weight")">Weight per Bag</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Sort Direction Dropdown -->
-                            <div class="dropdown-wrapper position-relative">
-                                <label for="sortDirection" class="form-label text-muted small mb-1 d-none d-sm-block">Order</label>
-                                <div class="select-container position-relative">
-                                    <select id="sortDirection" name="sortDirection" class="form-select shadow-sm" style="border-radius: 6px; padding-right: 2rem;">
-                                        <option value="asc" selected="@(Context.Request.Query["sortDirection"] == "asc")">Ascending</option>
-                                        <option value="desc" selected="@(Context.Request.Query["sortDirection"] == "desc")">Descending</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="action-buttons d-flex align-items-end gap-2 ms-md-auto">
-                                <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 6px;">
-                                    <i class="bi bi-filter me-2"></i>Apply
-                                </button>
-                                <a href="#" class="btn btn-outline-secondary shadow-sm" style="border-radius: 6px;">
-                                    <i href="@Url.Action("GetAllStocks")" class="bi bi-arrow-counterclockwise me-1"></i>Reset
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Advanced Filters Toggle -->
-                    <div class="d-flex justify-content-center border-top">
-                        <button type="button" class="btn btn-link text-primary px-4 py-2" onclick="toggleAdvancedFilters()" aria-expanded="false" aria-controls="advancedFilters">
-                            <span id="advancedFiltersText">Advanced Filters</span>
-                            <i class="bi bi-chevron-down ms-1" id="advancedFiltersIcon"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stock Cards Container -->
-    <div class="stock-cards-container mb-4 flex-grow-1 overflow-auto">
-        <div class="card shadow-sm border-0">
-            <!-- Cards Header with Stats and Actions -->
-            <div class="card-header bg-white p-2 border-bottom">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <!-- Left side with title and count -->
-                        <div class="d-flex align-items-center gap-2">
+        <!-- Stock Cards Container -->
+        <div class="stock-cards-container mb-1 flex-grow-1 overflow-auto">
+            <div class="card shadow-sm">
+                <!-- Cards Header with Stats and Actions -->
+            <div class="card-header bg-white p-1 border-bottom ">
+                    <div class="d-flex justify-content-between align-items-center sticky">
+                        <div class="d-flex align-items-center gap-2" style="z-index:unset">
                             <h5 class="text-nowrap mb-0 fw-semibold me-2">All Stocks</h5>
-                            <div class="badge rounded-pill bg-light text-primary border-primary px-2 py-1">
-                                <span id="billCount">@(Model?.Stock.Count() ?? 0)</span>  records
+                            <div class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 fs-6">
+                                <span id="billCount">@(Model?.Stock.Count() ?? 0)</span> records
                             </div>
                         </div>
 
                         <!-- Right side with action buttons -->
-                        <div class="d-flex align-items-center gap-2 ms-auto">
-                            <!-- Export dropdown -->
+                        <div class="d-flex align-items-center gap-3">
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-                                        type="button"
-                                        id="exportDropdown"
-                                        data-bs-toggle="dropdown">
-                                    <i class="bi bi-download me-1"></i>Export
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="exportDropdown">
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-1 text-danger"></i>PDF</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-excel me-1 text-success"></i>Excel</a></li>
-                                </ul>
-                            </div>
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                <button class="btn btn-outline-secondary dropdown-toggle"
                                         type="button"
                                         id="pageSizeDropdown"
                                         data-bs-toggle="dropdown">
-                                    <i class="bi bi-list-ul me-1"></i><span id="currentPageSize">Context.Request.Query["pageSize"] ?? "10"</span> Records
+                                    <i class="bi bi-list-ul me-1"></i>
+                                    <span id="currentPageSize">
+                                        @(Context.Request.Query["pageSize"].ToString() ?? "10")
+                                    </span> Records
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="pageSizeDropdown">
                                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="changePageSize(5)">5 Records</a></li>
@@ -349,167 +285,262 @@
                                 </ul>
                             </div>
 
-
                             <!-- Refresh button -->
-                            <button class="btn btn-sm btn-outline-secondary" id="refreshBtn" title="Refresh">
+                            <button class="btn btn-outline-secondary" id="refreshBtn" title="Refresh">
                                 <i class="bi bi-arrow-clockwise"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Cards Content -->
-            <div class="card-body p-3">
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+                <!-- Cards Content -->
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
 
-                    @if (Model != null && Model.Stock.Any())
-                    {
-
-                        foreach (var stock in Model.Stock)
+                        @if (Model != null && Model.Stock.Any())
                         {
+                            int bill_no = (Model.CurrentPage - 1) * Model.PageSize + 1;
+                            foreach (var stock in Model.Stock)
+                            {
+                               
                             <!-- Stock Card -->
                             <div class="col">
-                                <div class="card stock-card shadow-sm h-100">
+                                <div class="card stock-card shadow-sm h-100 border-0 hover-elevation transition-all">
                                     <div class="card-body p-3">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <!-- Header with name and menu -->
+                                        <!-- Improved Card Header -->
+                                        <div class="card-header-container d-flex justify-content-between align-items-start p-2 mb-3">
+                                            <!-- Left side with material info -->
                                             <div class="d-flex align-items-center">
                                                 @{
                                                     string initials = string.Join("", stock.ColorName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(n => n[0])) ?? "--";
+                                                    // Generate a consistent color based on material name
+                                                    string avatarColor = $"background-color: blue";
                                                 }
-                                                <div class="avatar-circle bg-primary-subtle text-primary me-2">
+
+                                                <!-- Material avatar with dynamically generated color -->
+                                                <div class="material-avatar me-3" style="@avatarColor">
                                                     <span>@initials</span>
                                                 </div>
-                                                <div>
-                                                    <h5 class="mb-0 fw-semibold">@stock.ColorName</h5>
-                                                    <small class="text-secondary">ID: @stock.StockId</small>
+
+                                                <!-- Material information -->
+                                                <div class="material-info">
+                                                    <h5 class="material-name mb-1">@stock.ColorName</h5>
+                                                    <div class="material-meta">
+                                                        <div class="stock-id">ID: @stock.StockId</div>
+                                                        <div class="status-indicator @(stock.isActive ? "status-active" : "status-inactive")">
+                                                            <i class="bi @(stock.isActive ? "bi-check-circle" : "bi-x-circle")"></i>
+                                                            <span>@(stock.isActive ? "Active" : "Inactive")</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary rounded-circle action-btn" type="button" data-bs-toggle="dropdown">
+
+                                            <!-- Actions menu -->
+                                            <div class="actions-menu">
+                                                <button class="actions-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="bi bi-three-dots-vertical"></i>
                                                 </button>
-                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                <ul class="dropdown-menu dropdown-menu-end">
                                                     <li>
-                                                        <a class="dropdown-item" href="#" onclick="addStockQuantity(@stock.StockId)">
-                                                            <i class="bi bi-plus-circle me-2 text-success"></i>Add Stock
+                                                        <a class="action-item add-action"
+                                                           href="#"
+                                                           data-bs-toggle="modal"
+                                                           data-bs-target="#addextraStockModal"
+                                                           data-stock-id="@stock.StockId">
+                                                            <i class="bi bi-plus-circle"></i>
+                                                            <span>Add Stock</span>
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" href="#" onclick="editStock(@stock.StockId)">
-                                                            <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Stock
+                                                        <a class="action-item edit-action" href="#" onclick="editStock(@stock.StockId)">
+                                                            <i class="bi bi-pencil-square"></i>
+                                                            <span>Edit Stock</span>
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a class="dropdown-item" href="#" onclick="removeStock(@stock.StockId)">
-                                                            <i class="bi bi-dash-circle me-2 text-warning"></i>Remove Stock
+                                                        <a class="action-item remove-action" href="#" onclick="removeStock(@stock.StockId)">
+                                                            <i class="bi bi-dash-circle"></i>
+                                                            <span>Remove Stock</span>
                                                         </a>
                                                     </li>
                                                     <li><hr class="dropdown-divider"></li>
                                                     <li>
-                                                        <a class="dropdown-item text-danger" href="#" onclick="deleteStock(@stock.StockId)">
-                                                            <i class="bi bi-trash me-2"></i>Delete Stock
+                                                        <a class="action-item delete-action" href="#" onclick="deleteStock(@stock.StockId)">
+                                                            <i class="bi bi-trash"></i>
+                                                            <span>Delete Stock</span>
                                                         </a>
                                                     </li>
                                                 </ul>
                                             </div>
                                         </div>
 
-                                        <div class="text-center py-2">
-                                            <div class="stock-available text-primary">@stock.TotalWeight</div>
-                                            <div class="stock-weight text-muted">kg available</div>
+                                        <!-- Stock Quantity - Visual representation -->
+                                        <div class="stock-quantity-container bg-light rounded-4 p-3 mb-3">
+                                            <div class="text-center">
+                                                <div class="stock-available text-primary fs-2 fw-bold mb-0">@stock.TotalWeight</div>
+                                                <div class="text-muted">Kilograms Available</div>
+                                            </div>
+
+                                            <!-- Visual progress indicator -->
+                                            <div class="progress mt-2" style="height: 8px;">
+                                                @{
+                                                    // Calculate percentage based on some threshold value (e.g., 1000kg)
+                                                    var threshold = 1000; // Adjust this based on your business logic
+                                                    var percentage = Math.Min((double)stock.TotalWeight / threshold * 100, 100);
+                                                    var progressClass = percentage > 70 ? "bg-success" : percentage > 30 ? "bg-warning" : "bg-danger";
+                                                }
+                                                <div class="progress-bar @progressClass" role="progressbar" style="width: @percentage%;"
+                                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
                                         </div>
 
-                                        <div class="d-flex justify-content-between mt-3">
-                                            <div class="text-center">
-                                                <div class="text-secondary fw-medium">@stock.TotalBags</div>
-                                                <small class="text-muted">Total Bags</small>
+                                        <!-- Stock Details -->
+                                        <div class="row g-2 text-center">
+                                            <div class="col-6">
+                                                <div class="p-2 bg-light rounded-3">
+                                                    <div class="fs-4 text-secondary fw-bold">@stock.TotalBags</div>
+                                                    <div class="text-muted">Total Bags</div>
+                                                </div>
                                             </div>
-                                            <div class="text-center">
-                                                <div class="text-secondary fw-medium">@stock.Weight</div>
-                                                <small class="text-muted">Kg/Bag</small>
-                                            </div>
-                                            <div class="text-center">
-                                                <div class="badge bg-success-subtle text-success px-2 py-1">
-                                                    <i class="bi bi-check-circle me-1"></i>@(stock.isActive ? "Active" : "Inactive")
+                                            <div class="col-6">
+                                                <div class="p-2 bg-light rounded-3">
+                                                    <div class="fs-4 text-secondary fw-bold">@stock.Weight</div>
+                                                    <div class="text-muted">Kg/Bag</div>
                                                 </div>
                                             </div>
                                         </div>
+
+                            
                                     </div>
                                 </div>
                             </div>
-
+                            }
                         }
-                    }
-                    else
-                    {
-
-
-                        <!-- Sample Empty State Card (for when no stock exists) -->
-                        <div class="col-12 d-none">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-body py-5">
-                                    <div class="text-center">
-                                        <i class="bi bi-box-seam text-secondary" style="font-size: 3rem;"></i>
-                                        <h4 class="mt-3">No Stock Items Found</h4>
+                        else
+                        {
+                            <!-- Empty State Card -->
+                            <div class="col-12">
+                                <div class="card shadow-sm py-5">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-box-seam text-secondary" style="font-size: 4rem; opacity: 0.7;"></i>
+                                        <h4 class="mt-4 fw-bold">No Stock Items Found</h4>
                                         <p class="text-muted mb-4">There are no stock items matching your search criteria.</p>
-                                        <button onclick="addStock()" class="btn btn-primary">
-                                            <i class="bi bi-plus-circle me-1"></i>Add New Stock
+                                        <button onclick="addStock()" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-plus-circle me-2"></i>Add New Stock
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Table Footer with Pagination -->
+            <div class="card-footer bg-white py-1 d-flex justify-content-between align-items-center border-top sticky-bottom">
+                    <div class="text-muted">
+                        Showing <span class="fw-semibold">@(Model?.Stock.Count() ?? 0)</span> of <span class="fw-semibold">@(Model?.TotalItems ?? 0)</span> materials
+                    </div>
+                    @if (Model?.TotalPages > 1)
+                    {
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm mb-0">
+                                <!-- First Page -->
+                                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("GetAllStocks", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                pageSize = Context.Request.Query["pageSize"],
+                                page = 1
+                            })" aria-label="First">
+                                        <i class="bi bi-chevron-double-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Previous Page -->
+                                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("GetAllStocks", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                page = Model.CurrentPage - 1,
+                                pageSize = Context.Request.Query["pageSize"]
+                            })" aria-label="Previous">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Dynamic Page Numbers -->
+                                @{
+                                    int startPage = Math.Max(1, Model.CurrentPage - 2);
+                                    int endPage = Math.Min(Model.TotalPages, startPage + 4);
+
+                                    if (endPage - startPage < 4 && startPage > 1)
+                                    {
+                                        startPage = Math.Max(1, endPage - 4);
+                                    }
+                                }
+
+                                @for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                        <a class="page-link" href="@Url.Action("GetAllStocks", new {
+                                    searchTerm = Context.Request.Query["searchTerm"],
+                                    sortColumn = Context.Request.Query["sortColumn"],
+                                    sortDirection = Context.Request.Query["sortDirection"],
+                                    pageSize = Context.Request.Query["pageSize"],
+                                    page = i
+                                })">@i</a>
+                                    </li>
+                                }
+
+                                @if (endPage < Model.TotalPages)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="@Url.Action("GetAllStocks", new {
+                                    searchTerm = Context.Request.Query["searchTerm"],
+                                    sortColumn = Context.Request.Query["sortColumn"],
+                                    sortDirection = Context.Request.Query["sortDirection"],
+                                    pageSize = Context.Request.Query["pageSize"],
+                                    page = Model.TotalPages
+                                })">@Model.TotalPages</a>
+                                    </li>
+                                }
+                                <!-- Next Page -->
+                                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("GetAllStocks", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                pageSize = Context.Request.Query["pageSize"],
+                                page = Model.CurrentPage + 1
+                            })" aria-label="Next">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <!-- Last Page -->
+                                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                                    <a class="page-link" href="@Url.Action("GetAllStocks", new {
+                                searchTerm = Context.Request.Query["searchTerm"],
+                                sortColumn = Context.Request.Query["sortColumn"],
+                                sortDirection = Context.Request.Query["sortDirection"],
+                                pageSize = Context.Request.Query["pageSize"],
+                                page = Model.TotalPages
+                            })" aria-label="Last">
+                                        <i class="bi bi-chevron-double-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     }
                 </div>
             </div>
-
-            <!-- Table Footer with Pagination -->
-            <div class="card-footer bg-white py-3 d-flex justify-content-between align-items-center border-top">
-                <div class="text-muted">
-                    Showing <span class="fw-semibold">12</span> of <span class="fw-semibold">12</span> items
-                </div>
-
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <!-- First Page -->
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="First">
-                                <i class="bi bi-chevron-double-left"></i>
-                            </a>
-                        </li>
-
-                        <!-- Previous Page -->
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="Previous">
-                                <i class="bi bi-chevron-left"></i>
-                            </a>
-                        </li>
-
-                        <!-- Page Numbers -->
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-
-                        <!-- Next Page -->
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="Next">
-                                <i class="bi bi-chevron-right"></i>
-                            </a>
-                        </li>
-
-                        <!-- Last Page -->
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" aria-label="Last">
-                                <i class="bi bi-chevron-double-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
         </div>
     </div>
-</div>
 
 <!-- Add Stock Modal -->
 <div class="modal" id="addStockModal" tabindex="-1" aria-labelledby="addStockModalLabel" aria-hidden="true">
@@ -561,6 +592,86 @@
     </div>
 </div>
 
+<div class="modal fade" id="addextraStockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addExtraStockModalLabel">Add Extra Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="extraStockForm" class="needs-validation" novalidate>
+                    <!-- Hidden fields for storing stock info -->
+                    <input type="hidden" id="stockId" name="stockId">
+                    <input type="hidden" id="extramaterialId" name="materialId">
+
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <div class="material-avatar-sm"> Material</div>
+                            </span>
+                            <input type="text" class="form-control" id="materialName" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Available Stock Information -->
+                    <div class="mb-3 bg-light p-3 rounded" id="availableStockInfo">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Available Stock:</span>
+                            <div>
+                                <span class="badge bg-primary" id="availableBags">0</span> bags
+                                (<span id="availableWeight" class="text-primary fw-bold">0</span> kg)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="totalBags" class="form-label">Total Bags</label>
+                        <input type="text" class="form-control" id="extratotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
+                        <div class="calc-preview text-muted small mt-1" id="extratotalBagsPreview"></div>
+                        <div class="invalid-feedback">
+                            Please enter a valid number for bags.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="weightPerBag" class="form-label">Weight per Bag (kg)</label>
+                        <input type="text" class="form-control" id="extraweightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
+                        <div class="calc-preview text-muted small mt-1" id="extraweightPerBagPreview"></div>
+                        <div class="invalid-feedback">
+                            Please enter a valid number for weight per bag.
+                        </div>
+                    </div>
+
+                    <!-- Extra KG Field -->
+                    <div class="mb-3">
+                        <label for="extraKg" class="form-label">Extra Kilograms</label>
+                        <input type="text" class="form-control" id="extraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
+                        <div class="calc-preview text-muted small mt-1" id="extraKgPreview"></div>
+                        <div class="form-text">Additional weight not included in complete bags</div>
+                        <div class="invalid-feedback">
+                            Please enter a valid number for extra kilograms.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="totalWeight" class="form-label">Total Weight</label>
+                        <input type="text" class="form-control bg-light" id="extratotalWeight" readonly value="0">
+                        <div class="form-text text-muted">Calculated: (Bags × Weight per Bag) + Extra kg</div>
+                        <div class="invalid-feedback" id="totalWeightFeedback">
+                            Total weight must be greater than zero.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveExtraStockBtn">Save Stock</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Add JavaScript for handling the modal and calculations -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 <script>
@@ -589,14 +700,20 @@
                 return response.json();
             })
             .then(data => {
+               
+                 
                 const materialSelect = document.getElementById('materialId');
+
+
                 materialSelect.innerHTML = '<option value="">Select Material</option>';
-                data.forEach(material => {
+               data["message"].forEach(material => {
                     const option = document.createElement('option');
                     option.value = material.id;
                     option.textContent = material.colorName;
                     materialSelect.appendChild(option);
+                      
                 });
+               
             })
             .catch(error => {
                 console.error('Error loading materials:', error);
@@ -772,6 +889,420 @@
                  });
         }
     });
+
+         function changePageSize(size) {
+        // Get current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Update the pageSize parameter
+        urlParams.set('pageSize', size);
+
+        // Reset to first page when changing page size
+        urlParams.set('page', 1);
+
+        // Update the displayed size in the dropdown button
+        document.getElementById('currentPageSize').textContent = size > 0 ? size : 'All';
+
+        // Redirect to the same page with updated parameters
+        window.location.href = window.location.pathname + '?' + urlParams.toString();
+    }
 </script>
 
-                < link rel = "stylesheet" href = "~/css/site.css" />
+                <link rel = "stylesheet" href = "~/css/site.css">
+                <style>
+
+    /* Card Header Container */
+    .card-header-container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Material Avatar */
+    .material-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        transition: transform 0.2s ease;
+    }
+
+        .material-avatar:hover {
+            transform: scale(1.05);
+        }
+
+    /* Material Info */
+    .material-info {
+        margin-left: 4px;
+    }
+
+    .material-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+        line-height: 1.2;
+    }
+
+    .material-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .stock-id {
+        font-size: 0.75rem;
+        color: #666;
+        background-color: #f1f3f5;
+        padding: 3px 8px;
+        border-radius: 4px;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    .status-active {
+        color: #2e7d32;
+        background-color: #e8f5e9;
+    }
+
+    .status-inactive {
+        color: #c62828;
+        background-color: #ffebee;
+    }
+
+    /* Actions Menu */
+    .actions-menu {
+        position: relative;
+    }
+
+    .actions-toggle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background-color: #f8f9fa;
+        color: #495057;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+        .actions-toggle:hover {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+
+    /* Action Items */
+    .action-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px;
+        color: #495057;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
+
+        .action-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .action-item i {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+    .add-action i {
+        color: #28a745;
+    }
+
+    .edit-action i {
+        color: #007bff;
+    }
+
+    .remove-action i {
+        color: #ffc107;
+    }
+
+    .delete-action {
+        color: #dc3545;
+    }
+
+        .delete-action i {
+            color: #dc3545;
+        }
+
+    
+    }
+
+    .material-avatar-sm {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 12px;
+    }
+                </style>
+
+<script>
+    let currentStockData = {};
+
+    // Set up event handlers when document is ready
+    $(document).ready(function() {
+
+        // Initialize modal and card interactions
+        initializeAddExtraStockModal();
+
+        // Setup the form validation and calculation logic
+        setupExtraStockForm();
+    });
+
+    function initializeAddExtraStockModal() {
+        // Listen for the modal being shown and prepare data
+        $('#addextraStockModal').on('show.bs.modal', function(event) {
+            resetExtraStockForm();
+          
+            // Get the button that triggered the modal
+            const button = $(event.relatedTarget);
+
+            // Find the closest card to extract stock information
+            const stockCard = $(button).closest('.stock-card');
+
+            // Extract stock data from the card
+            extractStockDataFromCard(stockCard);
+
+            // Populate the modal with the extracted data
+            populateExtraStockModal();
+
+            // Reset form validation state
+            resetExtraStockForm();
+        });
+    }
+
+    function extractStockDataFromCard(card) {
+        // Extract all necessary data from the stock card
+        currentStockData = {
+            stockId: $(card).find('.stock-id').text().replace('ID: ', '').trim(),
+            materialName: $(card).find('.material-name').text().trim(),
+            initials: $(card).find('.material-avatar span').text().trim(),
+            avatarColor: $(card).find('.material-avatar').css('background-color'),
+            totalBags: parseInt($(card).find('.col-6:first-child .fw-bold').text().trim()) || 0,
+            weightPerBag: parseFloat($(card).find('.col-6:last-child .fw-bold').text().trim()) || 0,
+            totalWeight: parseFloat($(card).find('.stock-available').text().trim()) || 0,
+            isActive: $(card).find('.status-indicator').hasClass('status-active')
+        };
+    }
+
+    function populateExtraStockModal() {
+        // Set hidden fields
+        $('#stockId').val(currentStockData.stockId);
+
+        // Set material display information
+        $('#materialName').val(currentStockData.materialName);
+        $('#materialInitials').text(currentStockData.initials);
+        $('#materialInitials').css('background-color', currentStockData.avatarColor);
+
+        // Set available stock information
+        $('#availableBags').text(currentStockData.totalBags);
+        $('#availableWeight').text(currentStockData.totalWeight);
+
+        // Set default bag weight (same as current stock)
+        $('#weightPerBag').val(currentStockData.weightPerBag);
+
+        // Reset other fields to zero
+        $('#extratotalBags').val('0');
+        $('#extraKg').val('0');
+        $('#extratotalWeight').val('0');
+        $('#extweightPerBag').val('0');
+
+        // Calculate initial total
+        calculateExtraStockTotal();
+    }
+
+    function setupExtraStockForm() {
+        // Input event handlers for calculation fields
+        $('#extratotalBags, #extraweightPerBag, #extraKg').on('input', function() {
+            calculateExtraStockTotal();
+            updateExtraStockPreview($(this).attr('id'));
+        });
+
+        // Form validation on submit
+        $('#saveExtraStockBtn').click(function() {
+            if (validateExtraStockForm()) {
+                saveExtraStock();
+            }
+        });
+    }
+
+    function calculateExtraStockTotal() {
+        try {
+            // Evaluate mathematical expressions
+            const bags = evaluateExpression($('#extratotalBags').val()) || 0;
+            const weightPerBag = evaluateExpression($('#extraweightPerBag').val()) || 0;
+            const extraKg = evaluateExpression($('#extraKg').val()) || 0;
+
+            // Calculate total
+            const totalWeight = (bags * weightPerBag) + extraKg;
+
+            // Display with 2 decimal places
+            $('#extratotalWeight').val(totalWeight.toFixed(2));
+            console.log(totalWeight);
+
+            // Return calculated total for validation
+            return totalWeight;
+
+        }
+        catch (error)
+        {
+            $('#totalWeight').val('Error');
+            return 0;
+        }
+    }
+
+    function updateExtraStockPreview(fieldId) {
+        const value = $('#' + fieldId).val();
+        const previewId = fieldId + 'Preview';
+
+        try {
+            if (value && (value.includes('+') || value.includes('-') || value.includes('*') || value.includes('/'))) {
+                const result = evaluateExpression(value);
+                $('#' + previewId).text(`= ${result}`);
+            } else {
+                $('#' + previewId).text('');
+            }
+        } catch (error) {
+            $('#' + previewId).text('Invalid expression');
+        }
+    }
+
+    function evaluateExpression(expression) {
+        if (!expression || expression.trim() === '') return 0;
+
+        // Basic sanitization to prevent code injection
+        expression = expression.replace(/[^0-9+\-*/().]/g, '');
+
+        // Evaluate the expression
+        return Number(eval(expression).toFixed(2));
+    }
+
+    function validateExtraStockForm() {
+        const form = document.getElementById('extraStockForm');
+        let isValid = true;
+
+        // Reset validation state
+        form.classList.remove('was-validated');
+        $('#extratotalWeight').removeClass('is-invalid');
+
+        // Check if inputs are valid numbers (can be zero)
+        const bags = evaluateExpression($('#extratotalBags').val());
+        const weightPerBag = evaluateExpression($('#extraweightPerBag').val());
+        const extraKg = evaluateExpression($('#extraKg').val());
+
+        // Get total weight
+        const totalWeight = calculateExtraStockTotal();
+
+        // Check if total weight is greater than zero
+        if (totalWeight <= 0) {
+            $('#extratotalWeight').addClass('is-invalid');
+            $('#extratotalWeightFeedback').text('Total weight must be greater than zero.');
+            isValid = false;
+        }
+
+        // Apply Bootstrap validation
+        form.classList.add('was-validated');
+
+        return isValid;
+    }
+
+    function resetExtraStockForm() {
+        const form = document.getElementById('extraStockForm');
+        
+        $(this).find('form').trigger('reset');
+     
+    }
+
+    function saveExtraStock() {
+        const extraStockData = {
+            stockId: $('#stockId').val(),
+            totalBags: evaluateExpression($('#extratotalBags').val()),
+            weightPerBag: evaluateExpression($('#extraweightPerBag').val()),
+            extraKg: evaluateExpression($('#extraKg').val()),
+            totalWeight: evaluateExpression($('#extratotalWeight').val())
+        };
+
+        // Replace with your actual API endpoint
+        $.ajax({
+            url: '/api/stocks/add-extra',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(extraStockData),
+            success: function(response) {
+                $('#addextraStockModal').modal('hide');
+                // Refresh stocks list or show success message
+                if (typeof refreshStocks === 'function') {
+                    refreshStocks();
+                } else {
+                    // Fallback refresh approach
+                    window.location.reload();
+                }
+                showToast('Success', 'Stock added successfully', 'success');
+            },
+            error: function(xhr) {
+                showToast('Error', xhr.responseText || 'Failed to save stock', 'danger');
+            }
+        });
+    }
+
+    // Display toast notification
+    function showToast(title, message, type) {
+        // Implementation depends on your toast component
+        // Simple implementation for Bootstrap toasts
+        const toastHtml = `
+            <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${title}:</strong> ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `;
+
+        // Create toast container if it doesn't exist
+        let toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toastContainer';
+            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(toastContainer);
+        }
+
+        // Add toast to container
+        toastContainer.innerHTML += toastHtml;
+        const toastElement = toastContainer.querySelector('.toast:last-child');
+        const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
+        toast.show();
+    }
+
+</script>
