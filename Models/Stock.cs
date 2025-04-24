@@ -26,38 +26,9 @@ namespace Moksha_App.Models
         // Available stock after purchases or sales
         [Column(TypeName = "decimal(18,2)")]
         public decimal AvailableStock { get; set; }  // Track how much stock is available
-
-
-        // Method to update available stock (e.g., after a sale)
-        public void removeStock(decimal quantitySold)
-        {
-            if (quantitySold <= AvailableStock)
-            {
-                AvailableStock -= quantitySold;
-            }
-            else
-            {
-                throw new InvalidOperationException("Not enough stock available.");
-            }
-        }
-
-        public void AddStock(int bagsAdded, decimal Weightperbag)
-        {
-            // Validate if the weight per bag is a positive number
-            if (Weightperbag <= 0)
-            {
-                throw new ArgumentException("Weight per bag must be greater than zero.");
-            }
-            // Update the weight per bag for this stock entry
-            Weight = Weightperbag;
-
-            // Update the total number of bags in stock
-            TotalBags = bagsAdded;
-
-            // Update the AvailableStock based on the weight of the new bags
-            AvailableStock += TotalWeight;
-        }
         public bool isActive { get; set; }
+
+        public decimal ExtraWeight { get; set; }
     }
     public class Stock_
     {

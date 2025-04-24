@@ -38,7 +38,6 @@
 {
     <p style="color:red">@ViewBag.Error</p>
 }
-
 <style>
     :root {
         --primary: #0d6efd;
@@ -304,71 +303,69 @@
                             {
                                
                             <!-- Stock Card -->
+                            <!-- Improved Stock Card -->
                             <div class="col">
-                                <div class="card stock-card shadow-sm h-100 border-0 hover-elevation transition-all">
+                                <div class="card stock-card shadow-sm h-100 border-0 rounded-3 hover-elevation transition-all">
                                     <div class="card-body p-3">
                                         <!-- Header with name and menu -->
-                                        <!-- Improved Card Header -->
-                                        <div class="card-header-container d-flex justify-content-between align-items-start p-2 mb-3">
+                                        <div class="card-header-container d-flex justify-content-between align-items-start mb-3">
                                             <!-- Left side with material info -->
-                                            <div class="d-flex align-items-center">
+                                            <div class="d-flex align-items-center gap-2">
                                                 @{
                                                     string initials = string.Join("", stock.ColorName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(n => n[0])) ?? "--";
-                                                    // Generate a consistent color based on material name
-                                                    string avatarColor = $"background-color: blue";
+                                                    string avatarColor = $"background-color: #4361ee";
                                                 }
 
                                                 <!-- Material avatar with dynamically generated color -->
-                                                <div class="material-avatar me-3" style="@avatarColor">
+                                                <div class="material-avatar rounded-circle d-flex align-items-center justify-content-center text-white"
+                                                     style="@avatarColor; width: 40px; height: 40px; font-size: 16px;">
                                                     <span>@initials</span>
                                                 </div>
 
                                                 <!-- Material information -->
                                                 <div class="material-info">
-                                                    <h5 class="material-name mb-1">@stock.ColorName</h5>
-                                                    <div class="material-meta">
-                                                        <div class="stock-id">ID: @stock.StockId</div>
-                                                        <div class="status-indicator @(stock.isActive ? "status-active" : "status-inactive")">
-                                                            <i class="bi @(stock.isActive ? "bi-check-circle" : "bi-x-circle")"></i>
+                                                    <h6 class="material-name mb-0 fw-bold">@stock.ColorName</h6>
+                                                    <div class="material-meta d-flex align-items-center gap-2">
+                                                        <small class="stock-id badge bg-light text-dark">ID: @stock.StockId</small>
+                                                        <small class="status-indicator d-flex align-items-center @(stock.isActive ? "text-success" : "text-danger")">
+                                                            <i class="bi @(stock.isActive ? "bi-check-circle-fill" : "bi-x-circle-fill") me-1"></i>
                                                             <span>@(stock.isActive ? "Active" : "Inactive")</span>
-                                                        </div>
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <!-- Actions menu -->
                                             <div class="actions-menu">
-                                                <button class="actions-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-sm btn-light rounded-circle p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="bi bi-three-dots-vertical"></i>
                                                 </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 py-1">
                                                     <li>
-                                                        <a class="action-item add-action"
-                                                           href="#"
-                                                           data-bs-toggle="modal"
-                                                           data-bs-target="#addextraStockModal"
-                                                           data-stock-id="@stock.StockId">
-                                                            <i class="bi bi-plus-circle"></i>
-                                                            <span>Add Stock</span>
-                                                        </a>
+                                                        <button type="button" class="dropdown-item py-1 d-flex align-items-center gap-2"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#addextraStockModal"
+                                                                data-stock-id="@stock.StockId"
+                                                                >
+                                                            <i class="bi bi-plus-circle text-success"></i>
+                                                            <small>Add Stock</small>
+                                                        </button>
                                                     </li>
                                                     <li>
-                                                        <a class="action-item edit-action" href="#" onclick="editStock(@stock.StockId)">
-                                                            <i class="bi bi-pencil-square"></i>
-                                                            <span>Edit Stock</span>
-                                                        </a>
+                                                      <button type="button" class="dropdown-item py-1 d-flex align-items-center gap-2"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editStockModal"
+                                                            data-stock-id="@stock.StockId">
+                                                            <i class="bi bi-pencil-square text-primary"></i>
+                                                            <small>Edit Stock</small>
+                                                        </button>
                                                     </li>
+                                                
+                                                    <li><hr class="dropdown-divider my-1"></li>
                                                     <li>
-                                                        <a class="action-item remove-action" href="#" onclick="removeStock(@stock.StockId)">
-                                                            <i class="bi bi-dash-circle"></i>
-                                                            <span>Remove Stock</span>
-                                                        </a>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <a class="action-item delete-action" href="#" onclick="deleteStock(@stock.StockId)">
-                                                            <i class="bi bi-trash"></i>
-                                                            <span>Delete Stock</span>
+                                                        <a class="dropdown-item py-1 d-flex align-items-center gap-2" href="#" onclick="deleteStock(@stock.StockId)">
+                                                            <i class="bi bi-trash text-danger"></i>
+                                                            <small>Delete Stock</small>
                                                         </a>
                                                     </li>
                                                 </ul>
@@ -376,42 +373,50 @@
                                         </div>
 
                                         <!-- Stock Quantity - Visual representation -->
-                                        <div class="stock-quantity-container bg-light rounded-4 p-3 mb-3">
-                                            <div class="text-center">
-                                                <div class="stock-available text-primary fs-2 fw-bold mb-0">@stock.TotalWeight</div>
-                                                <div class="text-muted">Kilograms Available</div>
+                                        <div class="stock-quantity-container bg-light bg-opacity-50 rounded-3 p-3 mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="stock-label text-dark small fw-semibold">Available Stock</span>
+                                                <span class="badge bg-primary bg-opacity-75 rounded-pill px-2 py-1 small">Inventory</span>
                                             </div>
 
-                                            <!-- Visual progress indicator -->
-                                            <div class="progress mt-2" style="height: 8px;">
-                                                @{
-                                                    // Calculate percentage based on some threshold value (e.g., 1000kg)
-                                                    var threshold = 1000; // Adjust this based on your business logic
-                                                    var percentage = Math.Min((double)stock.TotalWeight / threshold * 100, 100);
-                                                    var progressClass = percentage > 70 ? "bg-success" : percentage > 30 ? "bg-warning" : "bg-danger";
-                                                }
-                                                <div class="progress-bar @progressClass" role="progressbar" style="width: @percentage%;"
-                                                     aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                            <div class="stock-value fs-3 fw-bold text-primary mb-1">
+                                                @stock.AvailableStock <span class="fs-6 fw-normal text-secondary">kg</span>
+                                            </div>
+
+                                            <!-- Improved and more compact weight display -->
+                                            <div class="d-flex justify-content-between align-items-center bg-white bg-opacity-75 rounded p-2 mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-box-seam text-primary me-2"></i>
+                                                    <div>
+                                                        <div class="small fw-medium mb-0">With Bags</div>
+                                                        <div class="fw-bold">@(stock.TotalWeight) kg</div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="bi bi-plus-circle text-success me-2"></i>
+                                                    <div>
+                                                        <div class="small fw-medium mb-0">Extra</div>
+                                                        <div class="fw-bold"><span class="extra">@(stock.AvailableStock - stock.TotalWeight) kg</span></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <!-- Stock Details -->
                                         <div class="row g-2 text-center">
                                             <div class="col-6">
-                                                <div class="p-2 bg-light rounded-3">
-                                                    <div class="fs-4 text-secondary fw-bold">@stock.TotalBags</div>
-                                                    <div class="text-muted">Total Bags</div>
+                                                <div class="p-2 bg-light bg-opacity-50 rounded-3 h-100">
+                                                    <div class="fs-4 text-primary fw-bold mb-0">@stock.TotalBags</div>
+                                                    <div class="text-secondary small">Total Bags</div>
                                                 </div>
                                             </div>
                                             <div class="col-6">
-                                                <div class="p-2 bg-light rounded-3">
-                                                    <div class="fs-4 text-secondary fw-bold">@stock.Weight</div>
-                                                    <div class="text-muted">Kg/Bag</div>
+                                                <div class="p-2 bg-light bg-opacity-50 rounded-3 h-100">
+                                                    <div class="fs-4 text-primary fw-bold mb-0">@stock.Weight</div>
+                                                    <div class="text-secondary small">Kg/Bag</div>
                                                 </div>
                                             </div>
                                         </div>
-
-                            
                                     </div>
                                 </div>
                             </div>
@@ -592,30 +597,33 @@
     </div>
 </div>
 
-<div class="modal fade" id="addextraStockModal" tabindex="-1" aria-hidden="true">
+<!-- add stock-->
+<div class="modal fade" id="addextraStockModal" tabindex="-1" aria-labelledby="addExtraStockModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-light">
                 <h5 class="modal-title" id="addExtraStockModalLabel">Add Extra Stock</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="extraStockForm" class="needs-validation" novalidate>
-                    <!-- Hidden fields for storing stock info -->
+                    <!-- Hidden fields for storing stock info - Unchanged -->
                     <input type="hidden" id="stockId" name="stockId">
                     <input type="hidden" id="extramaterialId" name="materialId">
 
+                    <!-- Material Information -->
                     <div class="mb-3">
                         <div class="input-group">
                             <span class="input-group-text">
-                                <div class="material-avatar-sm"> Material</div>
+                                Material
                             </span>
                             <input type="text" class="form-control" id="materialName" readonly>
                         </div>
                     </div>
 
-                    <!-- Available Stock Information -->
-                    <div class="mb-3 bg-light p-3 rounded" id="availableStockInfo">
+                    <!-- Available Stock Information - Enhanced styling -->
+                    <div class="mb-4 bg-light p-3 rounded border" id="availableStockInfo">
+                      
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold">Available Stock:</span>
                             <div>
@@ -625,28 +633,46 @@
                         </div>
                     </div>
 
+                    <!-- Form divider -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-grow-1"><hr></div>
+                        <h6 class="mx-2 text-secondary">Add New Stock</h6>
+                        <div class="flex-grow-1"><hr></div>
+                    </div>
+
+                    <!-- Bags Information - IDs preserved -->
                     <div class="mb-3">
-                        <label for="totalBags" class="form-label">Total Bags</label>
-                        <input type="text" class="form-control" id="extratotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
+                        <label for="extratotalBags" class="form-label">Total Bags</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="extratotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
+                            <span class="input-group-text">bags</span>
+                        </div>
                         <div class="calc-preview text-muted small mt-1" id="extratotalBagsPreview"></div>
                         <div class="invalid-feedback">
                             Please enter a valid number for bags.
                         </div>
                     </div>
 
+                    <!-- Weight per Bag - IDs preserved -->
                     <div class="mb-3">
-                        <label for="weightPerBag" class="form-label">Weight per Bag (kg)</label>
-                        <input type="text" class="form-control" id="extraweightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
+                        <label for="extraweightPerBag" class="form-label">Weight per Bag</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="extraweightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
+                            <span class="input-group-text">kg</span>
+                        </div>
                         <div class="calc-preview text-muted small mt-1" id="extraweightPerBagPreview"></div>
                         <div class="invalid-feedback">
                             Please enter a valid number for weight per bag.
                         </div>
                     </div>
 
-                    <!-- Extra KG Field -->
+                    <!-- Extra KG Field - ID preserved -->
                     <div class="mb-3">
                         <label for="extraKg" class="form-label">Extra Kilograms</label>
-                        <input type="text" class="form-control" id="extraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="extraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
+                            <span class="input-group-text">kg</span>
+                        </div>
                         <div class="calc-preview text-muted small mt-1" id="extraKgPreview"></div>
                         <div class="form-text">Additional weight not included in complete bags</div>
                         <div class="invalid-feedback">
@@ -654,9 +680,13 @@
                         </div>
                     </div>
 
+                    <!-- Total Weight Field - ID preserved -->
                     <div class="mb-3">
-                        <label for="totalWeight" class="form-label">Total Weight</label>
-                        <input type="text" class="form-control bg-light" id="extratotalWeight" readonly value="0">
+                        <label for="extratotalWeight" class="form-label">Total Weight</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light" id="extratotalWeight" readonly value="0">
+                            <span class="input-group-text">kg</span>
+                        </div>
                         <div class="form-text text-muted">Calculated: (Bags × Weight per Bag) + Extra kg</div>
                         <div class="invalid-feedback" id="totalWeightFeedback">
                             Total weight must be greater than zero.
@@ -664,13 +694,156 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="saveExtraStockBtn">Save Stock</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- update modal-->
+<div class="modal fade" id="editStockModal" tabindex="-1" aria-labelledby="editStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title" id="editStockModalLabel">Edit Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editStockForm" class="needs-validation" novalidate>
+                    <!-- Hidden fields for storing stock info -->
+                    <input type="hidden" id="editStockId" name="stockId">
+                    <input type="hidden" id="editMaterialId" name="materialId">
+
+                    <!-- Material Information -->
+                    <div class="mb-2">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                Material
+                            </span>
+                            <input type="text" class="form-control" id="editMaterialName" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Current Stock Information -->
+                    <div class="mb-1 bg-light p-2 rounded border" id="currentStockInfo">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Current Stock:</span>
+                            <div>
+                                <span class="badge bg-primary" id="currentBags">0</span> bags
+                                (<span id="currentWeight" class="text-primary fw-bold">0</span> kg)
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form divider -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-grow-1"><hr></div>
+                        <h6 class="mx-2 text-secondary">Update Stock</h6>
+                        <div class="flex-grow-1"><hr></div>
+                    </div>
+
+                    <!-- Bags Information -->
+                    <div class="mb-3">
+                        <label for="editTotalBags" class="form-label">Total Bags</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="editTotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
+                            <span class="input-group-text">bags</span>
+                        </div>
+                        <div class="calc-preview text-muted small mt-1" id="editTotalBagsPreview"></div>
+                        <div class="invalid-feedback">
+                            Please enter a valid number for bags.
+                        </div>
+                    </div>
+
+                    <!-- Weight per Bag -->
+                    <div class="mb-3">
+                        <label for="editWeightPerBag" class="form-label">Weight per Bag</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="editWeightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
+                            <span class="input-group-text">kg</span>
+                        </div>
+                        <div class="calc-preview text-muted small mt-1" id="editWeightPerBagPreview"></div>
+                        <div class="invalid-feedback">
+                            Please enter a valid number for weight per bag.
+                        </div>
+                    </div>
+
+                    <!-- Extra KG Field -->
+                    <div class="mb-3">
+                        <label for="editExtraKg" class="form-label">Extra Kilograms</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="editExtraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
+                            <span class="input-group-text">kg</span>
+                        </div>
+                        <div class="calc-preview text-muted small mt-1" id="editExtraKgPreview"></div>
+                        <div class="form-text">Additional weight not included in complete bags</div>
+                        <div class="invalid-feedback">
+                            Please enter a valid number for extra kilograms.
+                        </div>
+                    </div>
+
+                    <!-- Total Weight Field -->
+                    <div class="mb-3">
+                        <label for="editTotalWeight" class="form-label">Total Weight</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light" id="editTotalWeight" readonly value="0">
+                            <span class="input-group-text">kg</span>
+                        </div>
+                        <div class="form-text text-muted">Calculated: (Bags × Weight per Bag) + Extra kg</div>
+                        <div class="invalid-feedback" id="editTotalWeightFeedback">
+                            Total weight must be greater than zero.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="updateStockBtn">Update Stock</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- delete modal-->
+<!-- Confirm Delete Stock Modal -->
+<div class="modal" id="ConfirmDeleteStockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-4 border-0">
+            <div class="modal-header bg-gradient-danger text-red position-relative py-3">
+                <h5 class="modal-title fw-bold  align-items-center" id="confirmModalTitle">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Confirm Delete Stock
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-10 mb-0">
+                    <p id="confirmModalMessage" class="mb-0  align-items-center">
+                        <i class="bi bi-question-circle me-2 fs-5"></i>
+                        Are you sure you want to delete this Stock? <br /> This action cannot be undone.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer border-top py-3">
+                <button type="button"
+                        class="btn btn-outline-secondary rounded-pill px-4 d-flex align-items-center"
+                        data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg me-2"></i>
+                    Cancel
+                </button>
+                <button type="button"
+                        class="btn btn-danger rounded-pill px-4 d-flex align-items-center"
+                        id="confirmDeleteStockBtn">
+                    <i class="bi bi-trash me-2"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Add JavaScript for handling the modal and calculations -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -1067,9 +1240,16 @@
 
 <script>
     let currentStockData = {};
+    const extraStockModal = new bootstrap.Modal(document.getElementById('addextraStockModal'), {
+    backdrop: true,
+    keyboard: true,
+    focus: true
+});
+
 
     // Set up event handlers when document is ready
     $(document).ready(function() {
+
 
         // Initialize modal and card interactions
         initializeAddExtraStockModal();
@@ -1078,11 +1258,14 @@
         setupExtraStockForm();
     });
 
-    function initializeAddExtraStockModal() {
+    function initializeAddExtraStockModal() 
+    {
+            
         // Listen for the modal being shown and prepare data
-        $('#addextraStockModal').on('show.bs.modal', function(event) {
+        $('#addextraStockModal').on('show.bs.modal', function(event) 
+        {
+             
             resetExtraStockForm();
-          
             // Get the button that triggered the modal
             const button = $(event.relatedTarget);
 
@@ -1100,7 +1283,8 @@
         });
     }
 
-    function extractStockDataFromCard(card) {
+    function extractStockDataFromCard(card) 
+    {
         // Extract all necessary data from the stock card
         currentStockData = {
             stockId: $(card).find('.stock-id').text().replace('ID: ', '').trim(),
@@ -1114,7 +1298,8 @@
         };
     }
 
-    function populateExtraStockModal() {
+    function populateExtraStockModal() 
+    {
         // Set hidden fields
         $('#stockId').val(currentStockData.stockId);
 
@@ -1134,7 +1319,7 @@
         $('#extratotalBags').val('0');
         $('#extraKg').val('0');
         $('#extratotalWeight').val('0');
-        $('#extweightPerBag').val('0');
+        $('#extraweightPerBag').val('0');
 
         // Calculate initial total
         calculateExtraStockTotal();
@@ -1197,69 +1382,100 @@
     }
 
     function evaluateExpression(expression) {
-        if (!expression || expression.trim() === '') return 0;
+        // Check for empty or invalid input
+        if (!expression || expression.trim() === '') {
+            return 0;
+        }
 
-        // Basic sanitization to prevent code injection
+        // Basic sanitization to allow only numbers, operators, parentheses, and decimal points
         expression = expression.replace(/[^0-9+\-*/().]/g, '');
 
-        // Evaluate the expression
-        return Number(eval(expression).toFixed(2));
+        // Additional validation to check for invalid patterns (e.g., consecutive operators)
+        if (/[+*/-]{2,}/.test(expression) || !/^[0-9+\-*/().]+$/.test(expression)) {
+            return 0;
+        }
+
+        try {
+            // Evaluate the expression
+            const result = eval(expression);
+
+            // Check if the result is a valid number
+            if (isNaN(result) || !isFinite(result)) {
+                 return 0;
+            }
+
+            // Return the result rounded to 2 decimal places
+            return Number(result.toFixed(2));
+        } catch (error) {
+            // Throw an error for invalid expressions
+          return 0;
+        }
     }
 
     function validateExtraStockForm() {
         const form = document.getElementById('extraStockForm');
+        form.classList.remove('was-validated');
+
+        const inputs = [
+            { id: 'extratotalBags', value: evaluateExpression($('#extratotalBags').val()) },
+            { id: 'extraweightPerBag', value: evaluateExpression($('#extraweightPerBag').val()) },
+            { id: 'extraKg', value: evaluateExpression($('#extraKg').val()) }
+        ];
         let isValid = true;
 
-        // Reset validation state
-        form.classList.remove('was-validated');
-        $('#extratotalWeight').removeClass('is-invalid');
+        // Validate inputs
+        inputs.forEach(input => {
+            const $element = $(`#${input.id}`);
+            $element.removeClass('is-valid is-invalid');
 
-        // Check if inputs are valid numbers (can be zero)
-        const bags = evaluateExpression($('#extratotalBags').val());
-        const weightPerBag = evaluateExpression($('#extraweightPerBag').val());
-        const extraKg = evaluateExpression($('#extraKg').val());
+            if (input.value < 0) {
+                $element.addClass('is-invalid');
+                isValid = false;
+            } else {
+                $element.addClass('is-valid');
+            }
+        });
 
-        // Get total weight
+        // Validate total weight
+        const $totalWeight = $('#extratotalWeight').removeClass('is-valid is-invalid');
         const totalWeight = calculateExtraStockTotal();
 
-        // Check if total weight is greater than zero
-        if (totalWeight <= 0) {
-            $('#extratotalWeight').addClass('is-invalid');
+        if (totalWeight < 0) {
+            $totalWeight.addClass('is-invalid');
             $('#extratotalWeightFeedback').text('Total weight must be greater than zero.');
             isValid = false;
+        } else {
+            $totalWeight.addClass('is-valid');
         }
-
-        // Apply Bootstrap validation
-        form.classList.add('was-validated');
 
         return isValid;
     }
 
     function resetExtraStockForm() {
         const form = document.getElementById('extraStockForm');
-        
+      $('#extratotalBagsPreview, #extraweightPerBagPreview, #extraKgPreview').text('');
         $(this).find('form').trigger('reset');
      
     }
 
     function saveExtraStock() {
         const extraStockData = {
-            stockId: $('#stockId').val(),
-            totalBags: evaluateExpression($('#extratotalBags').val()),
-            weightPerBag: evaluateExpression($('#extraweightPerBag').val()),
-            extraKg: evaluateExpression($('#extraKg').val()),
-            totalWeight: evaluateExpression($('#extratotalWeight').val())
+                StockId: $('#stockId').val(),
+                TotalBags: evaluateExpression($('#extratotalBags').val()),
+                Weight: evaluateExpression($('#extraweightPerBag').val()),
+                ExtraWeight: evaluateExpression($('#extraKg').val()),
+                totalWeight: evaluateExpression($('#extratotalWeight').val()),
+                   
         };
 
-        // Replace with your actual API endpoint
         $.ajax({
-            url: '/api/stocks/add-extra',
+                url: '@Url.Action("AddStock", "Stock_Management_")',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(extraStockData),
-            success: function(response) {
+            success: function(response) 
+            {
                 $('#addextraStockModal').modal('hide');
-                // Refresh stocks list or show success message
                 if (typeof refreshStocks === 'function') {
                     refreshStocks();
                 } else {
@@ -1305,4 +1521,292 @@
         toast.show();
     }
 
+</script>
+
+<script>
+
+        let currentEditStockData = {};
+    const editStockModal = new bootstrap.Modal(document.getElementById('editStockModal'), {
+        backdrop: true,
+        keyboard: true,
+        focus: true
+    });
+
+    // Set up event handlers when document is ready
+    $(document).ready(function() {
+        // Initialize modal and card interactions
+        initializeEditStockModal();
+
+        // Setup the form validation and calculation logic
+        setupEditStockForm();
+    });
+
+    function initializeEditStockModal() {
+        // Listen for the modal being shown and prepare data
+        $('#editStockModal').on('show.bs.modal', function(event) {
+            resetEditStockForm();
+
+            // Get the stock ID that triggered the modal
+            const stockId = event.relatedTarget.getAttribute('data-stock-id');
+
+            // Find the stock card with matching ID
+            const stockCard = $(`.stock-card .stock-id:contains('${stockId}')`).closest('.stock-card');
+
+            // Extract stock data from the card
+            extractEditStockDataFromCard(stockCard);
+
+            // Populate the modal with the extracted data
+            populateEditStockModal();
+        });
+    }
+
+    function extractEditStockDataFromCard(card) {
+        // Extract all necessary data from the stock card
+        currentEditStockData = {
+           stockId: $(card).find('.stock-id').text().replace('ID: ', '').trim(),
+        materialName: $(card).find('.material-name').text().trim(),
+        initials: $(card).find('.material-avatar span').text().trim(),
+        avatarColor: $(card).find('.material-avatar').css('background-color'),
+        totalBags: parseInt($(card).find('.col-6:first-child .fw-bold').text().trim()) || 0,
+        weightPerBag: parseFloat($(card).find('.col-6:last-child .fw-bold').text().trim()) || 0,
+        availableStock: parseFloat($(card).find('.stock-value').text().trim()) || 0,
+        totalWeight: parseFloat($(card).find('.stock-quantity-container .stock-value').text().replace(' kg', '').trim()) || 0,
+        extraWeight: parseFloat($(card).find('.d-flex.align-items-center:last-child .extra').text().replace(' kg', '').trim()) || 0,
+        isActive: $(card).find('.status-indicator').hasClass('text-success')
+        };
+      console.log(currentEditStockData.totalWeight);
+    }
+
+    function populateEditStockModal() {
+        // Set hidden fields
+        $('#editStockId').val(currentEditStockData.stockId);
+
+        // Set material display information
+        $('#editMaterialName').val(currentEditStockData.materialName);
+
+        // Set current stock information
+        $('#currentBags').text(currentEditStockData.totalBags);
+        $('#currentWeight').text(currentEditStockData.totalWeight);
+
+        // Calculate and set progress bar
+        const usagePercentage = Math.min((currentEditStockData.totalWeight / currentEditStockData.availableStock) * 100, 100);
+        $('#stockUsageBar').css('width', usagePercentage + '%').attr('aria-valuenow', usagePercentage);
+
+        // Prefill form fields with current values
+        $('#editTotalBags').val(currentEditStockData.totalBags);
+        $('#editWeightPerBag').val(currentEditStockData.weightPerBag);
+        $('#editExtraKg').val(currentEditStockData.extraWeight);
+        $('#editTotalWeight').val(currentEditStockData.totalWeight);
+
+        // Set active status
+        $('#editStockActive').prop('checked', currentEditStockData.isActive);
+
+        // Calculate initial total
+        calculateEditStockTotal();
+    }
+
+    function setupEditStockForm() {
+        // Input event handlers for calculation fields
+        $('#editTotalBags, #editWeightPerBag, #editExtraKg').on('input', function() {
+            calculateEditStockTotal();
+            updateEditStockPreview($(this).attr('id'));
+        });
+
+        // Form validation on submit
+        $('#updateStockBtn').click(function() {
+            if (validateEditStockForm()) {
+                updateStock();
+            }
+        });
+    }
+
+    function calculateEditStockTotal() {
+        try {
+            // Evaluate mathematical expressions
+            const bags = evaluateExpression($('#editTotalBags').val()) || 0;
+            const weightPerBag = evaluateExpression($('#editWeightPerBag').val()) || 0;
+            const extraKg = evaluateExpression($('#editExtraKg').val()) || 0;
+
+            // Calculate total
+            const totalWeight = (bags * weightPerBag) + extraKg;
+
+            // Display with 2 decimal places
+            $('#editTotalWeight').val(totalWeight.toFixed(2));
+
+            // Return calculated total for validation
+            return totalWeight;
+        } catch (error) {
+            $('#editTotalWeight').val('Error');
+            return 0;
+        }
+    }
+
+    function updateEditStockPreview(fieldId) {
+        const value = $('#' + fieldId).val();
+        const previewId = fieldId + 'Preview';
+
+        try {
+            if (value && (value.includes('+') || value.includes('-') || value.includes('*') || value.includes('/'))) {
+                const result = evaluateExpression(value);
+                $('#' + previewId).text(`= ${result}`);
+            } else {
+                $('#' + previewId).text('');
+            }
+        } catch (error) {
+            $('#' + previewId).text('Invalid expression');
+        }
+    }
+
+    function validateEditStockForm() {
+        const form = document.getElementById('editStockForm');
+        form.classList.remove('was-validated');
+
+        const inputs = [
+            { id: 'editTotalBags', value: evaluateExpression($('#editTotalBags').val()) },
+            { id: 'editWeightPerBag', value: evaluateExpression($('#editWeightPerBag').val()) },
+            { id: 'editExtraKg', value: evaluateExpression($('#editExtraKg').val()) }
+        ];
+        let isValid = true;
+
+        // Validate inputs
+        inputs.forEach(input => {
+            const $element = $(`#${input.id}`);
+            $element.removeClass('is-valid is-invalid');
+
+            if (input.value < 0) {
+                $element.addClass('is-invalid');
+                isValid = false;
+            } else {
+                $element.addClass('is-valid');
+            }
+        });
+
+        // Validate total weight
+        const $totalWeight = $('#editTotalWeight').removeClass('is-valid is-invalid');
+        const totalWeight = calculateEditStockTotal();
+
+        if (totalWeight <= 0) {
+            $totalWeight.addClass('is-invalid');
+            $('#editTotalWeightFeedback').text('Total weight must be greater than zero.');
+            isValid = false;
+        } else {
+            $totalWeight.addClass('is-valid');
+        }
+
+        return isValid;
+    }
+
+    function resetEditStockForm() {
+        const form = document.getElementById('editStockForm');
+        $('#editTotalBagsPreview, #editWeightPerBagPreview, #editExtraKgPreview').text('');
+        $(form).trigger('reset');
+    }
+
+    function updateStock() {
+        const editedStockData = {
+            StockId: $('#editStockId').val(),
+            TotalBags: evaluateExpression($('#editTotalBags').val()),
+            Weight: evaluateExpression($('#editWeightPerBag').val()),
+            ExtraWeight: evaluateExpression($('#editExtraKg').val()),
+            TotalWeight: evaluateExpression($('#editTotalWeight').val()),
+           
+        };
+
+        $.ajax({
+            url: '@Url.Action("UpdateStock", "Stock_Management_")',
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(editedStockData),
+            success: function(response) {
+                $('#editStockModal').modal('hide');
+                if (typeof refreshStocks === 'function') {
+                    refreshStocks();
+                } else {
+                    // Fallback refresh approach
+                    window.location.reload();
+                }
+                showToast('Success', 'Stock updated successfully', 'success');
+            },
+            error: function(xhr) {
+                showToast('Error', xhr.responseText || 'Failed to update stock', 'danger');
+            }
+        });
+    }
+
+    // Function to open the edit modal programmatically
+    function editStock(stockId) {
+        // Find the card with the matching stock ID
+        const card = $(`.stock-id:contains('${stockId}')`).closest('.stock-card');
+
+        // Set up the event.relatedTarget to include the data-stock-id
+        const event = {
+            relatedTarget: {
+                getAttribute: function(attr) {
+                    if (attr === 'data-stock-id') return stockId;
+                    return null;
+                }
+            }
+        };
+
+        // Trigger the modal show event with our custom event object
+        $('#editStockModal').trigger('show.bs.modal', event);
+
+        // Show the modal
+        editStockModal.show();
+    }
+
+</script>
+<script>
+
+     // Function to show the delete confirmation modal and store the stock ID
+    function deleteStock(stockId) {
+        // Store the stock ID in a data attribute or variable
+        $('#confirmDeleteStockBtn').data('stock-id', stockId);
+
+        // Optionally, update the modal message to include the stock ID or material name
+        const stockCard = $('.stock-card').filter(function() {
+            return $(this).find('.stock-id').text().includes(stockId);
+        });
+        const materialName = stockCard.find('.material-name').text().trim() || 'this stock';
+        $('#confirmModalMessage').html(`
+            <i class="bi bi-question-circle me-2 fs-5"></i>
+            Are you sure you want to delete stock <br><strong class="ms-2" >${materialName} (ID: ${stockId})</strong>? <br /> This action cannot be undone.
+        `);
+
+        // Show the modal
+        $('#ConfirmDeleteStockModal').modal('show');
+    }
+
+    // Event listener for the confirm delete button
+    $('#confirmDeleteStockBtn').on('click', function() {
+        const stockId = parseInt($(this).data('stock-id'));
+
+        
+
+        // Perform the deletion (e.g., via AJAX)
+        $.ajax({
+            url: `/Stock_Management_/DeleteStock/${stockId}`, // Adjust URL to your endpoint
+            type: 'DELETE',
+            success: function(response) {
+                if (response.success) {
+                    // Remove the stock card from the UI
+                    $(`.stock-card`).filter(function() {
+                        return $(this).find('.stock-id').text().includes(stockId);
+                    }).remove();
+
+                    // Hide the modal
+                    $('#ConfirmDeleteStockModal').modal('hide');
+
+                   
+                   window.location.reload();
+                } else {
+                    alert('Error deleting stock: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Delete stock failed:', error);
+                alert('Failed to delete stock. Please try again.');
+            }
+        });
+    });
 </script>

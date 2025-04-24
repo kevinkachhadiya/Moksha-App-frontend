@@ -179,7 +179,6 @@
                                 </ul>
                             </div>
                         </div>
-
                         <!-- Right side with action buttons -->
                         <div class="d-flex align-items-center gap-2">
                             <!-- Export dropdown -->
@@ -788,6 +787,8 @@
         </div>
     </div>
 </div>
+
+
 <link rel="stylesheet" href="~/css/Bills.css">
 <!-- Include math.js for safe expression evaluation -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.min.js"></script>
@@ -1551,35 +1552,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
            function addbill()
            {
-
                    $("#addBillModal").modal('show');
-
-
            }
-           function toggleAdvancedFilters() {
+           function toggleAdvancedFilters()
+           {
            const filterSection = document.getElementById('advancedFilters');
            const filterIcon = document.getElementById('advancedFiltersIcon');
            const filterText = document.getElementById('advancedFiltersText');
-        
-        if (filterSection.style.display === 'none') {
+        if (filterSection.style.display === 'none') 
+        {
             filterSection.style.display = 'block';
             filterIcon.classList.replace('bi-chevron-down', 'bi-chevron-up');
             filterText.textContent = 'Hide Advanced Filters';
-        } else {
+        } 
+        else
+        {
             filterSection.style.display = 'none';
             filterIcon.classList.replace('bi-chevron-up', 'bi-chevron-down');
             filterText.textContent = 'Advanced Filters';
         }
     }
  function clearSearch() {
-        document.querySelector('input[name="searchTerm"]').value = '';
-        document.getElementById('searchForm').submit();
+            document.querySelector('input[name="searchTerm"]').value = '';
+            document.getElementById('searchForm').submit();
     }
     </script>       
  }       
-    
 <style>
-
 /* Style for close button in danger header */
 .modal-header.bg-gradient-danger .btn-close {
   color: white;
