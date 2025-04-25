@@ -134,6 +134,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("All_Party", "Party")" data-controller="Party" data-action="Add_Party">
+                                <i class="bi bi-person-plus"></i> <span class="nav-text">Party</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("All_Materials", "Materials")" data-controller="Materials" data-action="All_Materials">
                                 <i class="bi bi-box-seam"></i> <span class="nav-text">Materials</span>
                             </a>
@@ -149,10 +154,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-controller="Inventory" data-action="Index">
-                                <i class="bi bi-shop"></i> <span class="nav-text">Inventory</span>
+                            <a class="nav-link" href="@Url.Action("All_bills", "SellerBilling" )" data-controller="SellingBill" data-action="Index">
+                                <i class="bi bi-receipt"></i> <span class="nav-text">Selling Bill</span>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-controller="Reports" data-action="Index">
                                 <i class="bi bi-graph-up"></i> <span class="nav-text">Reports</span>

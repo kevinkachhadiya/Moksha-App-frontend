@@ -174,11 +174,25 @@ namespace Moksha_App.Controllers
         [Route("Stock_Management_/DeleteStock/{stockId}")]
         public async Task<IActionResult> DeleteStock(int stockId)
         {
-            string baseAdd = uri + $"/Stock_Management/UpdateStock/{stockId}";
+            string baseAdd = uri + $"/Stock_Management/DeleteStock/{stockId}";
+            var response = await _httpClient.DeleteAsync(baseAdd);
 
+            Debug.WriteLine(response);
 
-            TempData["Delete"] = "stock '" + "" + "' Deleted!";
-            return Json(new { success = true });
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+
+                TempData["Delete"] = "stock '" + "" + "' Deleted!";
+                return Json(new { success = true });
+
+            }
+            else
+            {
+
+                return Json(new { success = false });
+
+            }
+             
         }
 
     }
