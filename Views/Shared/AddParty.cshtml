@@ -1,0 +1,47 @@
+﻿<form id="partyForm" class="needs-validation" novalidate>
+    <div class="mb-3">
+        <label for="P_Name" class="form-label">Party Name</label>
+        <input type="text" class="form-control" id="P_Name" required>
+        <div class="invalid-feedback">Please enter a party name (max 100 chars)</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="P_number" class="form-label">Phone Number</label>
+        <input type="tel"
+               class="form-control"
+               id="P_number"
+               required
+               pattern="[0-9]{10}"
+               maxlength="10"
+               oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+        <div class="invalid-feedback">Please enter exactly 10 digits (numbers only)</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="p_t" class="form-label">Party Type</label>
+        <select class="form-select" id="p_t" required>
+            <option value="">-- Select Type --</option>
+            <option value="0">Supplier</option>
+            <option value="1">Customer</option>
+        </select>
+        <div class="invalid-feedback">Please select a party type</div>
+    </div>
+    <div class="mb-3">
+        <label for="P_Address" class="form-label">Address</label>
+        <input type="text"
+               class="form-control"
+               id="P_Address"
+               minlength="0"
+               maxlength="200"
+               placeholder="Enter full address (street, city, etc.)">
+    
+    </div>
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="IsActive" required>
+        <label class="form-check-label" for="IsActive" >Active Status</label>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

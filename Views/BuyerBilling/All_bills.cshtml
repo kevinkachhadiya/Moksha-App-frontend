@@ -17,15 +17,16 @@
                     <div class="icon-container me-3">
                         <i class="bi bi-receipt-cutoff text-primary"></i>
                     </div>
-                    <h2 class="text-primary fw-bold mb-0">Billing Management</h2>
+                    <h2 class="text-primary fw-bold mb-0">Supplier Billing Management</h2>
                 </div>
             </div>
             <!-- Right side with action button -->
             <button class="btn btn-primary d-flex align-items-center px-2 py-2 shadow-sm add-bill-btn"
                     onclick="addbill()">
                 <i class="bi bi-plus-circle me-2"></i>
-                <span>Add New Bill</span>
+                <span>Add Supplier Bill</span>
             </button>
+
         </div>
     </div>
     <div class="search-filter-container mb-1">
@@ -43,7 +44,7 @@
                                 <input type="text"
                                        name="searchTerm"
                                        class="form-control ps-5 pe-5 shadow-sm"
-                                       placeholder="Search bills by buyer name, amount, or payment method..."
+                                       placeholder="Search bills by supplier name, amount, or payment method..."
                                        value="@Context.Request.Query["searchTerm"]"
                                        style="border-radius: 8px; height: 50px;">
 
@@ -69,7 +70,7 @@
                                 <div class="select-container position-relative">
                                     <select id="sortColumn" name="sortColumn" class="form-select shadow-sm" style="border-radius: 6px; padding-right: 2rem;">
                                         <option value="CreatedAt" selected="@(Context.Request.Query["sortColumn"] == "CreatedAt")">Date</option>
-                                        <option value="BuyerName" selected="@(Context.Request.Query["sortColumn"] == "BuyerName")">Buyer Name</option>
+                                        <option value="BuyerName" selected="@(Context.Request.Query["sortColumn"] == "BuyerName")">Supplier Name</option>
                                         <option value="TotalBillPrice" selected="@(Context.Request.Query["sortColumn"] == "TotalBillPrice")">Amount</option>
                                         <option value="PaymentMethod" selected="@(Context.Request.Query["sortColumn"] == "PaymentMethod")">Payment Method</option>
                                     </select>
@@ -156,7 +157,7 @@
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <!-- Left side with title and count -->
                         <div class="d-flex align-items-center gap-2">
-                            <h5 class="text-nowrap mb-0 fw-semibold me-2">All Bills</h5>
+                            <h5 class="text-nowrap mb-0 fw-semibold me-2">All Supplier Bills</h5>
                             <div class="badge rounded-pill bg-light text-primary border-primary px-2 py-1">
                                 <span id="billCount">@(Model?.Bills.Count() ?? 0)</span> records
                             </div>
@@ -217,7 +218,7 @@
                 sortDirection = Context.Request.Query["sortColumn"] == "BuyerName" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc",
                 pageSize = Context.Request.Query["pageSize"]
             })" class="text-decoration-none text-dark d-flex align-items-center">
-                                        <span class="small fw-medium">Buyer Name</span>
+                                            <span class="small fw-medium">Supplier Name</span>
                                         <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "BuyerName"
                     ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
                     : "bi-filter-left text-secondary opacity-50")"></i>
@@ -517,7 +518,7 @@
                 <form id="addBillForm" class="needs-validation" novalidate method="post">
                     <div class="row g-4">
                         <!-- Buyer Name Section -->
-                        <div class="col-12">
+                        <div class="col-6">
                             <div class="form-floating position-relative">
                                 <input type="text"
                                        class="form-control form-control-lg shadow-sm rounded-3"
@@ -528,10 +529,28 @@
                                        required
                                        autocomplete="off">
                                 <label for="buyerName" class="fw-semibold text-secondary ps-2">
-                                    <i class="bi bi-person-badge me-2"></i>Customer Name
+                                    <i class="bi bi-person-badge me-2"></i>Supplier Name
                                 </label>
                                 <div class="valid-feedback"> Looks good! </div>
 
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-floating position-relative">
+                                <input type="tel"
+                                       class="form-control form-control-lg shadow-sm rounded-3"
+                                       id="phoneNumber"
+                                       name="PhoneNumber"
+                                       placeholder=""
+                                       pattern="[0-9]{10}"
+                                       maxlength="10"
+                                       oninput="formatPhoneNumber(this)"
+                                       autocomplete="off">
+                                <label for="phoneNumber" class="fw-semibold text-secondary ps-2">
+                                    <i class="bi bi-telephone me-2"></i>Phone Number
+                                </label>
+                                <div class="valid-feedback">Valid phone number</div>
+                                <div class="invalid-feedback">Please enter a 10-digit number</div>
                             </div>
                         </div>
 
@@ -633,7 +652,7 @@
                 <div class="w-100 text-center">
                     <h5 class="modal-title fw-bold d-flex align-items-center justify-content-center">
                         <i class="bi bi-receipt-cutoff me-2 fs-2"></i>
-                        <span class="fs-3">Edit Buying Invoice</span>
+                        <span class="fs-3">Edit Supplier Invoice</span>
                     </h5>
                 </div>
                 <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3 top-50 translate-middle-y"
@@ -656,7 +675,7 @@
                                        required
                                        autocomplete="off">
                                 <label for="ebuyerName" class="fw-semibold text-secondary ps-2">
-                                    <i class="bi bi-person-badge me-2"></i>Customer Name
+                                    <i class="bi bi-person-badge me-2"></i>Supplier Name
                                 </label>
                                 <div class="valid-feedback"> Looks good! </div>
                             </div>
@@ -758,7 +777,7 @@
             <div class="modal-header bg-gradient-danger text-white position-relative py-3">
                 <h5 class="modal-title fw-bold d-flex align-items-center" id="confirmModalTitle">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    Confirm Delete Bill
+                    Confirm Delete Supplier Bill
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -766,7 +785,7 @@
                 <div class="alert alert-danger border-0 bg-danger bg-opacity-10 mb-0">
                     <p id="confirmModalMessage" class="mb-0 d-flex align-items-center">
                         <i class="bi bi-question-circle me-2 fs-5"></i>
-                        Are you sure you want to delete this Bill? <br /> This action cannot be undone.
+                        Are you sure you want to delete this Supplier Bill? <br /> This action cannot be undone.
                     </p>
                 </div>
             </div>
@@ -859,7 +878,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
              const $materialsContainer = $('#ematerialsContainer');
              const itemCount = $materialsContainer.find('.item-entry').length + 1;
-
              const $newItem = $(`
                  <div class="item-entry d-flex align-items-center gap-3 mb-3" id="item-${itemCount}" data-valid="false">
                      <div class="material-item mb-2 p-3 border rounded needs-validation" novalidate>
@@ -910,10 +928,8 @@ document.addEventListener('DOMContentLoaded', function() {
                      </div>
                  </div>
              `);
-
              $materialsContainer.append($newItem);
-
-                     // 1. First modify the dropdown population to include the price in the option's data attribute
+         // 1. First modify the dropdown population to include the price in the option's data attribute
          const $dropdown = $newItem.find('.item-dropdown');
          $dropdown.empty().append('<option value="">Select a material</option>');
          materials.forEach(material => {
@@ -2057,3 +2073,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 </style>
+<script>
+
+         function formatPhoneNumber(input) {
+
+        // Remove all non-digit characters
+        let phone = input.value.replace(/\D/g, '');
+
+        // Limit to 10 characters
+        phone = phone.substring(0, 10);
+
+        // Update the input value
+        input.value = phone;
+
+        // Get feedback elements (fixed traversal)
+        const formControl = input.closest('.form-floating');
+        const validFeedback = formControl?.querySelector('.valid-feedback');
+        const invalidFeedback = formControl?.querySelector('.invalid-feedback');
+
+        // Validate
+        const isValid = phone.length === 10;
+
+        // Toggle validation classes and feedback visibility
+        if (isValid) {
+            input.classList.add('is-valid');
+            input.classList.remove('is-invalid');
+            if (validFeedback) {validFeedback.style.display = 'block';}
+            if (invalidFeedback) {invalidFeedback.style.display = 'none';}
+        } else {
+            input.classList.remove('is-valid');
+            if (validFeedback) {validFeedback.style.display = 'none'};
+
+            if (phone.length > 0) {
+                input.classList.add('is-invalid');
+                if (invalidFeedback) {invalidFeedback.style.display = 'block'};
+            }
+            else if(phone.lengh = 0)
+            {
+                input.classList.remove('is-valid','is-invalid');
+                 if (invalidFeedback) {invalidFeedback.style.display = 'none'};
+                 if (validFeedback) {validFeedback.style.display = 'none'};
+            
+            }
+            else {
+                input.classList.remove('is-invalid');
+                if (invalidFeedback) {invalidFeedback.style.display = 'none'};
+            }
+        }
+    }
+</script>

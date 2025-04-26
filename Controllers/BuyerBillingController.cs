@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Moksha_App.Models;
 using NuGet.Protocol;
@@ -6,6 +7,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Moksha_App.Models.Party;
 
 namespace Moksha_App.Controllers
 {
@@ -214,6 +216,27 @@ namespace Moksha_App.Controllers
 
             return Ok(new { success = true, message = "Bill Deleted successfully" });
         }
-    
+
+        [HttpGet("SearchParties")]
+        public async Task<IActionResult> SearchParties(string term, P_t? partyType = null)
+        {
+            /* Search parties where name contains term (case insensitive)
+            var suggestions = await _context.Parties
+                .Where(p => p.P_Name.Contains(term) &&
+                           (partyType == null || p.p_t == partyType))
+                .OrderBy(p => p.P_Name)
+                .Take(10) // Limit to 10 suggestions
+                .Select(p => new {
+                    id = p.Id,
+                    name = p.P_Name,
+                    phone = p.P_number,
+                    type = p.p_t.ToString(),
+                    address = p.P_Address
+                })
+                .ToListAsync(); */
+
+            //suggestions
+            return Json("dd" );
+        }
     }
 }

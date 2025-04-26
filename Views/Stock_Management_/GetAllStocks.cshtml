@@ -183,7 +183,7 @@
                                            name="searchTerm"
                                            class="form-control ps-5 pe-5 shadow-sm"
                                            placeholder="Search by material name, stock ID, or quantity..."
-                                           value=""
+                                           value= "@Context.Request.Query["searchTerm"]"
                                            style="border-radius: 24px;">
 
                                     @if (!string.IsNullOrEmpty(Context.Request.Query["searchTerm"]))
@@ -636,7 +636,7 @@
                     <div class="mb-3">
                         <label for="extratotalBags" class="form-label">Total Bags</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="extratotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
+                            <input type="number" class="form-control" id="extratotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
                             <span class="input-group-text">bags</span>
                         </div>
                         <div class="calc-preview text-muted small mt-1" id="extratotalBagsPreview"></div>
@@ -649,7 +649,7 @@
                     <div class="mb-3">
                         <label for="extraweightPerBag" class="form-label">Weight per Bag</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="extraweightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
+                            <input type="number" class="form-control" id="extraweightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
                             <span class="input-group-text">kg</span>
                         </div>
                         <div class="calc-preview text-muted small mt-1" id="extraweightPerBagPreview"></div>
@@ -662,7 +662,7 @@
                     <div class="mb-3">
                         <label for="extraKg" class="form-label">Extra Kilograms</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="extraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
+                            <input type="number" class="form-control" id="extraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
                             <span class="input-group-text">kg</span>
                         </div>
                         <div class="calc-preview text-muted small mt-1" id="extraKgPreview"></div>
@@ -676,7 +676,7 @@
                     <div class="mb-3">
                         <label for="extratotalWeight" class="form-label">Total Weight</label>
                         <div class="input-group">
-                            <input type="text" class="form-control bg-light" id="extratotalWeight" readonly value="0">
+                            <input type="number" class="form-control bg-light" id="extratotalWeight" readonly value="0">
                             <span class="input-group-text">kg</span>
                         </div>
                         <div class="form-text text-muted">Calculated: (Bags × Weight per Bag) + Extra kg</div>
@@ -740,7 +740,7 @@
                     <div class="mb-3">
                         <label for="editTotalBags" class="form-label">Total Bags</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="editTotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
+                            <input type="number" class="form-control" id="editTotalBags" placeholder="Enter quantity (e.g. 5+2)" value="0">
                             <span class="input-group-text">bags</span>
                         </div>
                         <div class="calc-preview text-muted small mt-1" id="editTotalBagsPreview"></div>
@@ -753,7 +753,7 @@
                     <div class="mb-3">
                         <label for="editWeightPerBag" class="form-label">Weight per Bag</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="editWeightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
+                            <input type="number" class="form-control" id="editWeightPerBag" placeholder="Enter weight (e.g. 50.5)" value="0">
                             <span class="input-group-text">kg</span>
                         </div>
                         <div class="calc-preview text-muted small mt-1" id="editWeightPerBagPreview"></div>
@@ -766,7 +766,7 @@
                     <div class="mb-3">
                         <label for="editExtraKg" class="form-label">Extra Kilograms</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="editExtraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
+                            <input type="number" class="form-control" id="editExtraKg" placeholder="Enter extra kg (e.g. 2.5+1.2)" value="0">
                             <span class="input-group-text">kg</span>
                         </div>
                         <div class="calc-preview text-muted small mt-1" id="editExtraKgPreview"></div>
@@ -1801,4 +1801,12 @@
             }
         });
     });
+
+    function clearSearch()
+    {
+           document.querySelector('input[name="searchTerm"]').value = '';
+            document.getElementById('searchForm').submit();
+         
+    }
+
 </script>

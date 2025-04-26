@@ -104,7 +104,7 @@ namespace Moksha_App.Controllers
                 Weight = s.Weight,
                 AvailableStock = s.AvailableStock,
                 ExtraWeight = s.ExtraWeight,
-                isActive = s.isActive
+                isActive = true
             };
 
             string baseAdd = uri + $"/Stock_Management/add_stock/{s.StockId}";     //{ stockId}

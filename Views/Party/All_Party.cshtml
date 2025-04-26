@@ -1,5 +1,46 @@
 ﻿@model Moksha_App.Models.Party
 
+@{
+    // Check if TempData contains a success message
+    var successMessage = TempData["Success"] as string;
+    var deleteMessage = TempData["Delete"] as string;
+    var modifyMessage = TempData["modify"] as string;
+    ViewData["Title"] = "Material Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.body.appendChild(globalAlertContainer);
+            showAlert("✅ @successMessage", "success");
+        });
+    </script>
+}
+@if (!string.IsNullOrEmpty(deleteMessage))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.body.appendChild(globalAlertContainer);
+            showAlert("❌ @deleteMessage", "danger");
+        });
+    </script>
+}
+@if (!string.IsNullOrEmpty(modifyMessage))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.body.appendChild(globalAlertContainer);
+            showAlert("⚠️ @modifyMessage", "warning");
+        });
+    </script>
+}
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+
 <div class="container mt-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -7,7 +48,7 @@
         <div class="btn-group">
             
             <!-- Button to trigger modal -->
-            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#partyModal">
+            <button type="button" class="btn btn-outline-primary" id="AddParty">
                 <i class="bi bi-person-plus me-1"></i> Add New Party
             </button>
         </div>
@@ -48,7 +89,7 @@
 </div>
 
 <!-- Modal Popup -->
-<div class="modal fade" id="partyModal" tabindex="-1" aria-hidden="true">
+<div class="modal" id="partyModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -56,35 +97,160 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="Create" id="partyForm" method="post">
-                    <div class="mb-3">
-                        <label asp-for="P_Name" class="form-label"></label>
-                        <input asp-for="P_Name" class="form-control" />
-                        <span asp-validation-for="P_Name" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="P_number" class="form-label"></label>
-                        <input asp-for="P_number" class="form-control" />
-                        <span asp-validation-for="P_number" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3 form-check">
-                        <input asp-for="IsActive" class="form-check-input" />
-                        <label asp-for="IsActive" class="form-check-label"></label>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="p_t" class="form-label"></label>
-                        <select asp-for="p_t" asp-items="Html.GetEnumSelectList<Party.P_t>()" class="form-select">
-                            <option value="">-- Select Type --</option>
-                        </select>
-                        <span asp-validation-for="p_t" class="text-danger"></span>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Save</button>
-                </form>
+                @await Html.PartialAsync("AddParty")
             </div>
         </div>
     </div>
 </div>
+
+<script>
+
+       document.addEventListener('click', function (event) {
+       
+        if (event.target.matches('#AddParty')) { // Replace with your button's ID or selector
+          
+            const modal = new bootstrap.Modal(document.getElementById('partyModal'));
+            modal.show();
+        }
+
+
+    });
+</script>
+
+<script>
+
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('partyForm');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Validate all fields
+            const isValid = validateForm();
+
+            if (isValid) {
+                // Form is valid - proceed with submission
+                const formData = {
+                    P_Name: document.getElementById('P_Name').value,
+                    P_number: document.getElementById('P_number').value,
+                    p_t: parseInt(document.getElementById('p_t').value),
+                    IsActive: document.getElementById('IsActive').checked,
+                    P_Address : document.getElementById('P_Address').value
+                };
+
+            fetch('CreatePartyAsync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then( async response => {
+                  const data = await response.json();
+
+                 if (response.ok && data.success)
+                 {
+                        window.location.reload();
+                 }
+                 else
+                 {
+                     showAlert(data.message || "An error occurred", "danger", 3000);
+                  }
+                  })
+            .catch(error => {
+                    showAlert(error.toString(),"danger", 1000);
+                 });
+
+            }
+        });
+
+        // Add real-time validation on field blur
+        form.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', () => validateField(input));
+        });
+    });
+
+    function validateForm() {
+        let isValid = true;
+        const form = document.getElementById('partyForm');
+
+        form.querySelectorAll('input, select').forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+
+        form.classList.add('was-validated');
+        return isValid;
+    }
+
+    function validateField(input) {
+        if (input.id === 'P_Name') {
+                if (input.id === 'P_Name') {
+        // Check for empty field
+        if (input.value.length === 0) {
+            setInvalid(input, 'Party name is required');
+            return false;
+        }
+
+        // Check minimum length
+        if (input.value.length < 3) {
+            setInvalid(input, 'Must be at least 3 characters');
+            return false;
+        }
+
+        // Check maximum length
+        if (input.value.length > 100)
+        {
+            setInvalid(input, 'Max 100 characters allowed');
+            return false;
+        }
+        // Check character pattern (letters and spaces only)
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(input.value)) {
+            setInvalid(input, 'Only letters and spaces allowed');
+            return false;
+        }
+
+        // Trim whitespace and check if empty after trim
+        if (input.value.trim().length === 0) {
+            setInvalid(input, 'Cannot be just whitespace');
+            return false;
+        }
+    }
+        }
+
+        if (input.id === 'P_number') {
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(input.value)) {
+                setInvalid(input, '10-15 digit number required');
+                return false;
+            }
+        }
+
+        if (input.id === 'p_t' && input.value === "") {
+            setInvalid(input, 'Please select a type');
+            return false;
+        }
+
+        // If we get here, field is valid
+        setValid(input);
+        return true;
+    }
+
+    function setInvalid(input, message) {
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
+        const feedback = input.nextElementSibling;
+        if (feedback && feedback.classList.contains('invalid-feedback')) {
+            feedback.textContent = message;
+        }
+    }
+
+    function setValid(input) {
+        input.classList.add('is-valid');
+        input.classList.remove('is-invalid');
+    }
+
+</script>
