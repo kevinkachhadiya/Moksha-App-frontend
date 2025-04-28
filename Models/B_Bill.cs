@@ -44,9 +44,9 @@ namespace Moksha_App.Models
             CreditCard,
             BankTransfer
         }
+        public string P_number { get; set; } = string.Empty;
     }
 
-    // BillItem class
     public class B_BillItem
     {
         [Key]
@@ -72,9 +72,6 @@ namespace Moksha_App.Models
         // Fetch the ColorName from Material for each item
         public string ColorName => Material?.ColorName;
 
-   
-
-
     }
 
     public class Create_B_Bill_Dto
@@ -83,6 +80,8 @@ namespace Moksha_App.Models
         public bool IsPaid { get; set; }
         public PaymentMethodType PaymentMethod { get; set; }
         public List<B_BillItemDto> Items { get; set; }
+
+        public string P_number { get; set; } = string.Empty;
     }
 
     public class B_BillItemDto
@@ -96,9 +95,12 @@ namespace Moksha_App.Models
     {
         public int id { get; set; }
         public string? BuyerName { get; set; }
+
+        public string P_number { get; set; } = string.Empty;
         public bool IsPaid { get; set; }
         public PaymentMethodType PaymentMethod { get; set; }
         public List<B_BillItemDto>? Items { get; set; }
+
     }
 
     public class BillListViewModel

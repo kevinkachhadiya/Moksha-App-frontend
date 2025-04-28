@@ -50,10 +50,10 @@ namespace Moksha_App.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                
+
                 string jsonResponse = await response.Content.ReadAsStringAsync();
-                
-                
+
+
                 var viewModel = System.Text.Json.JsonSerializer.Deserialize<BillListViewModel>(jsonResponse, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -67,10 +67,10 @@ namespace Moksha_App.Controllers
                 ViewBag.Error = "Failed to retrieve materials. Status Code: " + response.StatusCode;
                 return View();
             }
-        
 
 
-           
+
+
 
             /* List<B_Bill> materials = new List<B_Bill>();
 
@@ -108,38 +108,38 @@ namespace Moksha_App.Controllers
              return View(materials);*/
         }
 
-    
+
         [HttpPost]
         public async Task<IActionResult> CreateBill([FromForm] Create_B_Bill_Dto bill)
         {
-          
-               string jsonContent = JsonSerializer.Serialize(bill);
-               HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                string baseAdd = _httpClient.BaseAddress + "/BuyerBilling";
-                var response = await _httpClient.PostAsync(baseAdd, content);
-               
+            string jsonContent = JsonSerializer.Serialize(bill);
+            HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                if (response.IsSuccessStatusCode)
+            string baseAdd = _httpClient.BaseAddress + "/BuyerBilling";
+            var response = await _httpClient.PostAsync(baseAdd, content);
 
-                {
-                //var token = await response.Content.ReadAsStringAsync();
+            var message = await response.Content.ReadAsStringAsync();
 
-                // Set a 24-hour expiration time
-                // var cookieExpirationTime = DateTime.UtcNow.AddHours(24);
 
+            if (response.IsSuccessStatusCode)
+
+            {
                 return Ok(new
                 {
                     success = true,
                     message = "Buying bill generated successfully"
                 });
             }
-                else
+            else
+            {
+                return Ok(new
                 {
-                    
-                    return Json(new { redirect = "Dash_Board" }); // Fix: Use a single object
-                }
-           
+                    success = false,
+                    message = "Buying bill generated successfully"
+                });
+            }
+
         }
 
         [HttpGet]
@@ -158,7 +158,7 @@ namespace Moksha_App.Controllers
             }
             else
             {
-               
+
                 return Json(new { redirect = "Dash_Board" }); // Fix: Use a single object
             }
         }
@@ -189,7 +189,7 @@ namespace Moksha_App.Controllers
             else
             {
                 return Json(new { redirect = "Dash_Board" }); // Fix: Use a single object
-            }       
+            }
         }
 
         [HttpPut]
@@ -217,26 +217,5 @@ namespace Moksha_App.Controllers
             return Ok(new { success = true, message = "Bill Deleted successfully" });
         }
 
-        [HttpGet("SearchParties")]
-        public async Task<IActionResult> SearchParties(string term, P_t? partyType = null)
-        {
-            /* Search parties where name contains term (case insensitive)
-            var suggestions = await _context.Parties
-                .Where(p => p.P_Name.Contains(term) &&
-                           (partyType == null || p.p_t == partyType))
-                .OrderBy(p => p.P_Name)
-                .Take(10) // Limit to 10 suggestions
-                .Select(p => new {
-                    id = p.Id,
-                    name = p.P_Name,
-                    phone = p.P_number,
-                    type = p.p_t.ToString(),
-                    address = p.P_Address
-                })
-                .ToListAsync(); */
-
-            //suggestions
-            return Json("dd" );
-        }
     }
 }

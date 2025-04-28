@@ -3,6 +3,41 @@
     ViewData["Title"] = "All_bills";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<style>
+    .suggestions-dropdown {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: white;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        z-index: 1000;
+        display: none;
+        margin-top: 2px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .suggestion-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+    .suggestion-name {
+        font-weight: 600;
+    }
+
+    .suggestion-phone {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+</style>
 <div class="">
     <!-- Header Section -->
     <div class="header-container mb-1 mt-1">
@@ -517,40 +552,42 @@
             <div class="modal-body p-4">
                 <form id="addBillForm" class="needs-validation" novalidate method="post">
                     <div class="row g-4">
-                        <!-- Buyer Name Section -->
-                        <div class="col-6">
-                            <div class="form-floating position-relative">
-                                <input type="text"
-                                       class="form-control form-control-lg shadow-sm rounded-3"
-                                       id="buyerName"
-                                       name="BuyerName"
-                                       placeholder=""
-                                       onkeyup="NameChange(this)"
-                                       required
-                                       autocomplete="off">
-                                <label for="buyerName" class="fw-semibold text-secondary ps-2">
-                                    <i class="bi bi-person-badge me-2"></i>Supplier Name
-                                </label>
-                                <div class="valid-feedback"> Looks good! </div>
-
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="form-floating position-relative">
+                                    <input type="text"
+                                           class="form-control form-control-lg shadow-sm rounded-3"
+                                           id="buyerName"
+                                           name="BuyerName"
+                                           placeholder=""
+                                           onkeyup="NameChange(this)"
+                                           required
+                                           autocomplete="off">
+                                    <label for="buyerName" class="fw-semibold text-secondary ps-2">
+                                        <i class="bi bi-person-badge me-2"></i>Supplier Name
+                                    </label>
+                                    <div class="valid-feedback"> Looks good! </div>
+                     
+                                    <div id="nameSuggestions" class="suggestions-dropdown">
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-floating position-relative">
-                                <input type="tel"
-                                       class="form-control form-control-lg shadow-sm rounded-3"
-                                       id="phoneNumber"
-                                       name="PhoneNumber"
-                                       placeholder=""
-                                       pattern="[0-9]{10}"
-                                       maxlength="10"
-                                       oninput="formatPhoneNumber(this)"
-                                       autocomplete="off">
-                                <label for="phoneNumber" class="fw-semibold text-secondary ps-2">
-                                    <i class="bi bi-telephone me-2"></i>Phone Number
-                                </label>
-                                <div class="valid-feedback">Valid phone number</div>
-                                <div class="invalid-feedback">Please enter a 10-digit number</div>
+                            <div class="col-6">
+                                <div class="form-floating position-relative">
+                                    <input type="tel"
+                                           class="form-control form-control-lg shadow-sm rounded-3"
+                                           id="phoneNumber"
+                                           name="PhoneNumber"
+                                           placeholder=""
+                                           pattern="[0-9]{10}"
+                                           maxlength="10"
+                                           oninput="formatPhoneNumber(this)"
+                                           autocomplete="off" readonly >
+                                    <label for="phoneNumber" class="fw-semibold text-secondary ps-2">
+                                        <i class="bi bi-telephone me-2"></i>Phone Number
+                                    </label>
+                                    <div class="valid-feedback">Valid phone number</div>
+                                </div>
                             </div>
                         </div>
 
@@ -664,8 +701,8 @@
                 <form id="editBillForm" class="needs-validation" novalidate method="post">
                     <div class="row g-4">
                         <!-- Buyer Name Section -->
-                        <div class="col-12">
-                            <div class="form-floating position-relative">
+                        <div class="row mt-2">
+                            <div class="col-6 form-floating position-relative">
                                 <input type="text"
                                        class="form-control form-control-lg shadow-sm rounded-3"
                                        id="ebuyerName"
@@ -673,11 +710,28 @@
                                        placeholder=""
                                        onkeyup="NameChange(this)"
                                        required
-                                       autocomplete="off">
-                                <label for="ebuyerName" class="fw-semibold text-secondary ps-2">
+                                       autocomplete="off" style="margin-left:-5px">
+                                <label for="ebuyerName" class="fw-semibold text-secondary ps-3">
                                     <i class="bi bi-person-badge me-2"></i>Supplier Name
                                 </label>
                                 <div class="valid-feedback"> Looks good! </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating position-relative">
+                                    <input type="tel"
+                                           class="form-control form-control-lg shadow-sm rounded-3"
+                                           id="ephoneNumber"
+                                           name="PhoneNumber"
+                                           placeholder=""
+                                           pattern="[0-9]{10}"
+                                           maxlength="10"
+                                           oninput="formatPhoneNumber(this)"
+                                           autocomplete="off" readonly>
+                                    <label for="phoneNumber" class="fw-semibold text-secondary ps-3">
+                                        <i class="bi bi-telephone me-2"></i>Phone Number
+                                    </label>
+                                    <div class="valid-feedback">Valid phone number</div>
+                                </div>
                             </div>
                         </div>
 
@@ -811,6 +865,7 @@
 <!-- Include math.js for safe expression evaluation -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.0.0/math.min.js"></script>
 <script src="~/js/site.js"></script>
+
 @section scripts{
            <script>
     function changePageSize(size) {
@@ -1278,6 +1333,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
         formData.append("BuyerName", $('#buyerName').val().trim());
+        formData.append("P_number", $('#phoneNumber').val().trim());
         formData.append("IsPaid", $('#isPaid').is(':checked'));
         formData.append("PaymentMethod", $('#paymentMethod').val());
         // Append items
@@ -1297,8 +1353,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 { 
                      if(response.success)
                      {
-
-                         $("#addBillModal").modal('hide');
+                  $("#addBillModal").modal('hide');
 
                             showAlert("Buying bill Created Successfully","success", 1000);
 
@@ -1306,6 +1361,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                                      },1100);
                      }
+                     else
+                     {    
+                         showAlert(response.message,"danger", 1000);
+                     }
+
      
                 },
                  error: function (xhr, status, error) {
@@ -1320,66 +1380,145 @@ document.addEventListener('DOMContentLoaded', function() {
         
         });
 
+        const supplierData = [ ];
 
-        //4. Name change handler
-        window.NameChange = function(input) 
-        {
+        // The NameChange function for both adding and editing
+        window.NameChange = function(input) {
+            const value = input.value.trim();
+            const formControl = $(input).closest('.form-floating');
+            const feedback = formControl.find('.valid-feedback, .invalid-feedback');
 
-        const value = input.value.trim();
-        const formControl = $(input).closest('.form-floating');
-        const feedback = formControl.find('.valid-feedback, .invalid-feedback');
+            // Clear previous validation classes
+            input.classList.remove('is-valid', 'is-invalid');
 
-        // Clear previous validation classes
-        input.classList.remove('is-valid', 'is-invalid');
-
-        if (!value) 
-        {
-            // Empty field case
-            input.classList.add('is-invalid');
-            if (feedback.length === 0)
-            {
-                formControl.append('<div class="invalid-feedback">Customer name is required</div>');
-            } 
-            else 
-            {
-                feedback.text('Customer name is required').removeClass('valid-feedback').addClass('invalid-feedback');
-            }
-        } 
-        else if (value.length < 3) 
-        {
-            // Minimum length check
-            input.classList.add('is-invalid');
-            if (feedback.length === 0) {
-                formControl.append('<div class="invalid-feedback">Name must be at least 3 characters</div>');
+            // Validation logic
+            if (!value) {
+                // Empty field case
+                input.classList.add('is-invalid');
+                if (feedback.length === 0) {
+                    formControl.append('<div class="invalid-feedback">Name is required</div>');
+                } else {
+                    feedback.text('Name is required').removeClass('valid-feedback').addClass('invalid-feedback');
+                }
+            } else if (value.length < 3) {
+                // Minimum length check
+                input.classList.add('is-invalid');
+                if (feedback.length === 0) {
+                    formControl.append('<div class="invalid-feedback">Name must be at least 3 characters</div>');
+                } else {
+                    feedback.text('Name must be at least 3 characters').removeClass('valid-feedback').addClass('invalid-feedback');
+                }
+            } else if (!/^[a-zA-Z\u00C0-\u017F\s'-]+$/.test(value)) {
+                // Character validation (letters, accents, spaces, hyphens, apostrophes)
+                input.classList.add('is-invalid');
+                if (feedback.length === 0) {
+                    formControl.append('<div class="invalid-feedback">Only letters and basic punctuation allowed</div>');
+                } else {
+                    feedback.text('Only letters and basic punctuation allowed').removeClass('valid-feedback').addClass('invalid-feedback');
+                }
             } else {
-                feedback.text('Name must be at least 3 characters').removeClass('valid-feedback').addClass('invalid-feedback');
+                // Valid input
+                input.classList.add('is-valid');
+                if (feedback.length === 0) {
+                    formControl.append('<div class="valid-feedback">Looks good!</div>');
+                } else {
+                    feedback.text('Looks good!').removeClass('invalid-feedback').addClass('valid-feedback');
+                }
             }
-        } 
-        else if (!/^[a-zA-Z\u00C0-\u017F\s'-]+$/.test(value)) 
-        {
-            // Character validation (letters, accents, spaces, hyphens, apostrophes)
-            input.classList.add('is-invalid');
-            if (feedback.length === 0) {
-                formControl.append('<div class="invalid-feedback">Only letters and basic punctuation allowed</div>');
-            } else {
-                feedback.text('Only letters and basic punctuation allowed').removeClass('valid-feedback').addClass('invalid-feedback');
-            }
-        } 
-        else 
-        {
-            // Valid input
-            input.classList.add('is-valid');
-            if (feedback.length === 0) {
-                formControl.append('<div class="valid-feedback">Looks good!</div>');
-            } else {
-                feedback.text('Looks good!').removeClass('invalid-feedback').addClass('valid-feedback');
-            }
-        }
 
-        // Enable/disable submit button based on validity (optional)
-        const form = $(input).closest('form');
-        form.find('[type="submit"]').prop('disabled', form.find('.is-invalid').length > 0);
-            };
+            // Enable/disable submit button based on validity (optional)
+            const form = $(input).closest('form');
+            form.find('[type="submit"]').prop('disabled', form.find('.is-invalid').length > 0);
+
+            // Autocomplete functionality
+            const searchText = input.value.toLowerCase();
+            const suggestionsElement = document.getElementById('nameSuggestions');
+
+            // Clear previous suggestions
+            suggestionsElement.innerHTML = '';
+
+            // Validate input before sending AJAX request
+            if (searchText.length <= 0 || /\d/.test(searchText)) {
+                suggestionsElement.style.display = 'none';
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("search", "Party")',  // Adjust if needed
+                type: "GET",
+                data: { search: searchText },
+                processData: true,
+                success: function(response) {
+                    if (response.success) {
+                        supplierData.length = 0;
+                        response.data.forEach(function(item) {
+                            supplierData.push({
+                                name: item.p_Name,
+                                phone: item.p_number
+                            });
+                        });
+                    }
+                }
+            });
+
+            // Filter matching suppliers
+            const matchingSuppliers = supplierData.filter(supplier =>
+                supplier.name.toLowerCase().includes(searchText)
+            );
+
+            if (matchingSuppliers.length === 0) {
+                suggestionsElement.style.display = 'none';
+                return;
+            }
+
+            // Create suggestion items
+            matchingSuppliers.forEach(supplier => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.className = 'suggestion-item';
+                suggestionItem.innerHTML = `
+                    <div class="suggestion-name">${supplier.name}</div>
+                    <div class="suggestion-phone">${supplier.phone}</div>
+                `;
+
+                // Add click event to fill the form
+                suggestionItem.addEventListener('click', () => {
+                    // Check if we're in add or edit mode
+                   
+                       
+                        // Add mode (buyerName)
+                        document.getElementById('buyerName').value = supplier.name;
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                        feedback.text('Looks good!').removeClass('invalid-feedback').addClass('valid-feedback');
+
+                        // Set phone value for adding
+                        const phoneInput = document.getElementById('phoneNumber');
+                        phoneInput.value = supplier.phone;
+                        phoneInput.classList.remove('is-invalid');
+                        phoneInput.classList.add('is-valid');
+                        formatPhoneNumber(phoneInput);
+
+                    
+
+                    // Hide suggestions after selection
+                    suggestionsElement.style.display = 'none';
+                });
+
+                suggestionsElement.appendChild(suggestionItem);
+            });
+
+            // Show the suggestions dropdown
+            suggestionsElement.style.display = 'block';
+        };
+
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#buyerName') && !e.target.closest('#nameSuggestions')) {
+                document.getElementById('nameSuggestions').style.display = 'none';
+            }
+
+        });
 
         });
  
@@ -1446,10 +1585,10 @@ document.addEventListener('DOMContentLoaded', function() {
                  {
                       if(response.success)
                       {
-
                                $('#editBillModal').modal('show');
-                              
                                $('input[id="ebuyerName"]').val(response.message.buyerName);
+                               $('input[id="ephoneNumber"]').val(parseInt(response.message.p_number));
+
                                NameChange($('input[id="ebuyerName"]')[0]);
                                $('#editPaymentMethod').val(response.message.paymentMethod);
                                $('#editIsPaid').prop('checked', response.message.isPaid);
@@ -1476,6 +1615,8 @@ document.addEventListener('DOMContentLoaded', function() {
              });
           }
 
+
+         
         // 3. Form submission handler
         $('#editBillForm').submit(function(e) {
         e.preventDefault();
@@ -1484,7 +1625,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
 
         formData.append("Id", modalId);
+        const latestPhoneNumber = $('#ephoneNumber').val().trim();
+
+
+        const phoneNumber = $('#ephoneNumber').val();  // Corrected ID from 'PhoneNumber' to 'phoneNumber'
+
         formData.append("BuyerName", $('#ebuyerName').val().trim());
+        formData.append("P_number", phoneNumber);  // Now the phone number will be valid
+
+        console.log(latestPhoneNumber);
         formData.append("IsPaid", $('#editIsPaid').is(':checked'));
         formData.append("PaymentMethod", $('#editPaymentMethod').val());
 
