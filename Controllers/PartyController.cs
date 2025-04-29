@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moksha_App.Models;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 
@@ -20,32 +21,38 @@ namespace Moksha_App.Controllers
             _httpClient.BaseAddress = baseAddress;
         }
 
-
-        public IActionResult All_Party()
-        {
-
-
-            List<Party> l = new List<Party>() {
-            new Party
+        [HttpGet]
+        public async Task<IActionResult> All_Party(
+             string party_ ,
+             string searchTerm = "",
+             string sortColumn = "P_Name",
+             string sortDirection = "asc",
+             int page = 1,
+             int pageSize = 10
+             )
+       {
+            var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            queryParams["party"] = party_;
+            queryParams["searchTerm"] = searchTerm.ToLower();
+            queryParams["sortColumn"] = sortColumn;
+            queryParams["sortDirection"] = sortDirection;
+            queryParams["page"] = page.ToString();
+            queryParams["pageSize"] = pageSize.ToString();
+        
+            string bassAdd = _httpClient.BaseAddress +$"/Party/AllParty?{queryParams}";
+            var response = await _httpClient.GetAsync(bassAdd);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
+                string jsonResponse = await response.Content.ReadAsStringAsync();
 
-                Id = 1,
-                P_Name = "jay",
-                P_number = "8928948943",
-                p_t = 0,
-                IsActive = true
-            },
-            new Party
-            {
+                var partyList = JsonSerializer.Deserialize<PartyListViewModel>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
-                Id = 1,
-                P_Name = "jay",
-                P_number = "8928948943",
-                p_t = 0,
-                IsActive = true
-            },
+                return View(partyList);
+            }
 
-            };
 
             return View();
 

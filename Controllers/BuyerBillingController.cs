@@ -112,6 +112,7 @@ namespace Moksha_App.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBill([FromForm] Create_B_Bill_Dto bill)
         {
+            bill.P_number = bill.P_number ?? "0000000000";
 
             string jsonContent = JsonSerializer.Serialize(bill);
             HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -136,7 +137,7 @@ namespace Moksha_App.Controllers
                 return Ok(new
                 {
                     success = false,
-                    message = "Buying bill generated successfully"
+                    message = message
                 });
             }
 
@@ -201,11 +202,13 @@ namespace Moksha_App.Controllers
             string baseAdd = _httpClient.BaseAddress + "/BuyerBilling/UpdateBill";
             var response = await _httpClient.PutAsync(baseAdd, content);
 
+            var message = await response.Content.ReadAsStringAsync();
+
             if (response.IsSuccessStatusCode)
             {
                 return Ok(new { success = true, message = "Bill updated successfully" });
             }
-            return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+            return Ok(new { success = false, message = message });
         }
 
         [HttpDelete]

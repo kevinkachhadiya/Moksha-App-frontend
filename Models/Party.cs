@@ -22,4 +22,15 @@ namespace Moksha_App.Models
         }
         public string P_Address { get; set; }="";
     }
+    public class PartyListViewModel
+    {
+        public List<Party> Party {get;set;}
+        public string party_ { get; set; }
+        public string SortColumn { get; set; } = "P_Name";
+        public string sortDirection { get; set; } = "asc";
+        public int CurrentPage { get; set; }
+        public int PageSize { get; set; }
+        public int TotalItems { get; set; }
+        public int TotalPages { get; set; }
+    }
 }

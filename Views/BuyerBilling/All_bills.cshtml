@@ -40,12 +40,12 @@
 </style>
 <div class="">
     <!-- Header Section -->
-    <div class="header-container mb-1 mt-1">
+    <div class=" mb-2 mt-2">
         <!-- Decorative top accent bar -->
-        <div class="accent-bar"></div>
+        <div class=""></div>
 
         <!-- Main header content -->
-        <div class="d-flex justify-content-between align-items-center p-2 bg-white rounded-lg shadow-sm position-relative">
+        <div class="d-flex justify-content-between align-items-center p-2 ">
             <!-- Left side with title and breadcrumb -->
             <div class="d-flex flex-column">
                 <div class="d-flex align-items-center mb-1">
@@ -240,10 +240,9 @@
             </div>
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 560px; overflow-y: auto;">
-                        <table class="table table-hover align-middle mb-0" >
-
-                        <thead class="sticky-top">
+                    <div class="table-wrapper" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-header bg-light position-sticky top-0" style="z-index: 10;">
                             <tr class="bg-light border-bottom">
                                 <th width="50" class="text-center px-2 py-2">#</th>
                                 <th class="px-2 py-2">
@@ -693,9 +692,9 @@
                     </h5>
                 </div>
                 <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3 top-50 translate-middle-y"
-                        data-bs-dismiss="modal" aria-label="Close"></button>
+                        data-bs-dismiss="modal" aria-label="Close">
+                </button>
             </div>
-
             <!-- Modal Body -->
             <div class="modal-body p-4">
                 <form id="editBillForm" class="needs-validation" novalidate method="post">
@@ -708,13 +707,15 @@
                                        id="ebuyerName"
                                        name="BuyerName"
                                        placeholder=""
-                                       onkeyup="NameChange(this)"
+                                       onkeyup="SupplierNameAutoSuggest(this)"
                                        required
                                        autocomplete="off" style="margin-left:-5px">
                                 <label for="ebuyerName" class="fw-semibold text-secondary ps-3">
                                     <i class="bi bi-person-badge me-2"></i>Supplier Name
                                 </label>
-                                <div class="valid-feedback"> Looks good! </div>
+                                <div class="valid-feedback">Looks good!</div>
+                                <!-- Suggestions dropdown container -->
+                                <div id="supplierSuggestions" class="suggestions-dropdown" style="display: none;"></div>
                             </div>
                             <div class="col-6">
                                 <div class="form-floating position-relative">
@@ -727,13 +728,14 @@
                                            maxlength="10"
                                            oninput="formatPhoneNumber(this)"
                                            autocomplete="off" readonly>
-                                    <label for="phoneNumber" class="fw-semibold text-secondary ps-3">
+                                    <label for="ephoneNumber" class="fw-semibold text-secondary ps-3">
                                         <i class="bi bi-telephone me-2"></i>Phone Number
                                     </label>
                                     <div class="valid-feedback">Valid phone number</div>
                                 </div>
                             </div>
                         </div>
+
 
                         <!-- Materials Section -->
                         <div class="col-12">
@@ -1178,10 +1180,11 @@ document.addEventListener('DOMContentLoaded', function() {
             let evaluatedValue = null;
 
             try {
-                const value = $input.val().trim();
-                if (!value) {
+                  const value = $input.val().trim();
+                  if (!value) 
+                  {
                     throw new Error('Empty input');
-                }
+                  }
 
                 // For dropdowns, just check if something is selected
                 if ($input.is('select')) {
@@ -1517,7 +1520,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!e.target.closest('#buyerName') && !e.target.closest('#nameSuggestions')) {
                 document.getElementById('nameSuggestions').style.display = 'none';
             }
-
         });
 
         });
@@ -1588,8 +1590,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                $('#editBillModal').modal('show');
                                $('input[id="ebuyerName"]').val(response.message.buyerName);
                                $('input[id="ephoneNumber"]').val(parseInt(response.message.p_number));
-
                                NameChange($('input[id="ebuyerName"]')[0]);
+
                                $('#editPaymentMethod').val(response.message.paymentMethod);
                                $('#editIsPaid').prop('checked', response.message.isPaid);
                                $('#ematerialsContainer').empty();
@@ -1654,24 +1656,21 @@ document.addEventListener('DOMContentLoaded', function() {
                   {
                        if(response.success)
                        {
-
                             $(editBillModal).hide();
 
                               showAlert("Bill updated successfully!","warning", 1000);
-
-                                       setTimeout(() => { window.location.reload(); // $("#loader_").css("display","none");
-
-                                       },1100);
+                              setTimeout(() => { window.location.reload(); },1100);
                        }
-
-                  },
+                       else
+                       {
+                            showAlert(response.message,"danger", 1000);
+                       }
+                       },
                    error: function (xhr, status, error) {
-                   // Corrected: Pass the type parameter directly
+                  
                    showAlert("An error occurred: " + error, "danger", 1000);
-                             //$("#loader_").css("display","none");
+                         
                }
-
-
 
               });
 
@@ -2271,3 +2270,177 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 </script>
+<script>
+        window.SupplierNameAutoSuggest = function(input) {
+        const value = input.value.trim();
+        const formControl = $(input).closest('.form-floating');
+        const feedback = formControl.find('.valid-feedback, .invalid-feedback');
+
+        // Clear previous validation classes
+        input.classList.remove('is-valid', 'is-invalid');
+
+        // Validation logic
+        if (!value) {
+            // Empty field case
+            input.classList.add('is-invalid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="invalid-feedback">Supplier name is required</div>');
+            } else {
+                feedback.text('Supplier name is required').removeClass('valid-feedback').addClass('invalid-feedback');
+            }
+        } else if (value.length < 3) {
+            // Minimum length check
+            input.classList.add('is-invalid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="invalid-feedback">Supplier name must be at least 3 characters</div>');
+            } else {
+                feedback.text('Supplier name must be at least 3 characters').removeClass('valid-feedback').addClass('invalid-feedback');
+            }
+        } else if (!/^[a-zA-Z\u00C0-\u017F\s'-]+$/.test(value)) {
+            // Character validation (letters, accents, spaces, hyphens, apostrophes)
+            input.classList.add('is-invalid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="invalid-feedback">Only letters and basic punctuation allowed</div>');
+            } else {
+                feedback.text('Only letters and basic punctuation allowed').removeClass('valid-feedback').addClass('invalid-feedback');
+            }
+        } else {
+            // Valid input
+            input.classList.add('is-valid');
+            if (feedback.length === 0) {
+                formControl.append('<div class="valid-feedback">Looks good!</div>');
+            } else {
+                feedback.text('Looks good!').removeClass('invalid-feedback').addClass('valid-feedback');
+            }
+        }
+
+        // Enable/disable submit button based on validity (optional)
+        const form = $(input).closest('form');
+        form.find('[type="submit"]').prop('disabled', form.find('.is-invalid').length > 0);
+
+        // Autocomplete functionality
+        const searchText = input.value.toLowerCase();
+        const suggestionsElement = document.getElementById('supplierSuggestions');
+
+        // Clear previous suggestions
+        suggestionsElement.innerHTML = '';
+
+        // Validate input before sending AJAX request
+        if (searchText.length <= 0 || /\d/.test(searchText)) {
+            suggestionsElement.style.display = 'none';
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("search", "Party")',  // Adjust this URL to your controller endpoint
+            type: "GET",
+            data: { search: searchText },
+            processData: true,
+            success: function(response) {
+                if (response.success) {
+                    supplierDatabase.length = 0;
+                    response.data.forEach(function(item) {
+                        supplierDatabase.push({
+                            name: item.p_Name,
+                            phone: item.p_number
+                        });
+
+                        console.log(response.data);
+                    });
+
+                    // Display suggestions after data is loaded
+                    displaySupplierSuggestions(supplierDatabase, suggestionsElement, input);
+                }
+            }
+        });
+    };
+
+    // Helper function to display supplier suggestions
+    function displaySupplierSuggestions(data, suggestionsElement, input) {
+        
+
+        // Create suggestion items
+        data.forEach(supplier => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.className = 'suggestion-item';
+            suggestionItem.innerHTML = `
+                <div class="suggestion-name">${supplier.name}</div>
+                <div class="suggestion-phone">${supplier.phone}</div>
+            `;
+
+            // Add click event to fill the form
+            suggestionItem.addEventListener('click', () => {
+              
+                document.getElementById('ebuyerName').value = supplier.name;
+                validateField(document.getElementById('ebuyerName'));
+                $('#ebuyerName').closest('.form-floating').find('.invalid-feedback').removeClass('invalid-feedback').addClass('valid-feedback').text("valid Supplier_name");
+                const phoneInput = document.getElementById('ephoneNumber');
+                phoneInput.value = supplier.phone;
+                phoneInput.classList.remove('is-invalid');
+                phoneInput.classList.add('is-valid');
+                formatPhoneNumber(phoneInput);
+
+                // Hide suggestions after selection
+                suggestionsElement.style.display = 'none';
+            });
+
+            suggestionsElement.appendChild(suggestionItem);
+        });
+
+        // Show the suggestions dropdown
+        suggestionsElement.style.display = 'block';
+    }
+
+    // Helper function to validate field
+    function validateField(input) {
+        const formControl = $(input).closest('.form-floating');
+        const feedback = formControl.find('.valid-feedback');
+
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        feedback.text('Looks good!');
+        const form = $(input).closest('form');
+        form.find('[type="submit"]').prop('disabled', form.find('.is-invalid').length > 0);
+    }
+
+    // Initialize supplier database
+    let supplierDatabase = [];
+
+    // Make sure the formatPhoneNumber function is available
+    // If it's not defined elsewhere, add a simple implementation
+    if (typeof formatPhoneNumber !== 'function') {
+        window.formatPhoneNumber = function(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length === 10) {
+                input.classList.add('is-valid');
+                input.classList.remove('is-invalid');
+                $(input).siblings('.valid-feedback').text('Valid phone number');
+            } else {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                const feedback = $(input).siblings('.invalid-feedback');
+                if (feedback.length === 0) {
+                    $(input).after('<div class="invalid-feedback">Phone number must be 10 digits</div>');
+                } else {
+                    feedback.text('Phone number must be 10 digits');
+                }
+            }
+        };
+    }
+
+
+</script>
+<style>
+
+    .table-wrapper {
+        height: 400px;
+        overflow-y: auto;
+    }
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa; /* light gray to match Bootstrap's bg-light */
+        z-index: 5;
+    }
+</style>

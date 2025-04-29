@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using static Moksha_App.Models.B_Bill;
-
 namespace Moksha_App.Models
 {
     public class B_Bill
     {
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]  // Auto-increment primary key
         public int B_Id { get; set; }
