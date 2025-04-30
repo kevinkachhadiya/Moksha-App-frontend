@@ -4,14 +4,13 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
     if (TempData["message"] != null && (bool)TempData["message"]==true)
-         {
+      {
         <script src="~/js/site.js">  </script>
-             <script>
-             document.body.appendChild(globalAlertContainer);
+        <script>
+      
              showAlert("✅ Login successful! Welcome, admin .<br>","success",2000);
-     </script>
-             }
-    
+        </script>
+       }
 }
 
 
@@ -26,7 +25,6 @@
                 <!-- ... -->
             </dl>
         </div>
-
         <!-- Buying Analytics Charts -->
         <div class="col-md-6">
             <div class="card">

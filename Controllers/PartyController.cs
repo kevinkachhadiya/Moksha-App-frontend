@@ -23,14 +23,14 @@ namespace Moksha_App.Controllers
 
         [HttpGet]
         public async Task<IActionResult> All_Party(
-             string party_ ,
+             string party_,
              string searchTerm = "",
              string sortColumn = "P_Name",
              string sortDirection = "asc",
              int page = 1,
              int pageSize = 10
              )
-       {
+        {
             var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
             queryParams["party"] = party_;
             queryParams["searchTerm"] = searchTerm.ToLower();
@@ -38,8 +38,8 @@ namespace Moksha_App.Controllers
             queryParams["sortDirection"] = sortDirection;
             queryParams["page"] = page.ToString();
             queryParams["pageSize"] = pageSize.ToString();
-        
-            string bassAdd = _httpClient.BaseAddress +$"/Party/AllParty?{queryParams}";
+
+            string bassAdd = _httpClient.BaseAddress + $"/Party/AllParty?{queryParams}";
             var response = await _httpClient.GetAsync(bassAdd);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -61,7 +61,7 @@ namespace Moksha_App.Controllers
 
         [HttpPost("CreatePartyAsync")]
         [Route("Party/CreatePartyAsync")]
-        public async Task<IActionResult> CreatePartyAsync([FromBody]Party party)
+        public async Task<IActionResult> CreatePartyAsync([FromBody] Party party)
         {
             string jsonContent = JsonSerializer.Serialize(party);
             HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -71,12 +71,12 @@ namespace Moksha_App.Controllers
             var message = await response.Content.ReadAsStringAsync();
 
             Debug.WriteLine(message);
-           
+
 
 
             if (response.IsSuccessStatusCode)
             {
-                TempData["Success"] = $"{party.p_t} added";  
+                TempData["Success"] = $"{party.p_t} added";
 
                 return Ok(new
                 {
@@ -100,10 +100,10 @@ namespace Moksha_App.Controllers
         public async Task<IActionResult> search(string search)
         {
             var seachparty = search.ToLower();
-            
-            
+
+
             string baseAdd = _httpClient.BaseAddress + $"/Party/SupplierSearch?search={seachparty}";
-  
+
 
             var response = await _httpClient.GetAsync(baseAdd);
 
@@ -156,8 +156,83 @@ namespace Moksha_App.Controllers
             }
         }
 
+        [HttpPost("EditParty")]
+        [Route("Party/EditParty")]
+        public async Task<IActionResult> Editparty([FromBody] Party party)
+        {
 
+            string jsonContent = JsonSerializer.Serialize(party);
+            HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            string baseAdd = _httpClient.BaseAddress + "/Party/EditParty";
+            var response = await _httpClient.PutAsync(baseAdd, content);
+            var message = await response.Content.ReadAsStringAsync();
+
+            Debug.WriteLine(message);
+
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = $"{party.p_t} added";
+
+                return Ok(new
+                {
+                    success = true,
+                    message = message
+
+                });
+            }
+            else
+            {
+
+                return Json(new
+                {
+                    success = false,
+                    message = message
+                }); // Fix: Use a single object
+            }
+
+        }
+
+        [HttpDelete("DeleteParty/{id}")]
+        [Route("Party/DeleteParty/{id}")]
+        public async Task<IActionResult> DeleteParty(int id)
+        {
+
+            
+
+            string baseAdd = _httpClient.BaseAddress + $"/Party/Delete/{id}";
+            var response = await _httpClient.DeleteAsync(baseAdd);
+            var message = await response.Content.ReadAsStringAsync();
+
+          
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Success"] = message;
+
+                return Ok(new
+                {
+                    success = true,
+                    message = message
+
+                });
+            }
+            else
+            {
+
+                return Json(new
+                {
+                    success = false,
+                    message = message
+                }); // Fix: Use a single object
+            }
+
+        }
 
     }
+    }
 
-}
+

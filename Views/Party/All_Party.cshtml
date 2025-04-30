@@ -265,15 +265,18 @@
                                     <td class="text-end pe-4">
                                         <div class="btn-group">
                                             <button class="btn btn-sm btn-outline-primary rounded-start-2 details-btn"
+                                                    id="EditParty"
                                                     data-id="@party.Id"
                                                     data-name="@party.P_Name"
                                                     data-number="@party.P_number"
                                                     data-address="@party.P_Address"
+                                                    data-party = "@party.p_t"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <button class="btn btn-sm btn-outline-danger rounded-end-2 delete-btn"
+                                                    id="DeleteParty"
                                                     data-id="@party.Id"
                                                     data-bs-toggle="tooltip"
                                                     data-bs-title="Delete">
@@ -434,11 +437,93 @@
     </div>
 </div>
 
+<!-- Edit Modal Popup -->
+<div class="modal" id="editpartyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">edit  Party</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @await Html.PartialAsync("EditParty")
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal Popup -->
+<div class="modal " id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <!-- Modal Header -->
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body text-center px-4 pt-0 pb-4">
+                <div class="mb-3">
+                    <span class="badge rounded-circle bg-danger p-3 mb-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                    </span>
+                    <h5 class="modal-title fw-bold mb-3" id="deleteConfirmModalLabel">Delete Party</h5>
+                </div>
+
+                <p class="text-dark mb-1">Are you sure you want to delete this party?</p>
+                <p class="text-muted small mb-4">This action cannot be undone.</p>
+
+                <div class="d-flex justify-content-center gap-2 pt-2">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger px-4" id="confirmDeletePartyBtn">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
+
+         document.addEventListener('click', function (event) {
+        if (event.target.matches('#DeleteParty') || event.target.closest('#DeleteParty')) {
+            const button = event.target.closest('#DeleteParty');
+            if (button) {
+                const selectedPartyId = button.dataset.id;
+
+                // Show your modal
+                const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                modal.show();
+
+                // Optional: store selectedPartyId for later use (e.g. deletion)
+                document.getElementById('confirmDeletePartyBtn').onclick = function () {
+                    fetch(`/Party/DeleteParty/${selectedPartyId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(res => {
+                        if (res.ok) {
+                            
+                            location.reload(); // Or remove the row from table
+                        } else {
+                            return res.text().then(text => { throw new Error(text); });
+                        }
+                    })
+                    .catch(err => {
+                        alert("Error: " + err.message);
+                    });
+                };
+            }
+        }
+    });
+
 
        document.addEventListener('click', function (event) {
        
-        if (event.target.matches('#AddParty')) { // Replace with your button's ID or selector
+       if (event.target.matches('#AddParty, #AddPartyEmpty')){
           
             const modal = new bootstrap.Modal(document.getElementById('partyModal'));
             modal.show();
@@ -446,16 +531,52 @@
 
 
     });
-</script>
 
-<script>
+    document.addEventListener('click', function (event) {
+
+        const editButton = event.target.closest('#EditParty');
+
+    if (editButton) {
+       
+        const partyId = editButton.dataset.id;
+        const partyName = editButton.dataset.name;
+        const partyNumber = editButton.dataset.number;
+        const partyAddress = editButton.dataset.address;
+        const partytype= editButton.dataset.party;
+        let party;
+        (partytype == "Supplier")?party = "0": party =  "1"
+
+        // Populate modal fields
+        document.getElementById('Edit_PartyID').value = partyId;
+        document.getElementById('Edit_P_Name').value = partyName;
+        document.getElementById('Edit_P_number').value = partyNumber;
+        document.getElementById('Edit_P_Address').value = partyAddress;
+        document.getElementById('Edit_p_t').value = party;
+        document.getElementById('Edit_IsActive').checked = true;
+
+        // You can also load party type and status if those are passed too
+        if (editButton.dataset.type) {
+            document.getElementById('Edit_p_t').value = editButton.dataset.type;
+        }
+
+        if (editButton.dataset.active) {
+            document.getElementById('Edit_IsActive').checked = editButton.dataset.active === 'true';
+        }
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('editpartyModal'));
+        modal.show();
+    }
+
+    });
+
 
       document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('partyForm');
+                    const form = document.getElementById('partyForm');
 
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-            event.stopPropagation();
+            console.log("ddf");
 
             // Validate all fields
             const isValid = validateForm();
@@ -463,14 +584,17 @@
             if (isValid) {
                 // Form is valid - proceed with submission
                 const formData = {
-                    P_Name: document.getElementById('P_Name').value,
-                    P_number: document.getElementById('P_number').value,
-                    p_t: parseInt(document.getElementById('p_t').value),
-                    IsActive: document.getElementById('IsActive').checked,
-                    P_Address : document.getElementById('P_Address').value
-                };
 
-            fetch('CreatePartyAsync', {
+                             P_Name: document.getElementById('P_Name').value,
+                            P_number: document.getElementById('P_number').value,
+                            IsActive: document.getElementById('IsActive').checked,
+                            p_t: parseInt(document.getElementById('p_t').value),
+                            P_Address : document.getElementById('P_Address').value,
+                      
+                };
+               
+
+                    fetch('/Party/CreatePartyAsync', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -516,73 +640,73 @@
         return isValid;
     }
 
-    function validateField(input) {
-        if (input.id === 'P_Name') {
-                if (input.id === 'P_Name') {
-        // Check for empty field
-        if (input.value.length === 0) {
-            setInvalid(input, 'Party name is required');
-            return false;
+        function validateField(input) {
+            const id = input.id;
+
+            // Validate Party Name
+            if (id === 'P_Name' || id === 'Edit_P_Name') {
+                if (input.value.length === 0) {
+                    setInvalid(input, 'Party name is required');
+                    return false;
+                }
+
+                if (input.value.length < 3) {
+                    setInvalid(input, 'Must be at least 3 characters');
+                    return false;
+                }
+
+                if (input.value.length > 100) {
+                    setInvalid(input, 'Max 100 characters allowed');
+                    return false;
+                }
+
+                const nameRegex = /^[a-zA-Z\s]+$/;
+                if (!nameRegex.test(input.value)) {
+                    setInvalid(input, 'Only letters and spaces allowed');
+                    return false;
+                }
+
+                if (input.value.trim().length === 0) {
+                    setInvalid(input, 'Cannot be just whitespace');
+                    return false;
+                }
+            }
+
+            // Validate Phone Number
+            if (id === 'P_number' || id === 'Edit_P_number') {
+                const phoneRegex = /^[0-9]{10}$/;
+                if (!phoneRegex.test(input.value)) {
+                    setInvalid(input, '10-digit number required');
+                    return false;
+                }
+            }
+
+            // Validate Party Type
+            if (id === 'p_t' || id === 'Edit_p_t') {
+                if (input.value === "") {
+                    setInvalid(input, 'Please select a type');
+                    return false;
+                }
+            }
+
+            // If we get here, field is valid
+            setValid(input);
+            return true;
         }
 
-        // Check minimum length
-        if (input.value.length < 3) {
-            setInvalid(input, 'Must be at least 3 characters');
-            return false;
-        }
-
-        // Check maximum length
-        if (input.value.length > 100)
-        {
-            setInvalid(input, 'Max 100 characters allowed');
-            return false;
-        }
-        // Check character pattern (letters and spaces only)
-        const nameRegex = /^[a-zA-Z\s]+$/;
-        if (!nameRegex.test(input.value)) {
-            setInvalid(input, 'Only letters and spaces allowed');
-            return false;
-        }
-
-        // Trim whitespace and check if empty after trim
-        if (input.value.trim().length === 0) {
-            setInvalid(input, 'Cannot be just whitespace');
-            return false;
-        }
-    }
-        }
-
-        if (input.id === 'P_number') {
-            const phoneRegex = /^[0-9]{10}$/;
-            if (!phoneRegex.test(input.value)) {
-                setInvalid(input, '10-15 digit number required');
-                return false;
+        function setInvalid(input, message) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+            const feedback = input.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.textContent = message;
             }
         }
 
-        if (input.id === 'p_t' && input.value === "") {
-            setInvalid(input, 'Please select a type');
-            return false;
+        function setValid(input) {
+            input.classList.add('is-valid');
+            input.classList.remove('is-invalid');
         }
-
-        // If we get here, field is valid
-        setValid(input);
-        return true;
-    }
-
-    function setInvalid(input, message) {
-        input.classList.add('is-invalid');
-        input.classList.remove('is-valid');
-        const feedback = input.nextElementSibling;
-        if (feedback && feedback.classList.contains('invalid-feedback')) {
-            feedback.textContent = message;
-        }
-    }
-
-    function setValid(input) {
-        input.classList.add('is-valid');
-        input.classList.remove('is-invalid');
-    }
 
 
         function changePageSize(size) {
@@ -608,6 +732,80 @@
 
 
 </script>
+
+
+<script>
+
+          document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editPartyForm');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Validate all fields
+                const isValid = validateForm();
+
+                if (isValid) {
+                    // Form is valid - proceed with submission
+                    const formData = {
+                        Id: parseInt(document.getElementById('Edit_PartyID').value),
+                        P_Name: document.getElementById('Edit_P_Name').value,
+                        P_number: document.getElementById('Edit_P_number').value,
+                        p_t: parseInt(document.getElementById('Edit_p_t').value),
+                        IsActive: document.getElementById('Edit_IsActive').checked,
+                        P_Address : document.getElementById('Edit_P_Address').value
+                    };
+
+                fetch('EditParty', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then( async response => {
+                      const data = await response.json();
+
+                     if (response.ok && data.success)
+                     {
+                            window.location.reload();
+                     }
+                     else
+                     {
+                         showAlert(data.message || "An error occurred", "danger", 3000);
+                      }
+                      })
+                .catch(error => {
+                        showAlert(error.toString(),"danger", 1000);
+                     });
+
+                }
+            });
+
+                 form.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', () => validateField(input));
+        });
+    });
+
+    function validateForm() {
+        let isValid = true;
+        const form = document.getElementById('editPartyForm');
+
+        form.querySelectorAll('input, select').forEach(input => {
+            if (!validateField(input)) {
+                isValid = false;
+            }
+        });
+
+        form.classList.add('was-validated');
+        return isValid;
+    }
+      
+</script>
+
+
+
 <style>
     /* Avatar circle for party type */
     .avatar-circle {
