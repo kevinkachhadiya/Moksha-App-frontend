@@ -17,7 +17,7 @@
                 </div>
             </div>
             <!-- Right side with action button -->
-            <button class="btn btn-primary d-flex align-items-center px-2 py-2 shadow-sm add-bill-btn"
+            <button class="btn btn-primary rounded-pill  d-flex align-items-center px-2 py-2 shadow-sm add-bill-btn"
                     onclick="addbill()">
                 <i class="bi bi-plus-circle me-2"></i>
                 <span>
@@ -148,7 +148,7 @@
         <div class="card shadow-sm border-0">
             <!-- Table Header with Stats and Actions -->
             <div class="card-header bg-white p-2 border-bottom">
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="justify-content-between align-items-center">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <!-- Left side with title and count -->
                         <div class="d-flex align-items-center gap-2">
@@ -158,6 +158,10 @@
                             </div>
 
                             <!-- Records per page dropdown -->
+                          
+                        </div>
+                        <!-- Right side with action buttons -->
+                        <div class="d-flex align-items-center gap-2">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                         type="button"
@@ -174,10 +178,7 @@
                                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="changePageSize(0)">All Records</a></li>
                                 </ul>
                             </div>
-                        </div>
-                        <!-- Right side with action buttons -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Export dropdown -->
+                            <!-- Export dropdown 
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                         type="button"
@@ -189,7 +190,7 @@
                                     <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-1 text-danger"></i>PDF</a></li>
                                 </ul>
                             </div>
-
+                            -->
                             <!-- Refresh button -->
                             <button class="btn btn-sm btn-outline-secondary" id="refreshBtn" title="Refresh">
                                 <i class="bi bi-arrow-clockwise"></i>
@@ -213,8 +214,8 @@
                 sortDirection = Context.Request.Query["sortColumn"] == "BuyerName" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc",
                 pageSize = Context.Request.Query["pageSize"]
             })" class="text-decoration-none text-dark d-flex align-items-center">
-                                            <span class="small fw-medium">Buyer Name</span>
-                                            <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "BuyerName"
+                                            <span class="">Buyer Name</span>
+                                            <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "BuyerName"
                     ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
                     : "bi-filter-left text-secondary opacity-50")"></i>
                                         </a>
@@ -225,9 +226,9 @@
                 sortColumn = "TotalBillPrice",
                 pageSize = Context.Request.Query["pageSize"],
                 sortDirection = Context.Request.Query["sortColumn"] == "TotalBillPrice" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-            })" class="text-decoration-none text-dark d-flex align-items-center">
-                                            <span class="small fw-medium">Amount</span>
-                                            <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "TotalBillPrice"
+            })" class="text-decoration-none text-dark d-flex align-items-center ">
+                                            <span class=" ">Amount</span>
+                                            <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "TotalBillPrice"
                     ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
                     : "bi-filter-left text-secondary opacity-50")"></i>
                                         </a>
@@ -239,8 +240,8 @@
                 pageSize = Context.Request.Query["pageSize"],
                 sortDirection = Context.Request.Query["sortColumn"] == "PaymentMethod" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
             })" class="text-decoration-none text-dark d-flex align-items-center">
-                                            <span class="small fw-medium">Payment</span>
-                                            <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "PaymentMethod"
+                                            <span class="">Payment</span>
+                                            <i class="bi ms-1 @(Context.Request.Query["sortColumn"] == "PaymentMethod"
                     ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
                     : "bi-filter-left text-secondary opacity-50")"></i>
                                         </a>
@@ -251,15 +252,15 @@
                 pageSize = Context.Request.Query["pageSize"],
                 sortColumn = "CreatedAt",
                 sortDirection = Context.Request.Query["sortColumn"] == "CreatedAt" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-            })" class="text-decoration-none text-dark d-flex align-items-center">
-                                            <span class="small fw-medium">Date</span>
-                                            <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "CreatedAt"
+            })" class="text-decoration-none text-dark d-flex align-items-center ">
+                                            <span class="">Date</span>
+                                            <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "CreatedAt"
                     ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
                     : "bi-filter-left text-secondary opacity-50")"></i>
                                         </a>
                                     </th>
                                     <th width="110" class="text-center px-2 py-2">
-                                        <span class="small fw-medium">Actions</span>
+                                        <span class="">Actions</span>
                                     </th>
                                 </tr>
                             </thead>

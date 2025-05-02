@@ -58,16 +58,13 @@ namespace Moksha_App.Models
         public decimal Quantity { get; set; } 
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]  // Decimal type for price with precision
-        public decimal Price { get; set; }  // Price at which the material is purchased
+        public decimal Price { get; set; }  
 
-        // Navigation property to Material
+        [ForeignKey("Id")]
         public Material Material { get; set; }
 
-        // Calculating Total Price for the item
         public decimal TotalPrice => Price * Quantity;
 
-        // Fetch the ColorName from Material for each item
         public string ColorName => Material?.ColorName;
 
     }

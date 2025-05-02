@@ -130,12 +130,14 @@ function showAlert(message, type = "danger", duration = 3000) {
     progressBar.style.transition = `width ${duration}ms linear`;
     alertDiv.appendChild(progressBar);
 
-    // Add the alert to the container
+   
     globalAlertContainer.appendChild(alertDiv);
 
     // Make sure container is in the DOM
     if (!globalAlertContainer.parentNode) {
         document.body.appendChild(globalAlertContainer);
+        // Add the alert to the container
+      
     }
 
     // Show the alert with animation (using requestAnimationFrame for better performance)

@@ -7,14 +7,18 @@
       {
         <script src="~/js/site.js">  </script>
         <script>
-      
+            document.addEventListener('DOMContentLoaded',
+            function(){
+
+            document.body.appendChild(globalAlertContainer);
              showAlert("✅ Login successful! Welcome, admin .<br>","success",2000);
+            });
         </script>
        }
 }
 
 
-<div>
+<div class="m-3">
     <h4>Stock Summary</h4>
     <hr />
     <div class="row">

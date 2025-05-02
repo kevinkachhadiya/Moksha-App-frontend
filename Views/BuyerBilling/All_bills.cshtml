@@ -38,17 +38,17 @@
         color: #6c757d;
     }
 </style>
-<div class="">
+<div class="m-3">
     <!-- Header Section -->
-    <div class=" mb-2 mt-2">
+    <div class="mb-2">
         <!-- Decorative top accent bar -->
         <div class=""></div>
 
         <!-- Main header content -->
-        <div class="d-flex justify-content-between align-items-center p-2 ">
+        <div class="d-flex justify-content-between align-items-center">
             <!-- Left side with title and breadcrumb -->
             <div class="d-flex flex-column">
-                <div class="d-flex align-items-center mb-1">
+                <div class="d-flex align-items-center mb-2">
                     <div class="icon-container me-3">
                         <i class="bi bi-receipt-cutoff text-primary"></i>
                     </div>
@@ -56,9 +56,9 @@
                 </div>
             </div>
             <!-- Right side with action button -->
-            <button class="btn btn-primary d-flex align-items-center px-2 py-2 shadow-sm add-bill-btn"
+            <button class="btn btn-primary rounded-pill shadow-sm add-bill-btn"
                     onclick="addbill()">
-                <i class="bi bi-plus-circle me-2"></i>
+                <i class="bi bi-plus-circle me-2 ms-1"></i>
                 <span>Add Supplier Bill</span>
             </button>
 
@@ -71,9 +71,10 @@
                     <div class="d-flex flex-column flex-lg-row p-3 gap-3">
                         <!-- Search Field with Icon -->
                         <div class="search-wrapper flex-grow-1 position-relative">
-                            <div class="position-relative d-flex align-items-end h-100">
+                            <label for="searchTerm" class="form-label text-muted small mb-1 d-none d-sm-block">Search by</label>
+                            <div class="position-relative d-flex h-100">
                                 <!-- Search Icon -->
-                                <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2;margin-bottom: 10px;"></i>
+                                <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2;margin-top: 10px;"></i>
 
                                 <!-- Search Input -->
                                 <input type="text"
@@ -88,7 +89,7 @@
                                 {
                                     <button type="button"
                                             class="btn position-absolute end-0 me-2 p-0"
-                                            style="background: transparent; border: none; z-index: 2; margin-bottom: 10px;"
+                                            style="background: transparent; border: none; z-index: 2; margin-top: 10px;"
                                             onclick="clearSearch()"
                                             aria-label="Clear search">
                                         <i class="bi bi-x-circle text-muted fs-5"></i>
@@ -98,7 +99,7 @@
                         </div>
 
                         <!-- Filters Group -->
-                        <div class="filters-group d-flex flex-column flex-md-row align-items-stretch gap-3">
+                        <div class="filters-group d-flex flex-column flex-md-row align-items-stretch gap-3 mb-2">
                             <!-- Sort By Dropdown -->
                             <div class="dropdown-wrapper position-relative">
                                 <label for="sortColumn" class="form-label text-muted small mb-1 d-none d-sm-block">Sort By</label>
@@ -109,7 +110,6 @@
                                         <option value="TotalBillPrice" selected="@(Context.Request.Query["sortColumn"] == "TotalBillPrice")">Amount</option>
                                         <option value="PaymentMethod" selected="@(Context.Request.Query["sortColumn"] == "PaymentMethod")">Payment Method</option>
                                     </select>
-                                    <i class="bi bi-chevron-down position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                                 </div>
                             </div>
 
@@ -121,7 +121,6 @@
                                         <option value="asc" selected="@(Context.Request.Query["sortDirection"] == "asc")">Ascending</option>
                                         <option value="desc" selected="@(Context.Request.Query["sortDirection"] == "desc")">Descending</option>
                                     </select>
-                                    <i class="bi bi-chevron-down position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                                 </div>
                             </div>
 
@@ -137,8 +136,10 @@
                         </div>
                     </div>
 
-                    <!-- Advanced Filters Section (Initially Hidden) -->
-                    <div class="advanced-filters border-top p-3 bg-light rounded-bottom" id="advancedFilters" style="display: none;">
+                    <!-- Advanced Filters Section (Overlay Style, Initially Hidden) -->
+                    <div class="advanced-filters rounded-bottom shadow-sm p-3 position-absolute w-100 d-none"
+                         id="advancedFilters"
+                         style="top: 100%; left: 0; z-index: 10;background-color: 	#e7f1ff; display: none;">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <label class="form-label small fw-bold">From Date</label>
@@ -172,31 +173,34 @@
                     </div>
 
                     <!-- Advanced Filters Toggle -->
-                    <div class="d-flex justify-content-center border-top">
+                    <div class="d-flex justify-content-center border-top bg-white position-relative" style="z-index: 9;">
                         <button type="button" class="btn btn-link text-primary px-4 py-2" onclick="toggleAdvancedFilters()" aria-expanded="false" aria-controls="advancedFilters">
                             <span id="advancedFiltersText">Advanced Filters</span>
                             <i class="bi bi-chevron-down ms-1" id="advancedFiltersIcon"></i>
                         </button>
                     </div>
+
                 </form>
 
             </div>
         </div>
     </div>
 
-  <div class="bills-table-container mb-4 mt-4">
+  <div class="bills-table-container mb-4 mt-4 ">
         <div class="card shadow-sm border-0">
             <!-- Table Header with Stats and Actions -->
-            <div class="card-header bg-white p-2 border-bottom">
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="card-header bg-white p-3 border-bottom">
+                <div class="justify-content-between align-items-center">
                     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <!-- Left side with title and count -->
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2 ms-2">
                             <h5 class="text-nowrap mb-0 fw-semibold me-2">All Supplier Bills</h5>
-                            <div class="badge rounded-pill bg-light text-primary border-primary px-2 py-1">
+                            <div class="badge rounded-pill bg-primary bg-opacity-10 text-primary px-3 py-2 fs-6">
                                 <span id="billCount">@(Model?.Bills.Count() ?? 0)</span> records
                             </div>
-
+                        </div>
+                        <!-- Right side with action buttons -->
+                        <div class="d-flex align-items-center gap-2">
                             <!-- Records per page dropdown -->
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
@@ -214,10 +218,7 @@
                                     <li><a class="dropdown-item" href="javascript:void(0)" onclick="changePageSize(0)">All Records</a></li>
                                 </ul>
                             </div>
-                        </div>
-                        <!-- Right side with action buttons -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Export dropdown -->
+                            <!-- Export dropdown 
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                         type="button"
@@ -229,11 +230,7 @@
                                     <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-1 text-danger"></i>PDF</a></li>
                                 </ul>
                             </div>
-
-                            <!-- Refresh button -->
-                            <button class="btn btn-sm btn-outline-secondary" id="refreshBtn" title="Refresh">
-                                <i class="bi bi-arrow-clockwise"></i>
-                            </button>
+                            -->
                         </div>
                     </div>
                 </div>
@@ -242,63 +239,65 @@
                 <div class="card-body p-0">
                     <div class="table-wrapper" style="max-height: 400px; overflow-y: auto;">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-header bg-light position-sticky top-0" style="z-index: 10;">
+                            <thead class="table-header bg-light position-sticky top-0" style="z-index: 1;">
                             <tr class="bg-light border-bottom">
-                                <th width="50" class="text-center px-2 py-2">#</th>
+                                    <th width="50" class="text-center px-2 py-2 ">#</th>
                                 <th class="px-2 py-2">
                                     <a href="@Url.Action("All_bills", new {
-                searchTerm = Context.Request.Query["searchTerm"],
-                sortColumn = "BuyerName",
-                sortDirection = Context.Request.Query["sortColumn"] == "BuyerName" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc",
-                pageSize = Context.Request.Query["pageSize"]
-            })" class="text-decoration-none text-dark d-flex align-items-center">
-                                            <span class="small fw-medium">Supplier Name</span>
-                                        <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "BuyerName"
-                    ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
-                    : "bi-filter-left text-secondary opacity-50")"></i>
+                                          searchTerm = Context.Request.Query["searchTerm"],
+                                          sortColumn = "BuyerName",
+                                          sortDirection = Context.Request.Query["sortColumn"] == "BuyerName" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc",
+                                          pageSize = Context.Request.Query["pageSize"]
+                                          })" class="text-decoration-none text-dark d-flex align-items-center  ">
+                                            <span class="">Supplier Name</span>
+                                        <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "BuyerName"
+                                              ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
+                                              : "bi-filter-left text-secondary opacity-50")"></i>
                                     </a>
                                 </th>
                                 <th class="px-2 py-2">
                                     <a href="@Url.Action("All_bills", new {
-                searchTerm = Context.Request.Query["searchTerm"],
-                sortColumn = "TotalBillPrice",
-                pageSize = Context.Request.Query["pageSize"],
-                sortDirection = Context.Request.Query["sortColumn"] == "TotalBillPrice" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-            })" class="text-decoration-none text-dark d-flex align-items-center">
-                                        <span class="small fw-medium">Amount</span>
-                                        <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "TotalBillPrice"
-                    ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
-                    : "bi-filter-left text-secondary opacity-50")"></i>
+                                          searchTerm = Context.Request.Query["searchTerm"],
+                                          sortColumn = "TotalBillPrice",
+                                           pageSize = Context.Request.Query["pageSize"],
+                                           sortDirection = Context.Request.Query["sortColumn"] == "TotalBillPrice" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
+                                            })" class="text-decoration-none text-dark d-flex align-items-center ">
+                                         <span class="">Amount</span>
+                                        <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "TotalBillPrice"
+                                                ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
+                                               : "bi-filter-left text-secondary opacity-50")"></i>
                                     </a>
                                 </th>
                                 <th class="px-2 py-2">
                                     <a href="@Url.Action("All_bills", new {
-                searchTerm = Context.Request.Query["searchTerm"],
-                sortColumn = "PaymentMethod",
-                pageSize = Context.Request.Query["pageSize"],
-                sortDirection = Context.Request.Query["sortColumn"] == "PaymentMethod" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-            })" class="text-decoration-none text-dark d-flex align-items-center">
-                                        <span class="small fw-medium">Payment</span>
-                                        <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "PaymentMethod"
-                    ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
-                    : "bi-filter-left text-secondary opacity-50")"></i>
+                                            searchTerm = Context.Request.Query["searchTerm"],
+                                            sortColumn = "PaymentMethod",
+                                            pageSize = Context.Request.Query["pageSize"],
+                                            sortDirection = Context.Request.Query["sortColumn"] == "PaymentMethod" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
+                                            })" 
+                                            
+                                           class="text-decoration-none text-dark d-flex align-items-center  ">
+                                                  <span class="">Payment</span>
+                                                  <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "PaymentMethod"
+                                                  ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
+                                                  : "bi-filter-left text-secondary opacity-50")"></i>
                                     </a>
                                 </th>
                                 <th class="px-2 py-2">
                                     <a href="@Url.Action("All_bills", new {
-                searchTerm = Context.Request.Query["searchTerm"],
-                pageSize = Context.Request.Query["pageSize"],
-                sortColumn = "CreatedAt",
-                sortDirection = Context.Request.Query["sortColumn"] == "CreatedAt" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-            })" class="text-decoration-none text-dark d-flex align-items-center">
-                                        <span class="small fw-medium">Date</span>
-                                        <i class="bi ms-1 small @(Context.Request.Query["sortColumn"] == "CreatedAt"
-                    ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
-                    : "bi-filter-left text-secondary opacity-50")"></i>
-                                    </a>
+                                         searchTerm = Context.Request.Query["searchTerm"],
+                                         pageSize = Context.Request.Query["pageSize"],
+                                         sortColumn = "CreatedAt",
+                                         sortDirection = Context.Request.Query["sortColumn"] == "CreatedAt" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
+                                         })" class="text-decoration-none text-dark d-flex align-items-center ">
+                                         <span class="">Date</span>
+                                                 <i class="bi ms-1  @(Context.Request.Query["sortColumn"] == "CreatedAt"
+                                                  ? (Context.Request.Query["sortDirection"] == "asc" ? "bi-sort-up-alt text-primary" : "bi-sort-down-alt text-primary")
+                                                  : "bi-filter-left text-secondary opacity-50")"></i>
+                                     </a>
                                 </th>
                                 <th width="110" class="text-center px-2 py-2">
-                                    <span class="small fw-medium">Actions</span>
+                                    <span class="small">Actions</span>
                                 </th>
                             </tr>
                         </thead>
@@ -406,7 +405,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">
+                                        <td colspan="6" class="text-center py-4" style="height:359px;" >
                                             <div class="py-3">
                                                 <i class="bi bi-receipt-cutoff fs-2 text-secondary mb-2 d-block"></i>
                                                 <h6 class="mb-2">No Bills Found</h6>
@@ -423,7 +422,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Table Footer with Pagination -->
             <div class="card-footer bg-white py-1 d-flex justify-content-between align-items-center border-top">
                 <div class="text-muted">
@@ -536,7 +534,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <!-- Modal Header -->
-            <div class="modal-header bg-gradient-primary text-white position-relative py-4">
+            <div class="modal-header  text-white position-relative py-4" style="background:var(--primary-dark)">
                 <div class="w-100 text-center">
                     <h5 class="modal-title fw-bold d-flex align-items-center justify-content-center">
                         <i class="bi bi-receipt-cutoff me-2 fs-2"></i>
@@ -684,7 +682,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0">
             <!-- Modal Header -->
-            <div class="modal-header bg-gradient-yellow text-white  position-relative">
+            <div class="modal-header bg-gradient-yellow text-white  position-relative" style="background-color: var(--warning);">
                 <div class="w-100 text-center">
                     <h5 class="modal-title fw-bold d-flex align-items-center justify-content-center">
                         <i class="bi bi-receipt-cutoff me-2 fs-2"></i>
@@ -1717,510 +1715,38 @@ document.addEventListener('DOMContentLoaded', function() {
            {
                    $("#addBillModal").modal('show');
            }
-           function toggleAdvancedFilters()
-           {
-           const filterSection = document.getElementById('advancedFilters');
-           const filterIcon = document.getElementById('advancedFiltersIcon');
-           const filterText = document.getElementById('advancedFiltersText');
-        if (filterSection.style.display === 'none') 
-        {
-            filterSection.style.display = 'block';
-            filterIcon.classList.replace('bi-chevron-down', 'bi-chevron-up');
-            filterText.textContent = 'Hide Advanced Filters';
-        } 
-        else
-        {
-            filterSection.style.display = 'none';
-            filterIcon.classList.replace('bi-chevron-up', 'bi-chevron-down');
-            filterText.textContent = 'Advanced Filters';
-        }
-    }
+
+                      function toggleAdvancedFilters() {
+                const filterSection = document.getElementById('advancedFilters');
+                const filterIcon = document.getElementById('advancedFiltersIcon');
+                const filterText = document.getElementById('advancedFiltersText');
+
+                const isHidden = filterSection.classList.contains('d-none');
+
+                if (isHidden) {
+                    filterSection.classList.remove('d-none');
+                    filterSection.classList.add('fade', 'show', 'd-block');
+                    filterIcon.classList.replace('bi-chevron-down', 'bi-chevron-up');
+                    filterText.textContent = 'Hide Advanced Filters';
+                } else {
+                    filterSection.classList.remove('show');
+                    setTimeout(() => {
+                        filterSection.classList.remove('fade', 'd-block');
+                        filterSection.classList.add('d-none');
+                    }, 150); // Delay matches Bootstrap’s fade transition
+                    filterIcon.classList.replace('bi-chevron-up', 'bi-chevron-down');
+                    filterText.textContent = 'Advanced Filters';
+                }
+            }
+
+
  function clearSearch() {
             document.querySelector('input[name="searchTerm"]').value = '';
             document.getElementById('searchForm').submit();
     }
     </script>       
  }       
-<style>
-/* Style for close button in danger header */
-.modal-header.bg-gradient-danger .btn-close {
-  color: white;
-  opacity: 0.8;
-  filter: brightness(0) invert(1);
-}
 
-.modal-header.bg-gradient-danger .btn-close:hover {
-  opacity: 1;
-}
-
-
-    .modal.fade {
-    transition: none;
-}
-
-    #isPaid{
-        margin-left:0.5em
-    }
-
-    #buyerNameError 
-    {
-        margin-left: 14px;
-    }
-
-    .material-item {
-        background-color: #f8f9fa;
-        transition: box-shadow 0.3s ease;
-    }
-
-        .material-item:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-    .input-group-text {
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #495057;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    .delete-item-btn {
-        transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-        .delete-item-btn:hover 
-        {
-            background-color: #dc3545;
-            color: #fff;
-        }
-
-    .form-label {
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-        color: #495057;
-    }
-
-    .form-control, .form-select {
-        border-radius: 0.375rem;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        border: 1px solid #ced4da;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-        .form-control:focus, .form-select:focus {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        #totalAmount{
-          padding-left:1rem;
-
-        }
-
-    .custom-large-checkbox {
-        width: 1rem;
-        height: 1rem;
-        margin-top: 0;
-        transform: scale(1.3);
-    }
-
-    .is-valid {
-        border-color: #198754 !important;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") !important;
-    }
-
-    .invalid-feedback {
-        display: block;
-        margin-top: 0.25rem;
-        font-size: 0.875em;
-        color: #dc3545;
-    }
-
-    .bg-gradient-yellow {
-        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-        color: white;
-        border-bottom: none;
-        border-top-left-radius: calc(0.5rem - 1px);
-        border-top-right-radius: calc(0.5rem - 1px);
-        padding: 1rem;
-        box-shadow: 0 2px 5px rgba(255, 193, 7, 0.3);
-    }
-
-        /* Style for close button in yellow header */
-        .bg-gradient-yellow .btn-close {
-            color: white;
-            opacity: 0.8;
-            filter: brightness(0) invert(1);
-        }
-
-            .bg-gradient-yellow .btn-close:hover {
-                opacity: 1;
-            }
-
-
-    /* Enhanced UI styles */
-    .modal-content {
-        border-radius: 0.75rem !important;
-        overflow: hidden;
-    }
-
- 
-
-    .hover-shadow {
-        transition: all 0.3s ease;
-    }
-
-        .hover-shadow:hover {
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08) !important;
-        }
-
-    /* Animation for form elements */
-    .form-control, .form-select {
-        transition: all 0.2s ease-in-out;
-    }
-
-        .form-control:focus, .form-select:focus {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.15) !important;
-        }
-
-    /* Enhanced button styles */
-    #addMaterialBtn {
-        transition: all 0.3s ease;
-        border-width: 2px;
-    }
-
-        #addMaterialBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.2);
-        }
-
-    /* Improved material item appearance */
-    .material-item {
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
-        padding: 1rem;
-    }
-
-        .material-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1) !important;
-        }
-
-    /* Button hover effects */
-    .btn {
-        transition: all 0.3s ease;
-    }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-    #createInvoiceBtn:not([disabled]):hover {
-        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3) !important;
-    }
-
-    /* Improved checkbox style */
-    .custom-large-checkbox {
-        cursor: pointer;
-    }
-
-    /* Total amount display enhancement */
-    #totalAmount {
-        background-color: rgba(25, 135, 84, 0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
-    }
-
-    #totalValue {
-        font-size: 1.5rem;
-    }
-
-    /* Card header improvements */
-    .card-header {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    /* Enhanced UI styles for Edit Modal */
-    .bg-gradient-yellow {
-        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-        color: white;
-        border-bottom: none;
-        border-top-left-radius: calc(0.5rem - 1px);
-        border-top-right-radius: calc(0.5rem - 1px);
-        padding: 1rem;
-        box-shadow: 0 2px 5px rgba(255, 193, 7, 0.3);
-    }
-
-        /* Style for close button in yellow header */
-        .bg-gradient-yellow .btn-close {
-            color: white;
-            opacity: 0.8;
-            filter: brightness(0) invert(1);
-        }
-
-            .bg-gradient-yellow .btn-close:hover {
-                opacity: 1;
-            }
-
-    /* Edit material button style */
-    .edit-material-btn {
-        transition: all 0.3s ease;
-        border-width: 2px;
-    }
-
-        .edit-material-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.2);
-        }
-
-    /* Update button style */
-    #updateInvoiceBtn {
-        background-color: #ffc107;
-        border-color: #ffc107;
-        color: #212529;
-        transition: all 0.3s ease;
-    }
-
-        #updateInvoiceBtn:not([disabled]):hover {
-            background-color: #ffca2c;
-            border-color: #ffc720;
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3) !important;
-            transform: translateY(-2px);
-        }
-
-    /* Edit form field focus effects */
-    #editBillForm .form-control:focus,
-    #editBillForm .form-select:focus {
-        border-color: #ffca2c;
-        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25) !important;
-    }
-
-    /* Edit total amount style */
-    #editTotalAmount {
-        background-color: rgba(25, 135, 84, 0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        transition: all 0.3s ease;
-    }
-
-    /* Label corrections */
-    label[for="ebuyerName"] {
-        color: #6c757d;
-    }
-
-    /* Fixed checkbox spacing */
-    #editIsPaid {
-        margin-left: 0.5em;
-    }
-
-    /* Enhanced materials container */
-    #ematerialsContainer .material-item {
-        border-left: 4px solid #ffc107;
-    }
-
-    /* Enhanced Delete Confirmation Modal Styles */
-    #ConfirmDeleteBillModal .modal-content {
-        overflow: hidden;
-    }
-
-    #ConfirmDeleteBillModal .modal-header {
-        background: linear-gradient(135deg, #dc3545 0%, #ff6b6b 100%);
-        color: white;
-        border-bottom: none;
-        box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
-    }
-
-        #ConfirmDeleteBillModal .modal-header .btn-close {
-            opacity: 0.8;
-            filter: brightness(0) invert(1);
-        }
-
-            #ConfirmDeleteBillModal .modal-header .btn-close:hover {
-                opacity: 1;
-            }
-
-    #ConfirmDeleteBillModal .alert-danger {
-        border-radius: 0.5rem;
-    }
-
-    #ConfirmDeleteBillModal #confirmModalMessage {
-        font-size: 1.05rem;
-        color: #212529;
-    }
-
-    #ConfirmDeleteBillModal .btn {
-        transition: all 0.3s ease;
-    }
-
-        #ConfirmDeleteBillModal .btn:hover {
-            transform: translateY(-2px);
-        }
-
-    #ConfirmDeleteBillModal .btn-danger {
-        background-color: #dc3545;
-        border-color: #dc3545;
-        box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
-    }
-
-        #ConfirmDeleteBillModal .btn-danger:hover {
-            background-color: #bb2d3b;
-            border-color: #b02a37;
-            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
-        }
-
-    #ConfirmDeleteBillModal .btn-outline-secondary:hover {
-        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.2);
-    }
-
-    .header-container {
-        position: relative;
-    }
-
-
-   
-
-    .breadcrumb-nav {
-        margin-left: 60px;
-    }
-
-    .breadcrumb {
-        font-size: 0.85rem;
-    }
-
-    .breadcrumb-item a {
-        color: #6c757d;
-    }
-
-    .breadcrumb-item.active {
-        color: #3a0ca3;
-    }
-
-    .breadcrumb-item + .breadcrumb-item::before {
-        content: "•";
-        color: #6c757d;
-    }
-
-    .add-bill-btn {
-        background: linear-gradient(135deg, #4361ee, #3a0ca3);
-        border: none;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-        .add-bill-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-        }
-
-        .add-bill-btn i {
-            font-size: 18px;
-        }
-
-    .search-filter-container {
-        transition: all 0.3s ease;
-    }
-
-    .search-wrapper {
-        position: relative;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 10;
-    }
-
-    .search-input {
-        height: 48px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-        .search-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
-            border-color: #4361ee;
-        }
-
-    .btn-clear {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        border: none;
-        background: transparent;
-        color: #6c757d;
-        cursor: pointer;
-        z-index: 10;
-    }
-
-        .btn-clear:hover {
-            color: #dc3545;
-        }
-
-    .select-container {
-        position: relative;
-    }
-
-    .select-icon {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        pointer-events: none;
-        color: #6c757d;
-    }
-
-    .form-select {
-        appearance: none;
-        height: 48px;
-        padding-right: 40px;
-        background-image: none;
-        border-radius: 8px;
-        min-width: 140px;
-    }
-
-    .action-buttons .btn {
-        height: 48px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .action-buttons .btn-primary {
-        background: linear-gradient(135deg, #4361ee, #3a0ca3);
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-        .action-buttons .btn-primary:hover {
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
-        }
-
-    .advanced-filters {
-        background-color: #f8f9fa;
-        transition: all 0.3s ease;
-    }
-
-   @@media (max-width: 992px) {
-        .filters-group
-
-    {
-        
-    }
-
-    }
-
-</style>
 <script>
 
          function formatPhoneNumber(input) {
@@ -2431,16 +1957,392 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 <style>
-
+    /* Enhanced Table Wrapper */
     .table-wrapper {
         height: 400px;
         overflow-y: auto;
+      
+        border: 1px solid var(--border);
+        background-color: white;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
     }
 
+        .table-wrapper:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+    /* Sticky Header with Modern Styling */
     .table thead th {
         position: sticky;
         top: 0;
-        background-color: #f8f9fa; /* light gray to match Bootstrap's bg-light */
-        z-index: 5;
+        background-color: var(--bg-medium);
+        color: var(--text-primary);
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--border);
+        z-index: 10;
+        white-space: nowrap;
+    }
+
+    /* Table Body Styles */
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .table tbody td {
+        padding: 0.75rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-secondary);
+    }
+
+    /* Hover Effect */
+    .table tbody tr:hover {
+        background-color: var(--primary-light);
+    }
+
+    /* Scrollbar Styling */
+    .table-wrapper::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+        background: var(--bg-light);
+       
+
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: var(--border);
+       
+
+    }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+</style>
+<style>
+    /* ===================== */
+    /* MODAL STYLES */
+    /* ===================== */
+    .modal.fade {
+        transition: none;
+    }
+
+    .modal-content {
+        border-radius: 0.75rem !important;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        border: none;
+    }
+
+    /* Danger Gradient Header */
+    .modal-header.bg-gradient-danger {
+        background: linear-gradient(135deg, var(--error) 0%, #ff6b6b 100%);
+        color: white;
+        border-bottom: none;
+        box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+    }
+
+        .modal-header.bg-gradient-danger .btn-close {
+            color: white;
+            opacity: 0.8;
+            filter: brightness(0) invert(1);
+            transition: opacity 0.2s ease;
+        }
+
+            .modal-header.bg-gradient-danger .btn-close:hover {
+                opacity: 1;
+            }
+
+    /* Yellow Gradient Header */
+    .modal-header.bg-gradient-yellow {
+        background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+        color: white;
+        border-bottom: none;
+        box-shadow: 0 2px 5px rgba(255, 193, 7, 0.3);
+    }
+
+        .modal-header.bg-gradient-yellow .btn-close {
+            color: white;
+            opacity: 0.8;
+            filter: brightness(0) invert(1);
+            transition: opacity 0.2s ease;
+        }
+
+            .modal-header.bg-gradient-yellow .btn-close:hover {
+                opacity: 1;
+            }
+
+    /* Delete Confirmation Modal */
+    #ConfirmDeleteBillModal .modal-header {
+        background: linear-gradient(135deg, var(--error) 0%, #ff6b6b 100%);
+    }
+
+    #ConfirmDeleteBillModal .alert-danger {
+        border-radius: 0.5rem;
+        border-left: 4px solid var(--error);
+    }
+
+    #ConfirmDeleteBillModal #confirmModalMessage {
+        font-size: 1.05rem;
+        color: var(--text-primary);
+    }
+
+    /* ===================== */
+    /* FORM ELEMENTS */
+    /* ===================== */
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9375rem;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+        height: calc(2.5rem + 2px);
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+            transform: translateY(-1px);
+        }
+
+    .input-group-text {
+        background-color: var(--bg-medium);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        padding: 0.5rem 1rem;
+    }
+
+    /* Validation States */
+    .is-valid {
+        border-color: var(--success) !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e") !important;
+    }
+
+    .invalid-feedback {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.8125rem;
+        color: var(--error);
+    }
+
+    /* Checkboxes */
+    .custom-large-checkbox {
+        width: 1.125rem;
+        height: 1.125rem;
+        margin-top: 0;
+        transform: scale(1.3);
+        cursor: pointer;
+    }
+
+    /* ===================== */
+    /* MATERIAL ITEMS */
+    /* ===================== */
+    .material-item {
+        background-color: var(--bg-light);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        transition: all 0.3s ease;
+        margin-bottom: 0.75rem;
+        border-left: 4px solid transparent;
+    }
+
+        .material-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            background-color: white;
+        }
+
+    #ematerialsContainer .material-item {
+        border-left-color: var(--warning);
+    }
+
+    /* ===================== */
+    /* BUTTONS & ACTIONS */
+    /* ===================== */
+    .btn {
+        transition: all 0.3s ease;
+        font-weight: 500;
+        border-radius: 0.5rem;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+    /* Primary Buttons */
+    .btn-primary,
+    .add-bill-btn,
+    .action-buttons .btn-primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border: none;
+        color: white;
+    }
+
+        .btn-primary:hover,
+        .add-bill-btn:hover,
+        .action-buttons .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+    /* Warning Buttons */
+    #updateInvoiceBtn,
+    .edit-material-btn {
+        background-color: var(--warning);
+        border-color: var(--warning);
+        color: var(--text-primary);
+    }
+
+        #updateInvoiceBtn:not([disabled]):hover,
+        .edit-material-btn:hover {
+            background-color: var(--warning-dark);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+
+    /* Danger Buttons */
+    .delete-item-btn,
+    #ConfirmDeleteBillModal .btn-danger {
+        background-color: var(--error);
+        border-color: var(--error);
+        color: white;
+    }
+
+        .delete-item-btn:hover,
+        #ConfirmDeleteBillModal .btn-danger:hover {
+            background-color: var(--error-dark);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+    /* ===================== */
+    /* LAYOUT COMPONENTS */
+    /* ===================== */
+    .header-container {
+        position: relative;
+    }
+
+    .breadcrumb {
+        font-size: 0.85rem;
+        background-color: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb-item a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--primary-dark);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "•";
+        color: var(--text-secondary);
+    }
+
+    /* Search & Filters */
+    .search-filter-container {
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-input {
+        height: 3rem;
+        border-radius: 0.5rem;
+        padding-left: 2.5rem;
+    }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15);
+        }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+
+    .btn-clear {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+    }
+
+        .btn-clear:hover {
+            color: var(--error);
+        }
+
+    /* Select Elements */
+    .form-select {
+        appearance: none;
+        padding-right: 2.5rem;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%234a5568' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+
+    /* ===================== */
+    /* RESPONSIVE ADJUSTMENTS */
+    /* ===================== */
+    @@media (max-width: 992px) {
+        .advanced-filters {
+            margin-top: 1rem;
+        }
+
+        .action-buttons .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* ===================== */
+    /* UTILITY CLASSES */
+    /* ===================== */
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+
+        .hover-shadow:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08) !important;
+        }
+
+    #totalAmount,
+    #editTotalAmount {
+        background-color: rgba(25, 135, 84, 0.1);
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    #totalValue {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--success);
     }
 </style>

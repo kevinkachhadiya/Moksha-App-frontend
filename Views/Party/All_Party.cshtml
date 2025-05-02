@@ -41,7 +41,7 @@
     <p style="color:red">@ViewBag.Error</p>
 }
 
-<div class="container mt-4">
+<div class="m-3">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="text-primary fw-bold">
@@ -53,10 +53,10 @@
     </div>
 
     <!-- Party Type Filter -->
-    <div class="card shadow-sm mb-4 border-0 rounded-4">
+    <div class="card shadow-sm mb-4 border-0 rounded-2">
         <div class="card-body p-3">
             <form id="searchForm" method="get" asp-action="All_Party">
-                <div class="d-flex flex-column flex-lg-row p-1 gap-3 align-items-end">
+                <div class="d-flex flex-column flex-lg-row p-1 gap-3 ">
                     <div class="form-group">
                         <label for="partyType" class="form-label small text-muted mb-1">View Parties</label>
                         <select id="party_" name="party_" class="form-select shadow-sm" style="min-width: 200px; height: 45px; border-radius: 8px;">
@@ -68,9 +68,9 @@
 
                     <div class="search-wrapper flex-grow-1 position-relative">
                         <label for="searchTerm" class="form-label small text-muted mb-1">Search</label>
-                        <div class="position-relative d-flex align-items-end h-100">
+                        <div class="position-relative d-flex h-100">
                             <!-- Search Icon -->
-                            <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2; margin-bottom: 10px;"></i>
+                            <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2; margin-top: 10px;"></i>
 
                             <!-- Search Input -->
                             <input type="text"
@@ -96,14 +96,28 @@
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="action-buttons d-flex align-items-end gap-2 ms-md-auto">
-                        <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px; height: 45px;">
-                            <i class="bi bi-filter me-2"></i>Apply Filters
-                        </button>
-                        <a href="@Url.Action("All_Party")" class="btn btn-outline-secondary shadow-sm" style="border-radius: 8px; height: 45px; align-content:center">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
-                        </a>
+                    <div class="action-buttons d-flex align-items-end ms-md-auto">
+                        <div class="row w-100 g-2 align-items-end">
+                            <div class="col-12 col-md-6">
+                                <button type="submit"
+                                        class="btn btn-primary w-100 px-3 shadow-sm d-inline-flex align-items-center justify-content-center text-nowrap"
+                                        style="border-radius: 8px; height: 45px; font-size: 13px;">
+                                    <i class="bi bi-filter me-2"></i>
+                                    <span class="d-none d-sm-inline">Apply Filters</span>
+                                    <span class="d-inline d-sm-none">Filter</span>
+                                </button>
+
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <a href="@Url.Action("All_Party")"
+                                   class="btn btn-outline-secondary w-100 shadow-sm d-inline-flex align-items-center justify-content-center"
+                                   style="border-radius: 8px; min-height:45px">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                                </a>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -164,7 +178,7 @@
                                     sortDirection = Context.Request.Query["sortColumn"] == "P_Name"
                                     && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
                                 })"
-                                   class="text-decoration-none text-dark d-flex align-items-center">
+                                   class="text-decoration-none text-dark d-flex align-items-center fw-medium fw-semibold">
                                     <span>Party Name</span>
                                     <div class="ms-2">
                                         @if (Context.Request.Query["sortColumn"] == "P_Name")
@@ -184,7 +198,7 @@
                                     party_ = Context.Request.Query["party_"],
                                     sortColumn = "P_number",
                                     sortDirection = Context.Request.Query["sortColumn"] == "P_number" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-                                })" class="text-decoration-none text-dark d-flex align-items-center">
+                                })" class="text-decoration-none text-dark d-flex align-items-center fw-medium fw-semibold">
                                     <span>Phone Number</span>
                                     <div class="ms-2">
                                         @if (Context.Request.Query["sortColumn"] == "P_number")
@@ -204,7 +218,7 @@
                                     party_ = Context.Request.Query["party_"],
                                     sortColumn = "P_Address",
                                     sortDirection = Context.Request.Query["sortColumn"] == "P_Address" && Context.Request.Query["sortDirection"] == "asc" ? "desc" : "asc"
-                                })" class="text-decoration-none text-dark d-flex align-items-center">
+                                })" class="text-decoration-none text-dark d-flex align-items-center fw-medium fw-semibold">
                                     <span>Address</span>
                                     <div class="ms-2">
                                         @if (Context.Request.Query["sortColumn"] == "P_Address")
@@ -218,8 +232,8 @@
                                     </div>
                                 </a>
                             </th>
-                            <th scope="col" class="py-3" width="10%">Type</th>
-                            <th scope="col" class="py-3 text-end pe-4" width="15%">Actions</th>
+                            <th scope="col" class="py-3 fw-medium fw-semibold" width="10%">Type</th>
+                            <th scope="col" class="py-3 text-end pe-4 fw-medium fw-semibold" width="15%">Actions</th>
                         </tr>
                     </thead>
                 
@@ -576,10 +590,10 @@
 
         form.addEventListener('submit', function(event) {
             event.preventDefault();
-            console.log("ddf");
+           
 
             // Validate all fields
-            const isValid = validateForm();
+            const isValid = validateFormadd();
 
             if (isValid) {
                 // Form is valid - proceed with submission
@@ -590,9 +604,9 @@
                             IsActive: document.getElementById('IsActive').checked,
                             p_t: parseInt(document.getElementById('p_t').value),
                             P_Address : document.getElementById('P_Address').value,
-                      
-                };
-               
+                
+                    };
+                    console.log("ddef");
 
                     fetch('/Party/CreatePartyAsync', {
                 method: 'POST',
@@ -618,6 +632,7 @@
                  });
 
             }
+                  
         });
 
         // Add real-time validation on field blur
@@ -626,7 +641,7 @@
         });
     });
 
-    function validateForm() {
+    function validateFormadd() {
         let isValid = true;
         const form = document.getElementById('partyForm');
 
@@ -801,12 +816,33 @@
         form.classList.add('was-validated');
         return isValid;
     }
-      
 </script>
-
-
-
 <style>
+    <style >
+    /* CSS Variables for consistent theming */
+    :root {
+        /* Primary Colors */
+        --primary: #2563EB; /* Deep Blue */
+        --primary-light: #DBEAFE; /* Light Blue */
+        --primary-dark: #1E40AF; /* Dark Blue */
+        /* Neutral Colors */
+        --bg-light: #F9FAFB; /* Off-White */
+        --bg-medium: #EDF2F7; /* Light Gray */
+        --text-primary: #1A202C; /* Dark Gray */
+        --text-secondary: #4A5568; /* Medium Gray */
+        --border: #E2E8F0; /* Light Gray */
+        /* Accent Colors */
+        --success: #10B981; /* Green */
+        --warning: #F59E0B; /* Amber */
+        --error: #EF4444; /* Red */
+        --info: #06B6D4; /* Teal */
+        /* Shadows */
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
     /* Avatar circle for party type */
     .avatar-circle {
         width: 32px;
@@ -816,35 +852,93 @@
         align-items: center;
         justify-content: center;
         font-size: 16px;
+        color: white;
+        font-weight: 500;
     }
+
+        /* Avatar background colors */
+        .avatar-circle.customer {
+            background-color: var(--info);
+        }
+
+        .avatar-circle.supplier {
+            background-color: var(--success);
+        }
 
     /* Customer and Supplier row styling */
     .customer-row {
-        border-left: 3px solid #0dcaf0;
+        border-left: 3px solid var(--info);
     }
 
     .supplier-row {
-        border-left: 3px solid #198754;
+        border-left: 3px solid var(--success);
     }
 
     /* Improved card styling */
     .card {
         transition: all 0.3s ease;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        background-color: white;
+        overflow: hidden;
+    }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+    .card-header {
+        background-color: var(--bg-light);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+    }
+
+    .card-title {
+        margin-bottom: 0.5rem;
+        color: var(--primary-dark);
+        font-weight: 600;
     }
 
     /* Improved table styling */
     .table > :not(caption) > * > * {
         padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        border-color: var(--border);
+    }
+
+    .table-wrapper {
+        height: 400px;
+        overflow-y: auto;
+        border-radius: 0px;
+        border: 1px solid var(--border);
+    }
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: var(--bg-light);
+        z-index: 5;
+        color: var(--text-secondary);
+        font-weight: 600;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: var(--primary-light);
     }
 
     /* Styling for the add button */
     #AddParty, #AddPartyEmpty {
         transition: all 0.2s ease;
+        background: var(--primary);
+        border-color: var(--primary);
     }
 
         #AddParty:hover, #AddPartyEmpty:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+            box-shadow: var(--shadow-hover) !important;
+            background-color: var(--primary-dark);
         }
 
     /* Tooltip styling */
@@ -852,39 +946,121 @@
         font-size: 0.75rem;
     }
 
-    /* Animation for hovering over buttons */
+    .tooltip-inner {
+        background-color: var(--text-primary);
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Button styling */
     .btn {
         transition: all 0.2s ease;
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+    .btn-success {
+        background-color: var(--success);
+        border-color: var(--success);
+    }
+
+    .btn-info {
+        background-color: var(--info);
+        border-color: var(--info);
+    }
+
+    .btn-warning {
+        background-color: var(--warning);
+        border-color: var(--warning);
+    }
+
+    .btn-danger {
+        background-color: var(--error);
+        border-color: var(--error);
     }
 
     /* Style for pagination */
     .pagination .page-link {
         border-radius: 0;
-        color: #6c757d;
+        color: var(--text-secondary);
+        border-color: var(--border);
     }
 
     .pagination .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
+        background-color: var(--primary);
+        border-color: var(--primary);
         color: white;
+    }
+
+    .pagination .page-link:hover {
+        background-color: var(--primary-light);
+        color: var(--primary);
     }
 
     /* Search input focus effect */
     input:focus, select:focus {
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15) !important;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.15) !important;
     }
 
-    .table-wrapper {
-        height: 400px;
-        overflow-y: auto;
+    .form-control {
+        border: 1px solid var(--border);
+        color: var(--text-primary);
     }
 
-    .table thead th {
-        position: sticky;
-        top: 0;
-        background-color: #f8f9fa; /* light gray to match Bootstrap's bg-light */
-        z-index: 5;
+        .form-control::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+    /* Status badges */
+    .badge.bg-success {
+        background-color: var(--success) !important;
     }
 
+    .badge.bg-info {
+        background-color: var(--info) !important;
+    }
 
-</style>
+    .badge.bg-warning {
+        background-color: var(--warning) !important;
+    }
+
+    .badge.bg-danger {
+        background-color: var(--error) !important;
+    }
+
+    /* Action buttons in tables */
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        color: var(--text-secondary);
+        background-color: transparent;
+        transition: all 0.2s ease;
+    }
+
+        .action-btn:hover {
+            background-color: var(--bg-medium);
+            color: var(--primary);
+        }
+
+        .action-btn.edit:hover {
+            color: var(--primary);
+        }
+
+        .action-btn.delete:hover {
+            color: var(--error);
+        }
+</style></style>

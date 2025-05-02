@@ -58,7 +58,6 @@ namespace Moksha_App.Controllers
 
         }
 
-
         [HttpPost("CreatePartyAsync")]
         [Route("Party/CreatePartyAsync")]
         public async Task<IActionResult> CreatePartyAsync([FromBody] Party party)
@@ -97,6 +96,7 @@ namespace Moksha_App.Controllers
         }
 
         [HttpGet("search")]
+        [Route("Party/search")]
         public async Task<IActionResult> search(string search)
         {
             var seachparty = search.ToLower();
@@ -174,7 +174,7 @@ namespace Moksha_App.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                TempData["Success"] = $"{party.p_t} added";
+                TempData["Success"] = "Party details updated successfully.";
 
                 return Ok(new
                 {
@@ -211,7 +211,7 @@ namespace Moksha_App.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                TempData["Success"] = message;
+                TempData["Delete"] = message;
 
                 return Ok(new
                 {
