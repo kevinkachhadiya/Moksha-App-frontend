@@ -174,10 +174,10 @@
             <div class="card shadow-sm">
                 <div class="card-body p-0">
                     <form id="searchForm" method="get" asp-action="GetAllStocks">
-                        <div class="d-flex flex-column flex-lg-row p-2 gap-2">
+                        <div class="d-flex flex-column flex-lg-row p-3 gap-2 ">
                             <!-- Search Field with Icon -->
                             <div class="search-wrapper flex-grow-1 position-relative">
-                            <label for="searchTerm" class="form-label text-muted small mb-1 d-none d-sm-block">Search By</label>
+                            <label for="searchTerm" class="form-label text-muted small mb-1  d-sm-block">Search By</label>
                                 <div class="position-relative d-flexh-100">
                                     <!-- Search Icon -->
                                     <i class="bi bi-search text-muted position-absolute ms-3" style="z-index: 2;margin-top: 10px;"></i>
@@ -208,7 +208,7 @@
                             <div class="filters-group d-flex flex-column flex-md-row align-items-stretch gap-3">
                                 <!-- Sort By Dropdown -->
                                 <div class="dropdown-wrapper position-relative">
-                                    <label for="sortColumn" class="form-label text-muted small mb-1 d-none d-sm-block">Sort By</label>
+                                    <label for="sortColumn" class="form-label text-muted small mb-1  d-sm-block">Sort By</label>
                                     <div class="select-container position-relative">
                                         <select id="sortColumn" name="sortColumn" class="form-select shadow-sm">
                                             <option value="MaterialName" selected="@(Context.Request.Query["sortColumn"] == "ColorName")">Material Name</option>
@@ -221,7 +221,7 @@
 
                                 <!-- Sort Direction Dropdown -->
                                 <div class="dropdown-wrapper position-relative">
-                                    <label for="sortDirection" class="form-label text-muted small mb-1 d-none d-sm-block">Order</label>
+                                    <label for="sortDirection" class="form-label text-muted small mb-1  d-sm-block">Order</label>
                                     <div class="select-container position-relative">
                                         <select id="sortDirection" name="sortDirection" class="form-select shadow-sm">
                                             <option value="asc" selected="@(Context.Request.Query["sortDirection"] == "asc")">Ascending</option>
@@ -230,16 +230,15 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Buttons -->
-                                <div class="action-buttons d-flex align-items-end gap-2 ms-md-auto">
-                                    <button type="submit" class="btn btn-primary shadow-sm">
-                                        <i class="bi bi-filter me-2"></i>Apply
-                                    </button>
-                                    <a href="@Url.Action("GetAllStocks")" class="btn btn-outline-secondary shadow-sm">
-                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
-                                    </a>
-                                </div>
+                            <div class="d-flex flex-row flex-sm-row align-items-end justify-content-center gap-2">
+                                <button type="submit" class="btn btn-primary shadow-sm w-100 w-sm-auto">
+                                    <i class="bi bi-filter me-2"></i>Apply
+                                </button>
+                                <a href="/Stock_Management_/GetAllStocks" class="btn btn-outline-secondary shadow-sm w-100 w-sm-auto">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                                </a>
                             </div>
+
                         </div>
                     </form>
                 </div>
@@ -247,7 +246,7 @@
         </div>
 
         <!-- Stock Cards Container -->
-        <div class="stock-cards-container mb-1 flex-grow-1 overflow-auto">
+        <div class="stock-cards-container mb-1 flex-grow-1 overflow-auto mt-4">
             <div class="card shadow-sm">
                 <!-- Cards Header with Stats and Actions -->
             <div class="card-header bg-white p-1 border-bottom">

@@ -98,17 +98,17 @@
                     <!-- Action Buttons -->
                     <div class="action-buttons d-flex align-items-end ms-md-auto">
                         <div class="row w-100 g-2 align-items-end">
-                            <div class="col-12 col-md-6">
+                            <div class="col-6 col-md-6">
                                 <button type="submit"
                                         class="btn btn-primary w-100 px-3 shadow-sm d-inline-flex align-items-center justify-content-center text-nowrap"
                                         style="border-radius: 8px; height: 45px; font-size: 13px;">
                                     <i class="bi bi-filter me-2"></i>
-                                    <span class="d-none d-sm-inline">Apply Filters</span>
-                                    <span class="d-inline d-sm-none">Filter</span>
+                                    <span class="d-sm-inline">Apply </span>
+                                    
                                 </button>
 
                             </div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-6 col-md-6">
                                 <a href="@Url.Action("All_Party")"
                                    class="btn btn-outline-secondary w-100 shadow-sm d-inline-flex align-items-center justify-content-center"
                                    style="border-radius: 8px; min-height:45px">
@@ -499,7 +499,7 @@
         </div>
     </div>
 </div>
-
+@section sripts{
 
 <script>
 
@@ -817,6 +817,7 @@
         return isValid;
     }
 </script>
+}
 <style>
     <style >
     /* CSS Variables for consistent theming */

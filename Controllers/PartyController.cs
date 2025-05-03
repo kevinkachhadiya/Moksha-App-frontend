@@ -200,13 +200,13 @@ namespace Moksha_App.Controllers
         public async Task<IActionResult> DeleteParty(int id)
         {
 
-            
+
 
             string baseAdd = _httpClient.BaseAddress + $"/Party/Delete/{id}";
             var response = await _httpClient.DeleteAsync(baseAdd);
             var message = await response.Content.ReadAsStringAsync();
 
-          
+
 
 
             if (response.IsSuccessStatusCode)
@@ -231,6 +231,68 @@ namespace Moksha_App.Controllers
             }
 
         }
+
+
+     
+        [HttpGet("getByNameCustomerName/{name}")]
+        [Route("Party/getByNameCustomerName")]
+        public async Task<IActionResult> getByNameCustomerName(string name)
+        {
+            var seachparty = name.ToLower();
+
+            string baseAdd = _httpClient.BaseAddress + $"/Party/CustomerSearch?search={seachparty}";
+
+
+            var response = await _httpClient.GetAsync(baseAdd);
+
+
+            Debug.WriteLine(response);
+
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Dictionary<string, string> p = new Dictionary<string, string>();
+                var parties = JsonSerializer.Deserialize<List<Party>>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                foreach (var party in parties)
+                {
+                    p.Add(party.P_Name, party.P_number);
+                }
+                if (parties.Count() >= 1)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        data = parties // you can even return the list
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        data = parties // you can even return the list
+                    });
+                }
+
+
+            }
+            else
+            {
+                return Ok(new
+                {
+                    success = false,
+                    data = "" // you can even return the list
+                });
+            }
+        }
+
+
+
 
     }
     }
