@@ -48,6 +48,8 @@ namespace Moksha_App.Models
         public decimal AvailableStock { get; set; }
 
         public bool isActive { get; set; }
+
+        public decimal price { get; set; }
     }
 
     public class stockListViewModel

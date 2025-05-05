@@ -245,7 +245,6 @@ namespace Moksha_App.Controllers
 
             var response = await _httpClient.GetAsync(baseAdd);
 
-
             Debug.WriteLine(response);
 
             string jsonResponse = await response.Content.ReadAsStringAsync();
@@ -257,7 +256,6 @@ namespace Moksha_App.Controllers
                 {
                     PropertyNameCaseInsensitive = true
                 });
-
                 foreach (var party in parties)
                 {
                     p.Add(party.P_Name, party.P_number);
@@ -267,7 +265,7 @@ namespace Moksha_App.Controllers
                     return Ok(new
                     {
                         success = true,
-                        data = parties // you can even return the list
+                        data = p
                     });
                 }
                 else
@@ -275,7 +273,7 @@ namespace Moksha_App.Controllers
                     return Ok(new
                     {
                         success = false,
-                        data = parties // you can even return the list
+                        data = parties
                     });
                 }
 

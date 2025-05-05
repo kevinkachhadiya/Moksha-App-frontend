@@ -513,12 +513,12 @@
                                     <input type="text"
                                            class="form-control form-control-lg shadow-sm rounded-3"
                                            id="CustomerName"
-                                           name="BuyerName"
+                                           name="CustomerName"
                                            placeholder=""
                                           
                                            required
                                            autocomplete="off">
-                                    <label for="buyerName" class="fw-semibold text-secondary ps-2">
+                                    <label for="CutomerName" class="fw-semibold text-secondary ps-2">
                                         <i class="bi bi-person-badge me-2"></i>Supplier Name
                                     </label>
                                     <div class="valid-feedback"> Looks good! </div>
@@ -555,12 +555,11 @@
                                     </h5>
                                 </div>
                                 <div class="card-body p-3">
-                                    <div id="materialsContainer" class="d-grid gap-3">
+                                    <div id="materialsContainer">
                                         <!-- Material items will be added here -->
                                     </div>
                                     <button type="button"
                                             class="btn btn-outline-primary w-100 mt-3 py-3 rounded-3 add-material-btn"
-                                            onclick="Additem();"
                                             id="addMaterialBtn">
                                         <i class="bi bi-plus-circle me-2"></i>Add Item
                                     </button>
@@ -637,48 +636,522 @@
 
 @section scripts{
 <script>
+     let availablestocks = [];
+
+     const params = new URLSearchParams({
+
+                    searchTerm: '',
+                    sortColumn: 'ColorName',
+                    sortDirection: 'asc',
+                    page: '1',
+                    pageSize: '9999'
+                });
+
+    function applyValidation(inputId, showValid = false) {
+     const input = document.getElementById(inputId);
+    input.classList.add('is-invalid');
+
+    const icon = input.nextElementSibling;
+    const feedback = icon?.nextElementSibling;
+
+    if (feedback) 
+    {
+        feedback.classList.add('valid-feedback');
+        feedback.style.display = showValid ? 'block' : 'none';
+    }
+
+}
+
    document.addEventListener("DOMContentLoaded",function(){
 
-        document.getElementById("cutomer-invoice").addEventListener("click",function()
+       document.getElementById("cutomer-invoice").addEventListener("click",function()
         {
+               $.ajax({
+                                url: `@Url.Action("GetAll_availableStocks", "Stock_Management_")?`+ params.toString(),
+                        type: "GET",
+                        success: function(response) {
+                            if ( response.success) {
+                                            
+                                            availablestocks.length = 0;
+                                            Object.entries(response.message.stock).forEach(([key,stock])=>{
+                                                       availablestocks.push({
+                                                               id : stock.stockId,
+                                                               colorName : stock.colorName,
+                                                               availablestocks : stock.availableStock,
+                                                               price : stock.price
+                                                       
+                                                       });
+                                        });
+
+                                      
+                            } else {
+                                console.error("No data received");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("AJAX error:", error);
+                        }
+                    });
+
                  const modal =  new bootstrap.Modal(document.getElementById('addCutomerBillModal'));
                  const form = document.getElementById('customerBillForm');
                  if (form)
                       {
+                  const inputs = form.querySelectorAll('.is-valid, .is-invalid');
+                  inputs.forEach(input => {
+                  input.classList.remove('is-valid', 'is-invalid');
+                    });
+
+                 // Optional: remove feedback text if needed
+                 const feedbacks = form.querySelectorAll('.valid-feedback, .invalid-feedback');
+                 feedbacks.forEach(fb => {
+                  fb.style.display = 'none'; // or hide it with ``
+                 fb.classList.remove('valid-feedback', 'invalid-feedback');
+                   });
+
                           form.reset(); 
-                      }
+                 }
 
             modal.show();
 
         });
 
-             document.getElementById("CustomerName").addEventListener("keyup",function(input){
-             
+       const customer = [];
+
+       document.getElementById("CustomerName").addEventListener("keyup",function(input)
+             {
                const value = input.target.value;
-                
+               document.getElementById('phoneNumber').value = "";
+               applyValidation('CustomerName', false);
+               applyValidation('phoneNumber', false);
+
+                                        if (value.length <= 0 || /\d/.test(value))
+                                {
+                            nameSuggestions.style.display = 'none';
+                           return;
+                         }
+                         
+         
                if(value)
                {
-                       fetch(`/Party/getByNameCustomerName?name=${encodeURIComponent(value)}`, {
+                       fetch(`/Party/getByNameCustomerName?name=${encodeURIComponent(value)}`, 
+                       {
                        method: 'GET',
                        headers: 
                          {
                             'Content-Type': 'application/json'
                           }
                         })
-                      .then(response => response.json())
-                      .then(data => {   console.log(data); // Handle the response from the controller 
-                           })
-                      .catch(error => {
+                       .then(response => response.json())
+                       .then(response =>{
+                            customer.length = 0;
+                            Object.entries(response.data).forEach(([key,value]) => customer.push({name: key,
+                            phone: parseInt(value)
+                        })
+                       )
+                             const nameSuggestions = document.getElementById('nameSuggestions');
+                            
+                            displayCustomerSuggestions(customer, nameSuggestions);
+                       })
+                       .catch(error => 
+                          {
                                  console.error('Error:', error);
-                           });
-               }
- 
+                          });
+
+                                  function  displayCustomerSuggestions(data,nameSuggestions)
+                                    {
+                                           nameSuggestions.innerHTML = '';
+                                           data.forEach(cus => {
+                                           const suggestionItem = document.createElement('div');
+                                           suggestionItem.className = 'suggestion-item';
+                                           suggestionItem.innerHTML = `
+                                            <div class="suggestion-name">${cus.name}</div>
+                                            <div class="suggestion-phone">${cus.phone}</div>`;
+                                             nameSuggestions.appendChild(suggestionItem);
+
+                                   suggestionItem.addEventListener('click', () => {
+
+                                  const input = document.getElementById('CustomerName');
+
+                                  applyValidation('CustomerName',true);
+                                
+
+                                  input.value =  cus.name;
+                                  input.classList.remove('is-invalid');
+                                  input.classList.add('is-valid');
+                                  input.style.display = 'block';
+                               
+                                  const phoneInput = document.getElementById('phoneNumber');
+                                   applyValidation('phoneNumber',true);
+                                  phoneInput.value  = cus.phone;
+                                  phoneInput.classList.remove('is-invalid');
+                                  phoneInput.classList.add('is-valid');
+                                 
+                                  nameSuggestions.style.display = 'none';
+                                 });
+                                 });
+
+                                  nameSuggestions.style.display = 'block';
+                                  }
+                              }
              });
-   
-   
+
+      document.getElementById('addMaterialBtn').addEventListener("click", function() {
+            const materialsContainer = document.getElementById('materialsContainer');
+                              const itemCount = materialsContainer.querySelectorAll('.material-row').length + 1;
+
+          const newItem = `
+                  <div class="material-row justify-content-between" id="item-${itemCount}">
+          <!-- Item Number -->
+          <div class="item-number">${itemCount}</div>
+
+          <!-- Item Selector -->
+          <div class="item-cell item-selector">
+            <div class="cell-label">Item</div>
+            <div class="select-container">
+              <select class="item-dropdown" id="dropdown-${itemCount}" required>
+                <option value="">Select item...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Price per Kg -->
+          <div class="item-cell">
+            <div class="cell-label">Price/kg</div>
+            <div class="input-container">
+              <span class="price-prefix">₹</span>
+              <input type="text" class="price-input" readonly>
+              <span class="check-icon" style="display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Weight per Bag -->
+          <div class="item-cell">
+            <div class="cell-label">Weight/bag</div>
+            <div class="input-container">
+              <input type="text" class="weight-per-bag-input input-with-unit calc-trigger" placeholder="25" required>
+              <span class="unit-suffix">kg</span>
+            </div>
+          </div>
+
+          <!-- Total Bags -->
+          <div class="item-cell">
+            <div class="cell-label">Bags</div>
+            <div class="input-container">
+              <input type="text" class="total-bags-input calc-trigger" placeholder="10" required>
+              <span class="unit-suffix">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Additional Weight -->
+          <div class="item-cell">
+            <div class="cell-label">Extra</div>
+            <div class="input-container">
+              <input type="text" class="additional-weight-input input-with-unit calc-trigger" placeholder="0">
+              <span class="unit-suffix">+kg</span>
+            </div>
+          </div>
+
+          <!-- Total Price -->
+          <div class="price-cell">
+            <span class="total-price">₹0.00</span>
+          </div>
+
+          <!-- Delete Button -->
+                  <button type="button" class="delete-btn delete-item-btn" title="Delete Item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+          </button>
+                  `;
+
+            materialsContainer.insertAdjacentHTML("beforeend", newItem);
+
+               const lastItem = materialsContainer.lastElementChild;
+                       const dropdown = lastItem.querySelector('.item-dropdown');
+
+                dropdown.innerHTML = '';
+
+                 // Add default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Select a stock';
+                dropdown.appendChild(defaultOption);
+
+               // Loop through available stocks and add as options
+                availablestocks.forEach(stock => {
+               const option = document.createElement('option');
+               option.value = stock.id;
+               option.textContent = `${stock.colorName} - ${stock.availablestocks.toFixed(2)} Kg (available)`;
+               option.setAttribute('data-price', stock.price);
+               dropdown.appendChild(option);
+               });
+
+                       dropdown.addEventListener("change",function()
+                      {
+                          const selectedOption = this.options[this.selectedIndex];
+                          const selectedText = selectedOption.textContent;
+                          const price = selectedOption.getAttribute('data-price');
+
+                                  const stockprice = this.closest('.row').querySelector('.price-input');
+
+                                  if(selectedOption.value)
+                                  {
+                                        stockprice.value = price;
+                                        stockprice.classList.remove('is-invalid');
+                                        stockprice.classList.add('is-valid');
+                                  }
+                                  else
+                                  {
+                                          
+                                         stockprice.classList.remove('is-valid');
+                                         stockprice.classList.add('is-invalid');
+                                  }
+                       });
+
+        });
+
+        document.addEventListener("click", function (event) {
+             const nameSuggestions = document.getElementById('nameSuggestions');
+               if (!nameSuggestions.contains(event.target)) {
+                    nameSuggestions.style.display = "none";
+                    }
+        });
+
    });
 
 
 
 </script>
 }
+
+ <style>
+
+    .suggestions-dropdown {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: white;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        z-index: 1000;
+        display: none;
+        margin-top: 2px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .suggestion-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+    .suggestion-name {
+        font-weight: 600;
+    }
+
+    .suggestion-phone {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    @@media (min-width: 992px) {
+        .small-on-lg {
+            font-size: 0.95rem;
+        }
+    }
+</style>
+
+<style>
+    /* Clean, minimal styling to match your screenshot */
+    .material-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .item-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: #3366ff;
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .item-cell {
+        display: flex;
+        flex-direction: column;
+        min-width: 80px;
+    }
+
+    .item-selector {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .cell-label {
+        font-size: 11px;
+        color: #6c757d;
+        margin-bottom: 2px;
+    }
+
+    /* Clean form controls */
+    .select-container {
+        position: relative;
+        width: 100%;
+    }
+
+        .select-container select {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 14px;
+            appearance: none;
+            background-color: white;
+        }
+
+        .select-container:after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #6c757d;
+            pointer-events: none;
+        }
+
+    .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-container input {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+    .price-prefix {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    .price-input {
+        padding-left: 20px !important;
+    }
+
+    .unit-suffix {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        font-size: 12px;
+    }
+
+    .input-with-unit {
+        padding-right: 25px !important;
+    }
+
+    /* Price cell */
+    .price-cell {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        background-color: #f0f7ff;
+        border-radius: 4px;
+        padding: 6px 12px;
+        height: 32px;
+        font-weight: 500;
+        color: #3366ff;
+        min-width: 80px;
+    }
+
+    /* Delete button */
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        height: 32px;
+    }
+
+        .delete-btn:hover {
+            background-color: #f8d7da;
+        }
+
+    /* Checked icon */
+    .check-icon {
+        color: #28a745;
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .material-row
+
+    {
+        flex-wrap: wrap;
+    }
+
+    .item-selector {
+        flex: 1 0 calc(100% - 80px);
+    }
+
+    .item-cell {
+        flex: 1 0 30%;
+        min-width: 60px;
+    }
+
+    .price-cell {
+        margin-left: auto;
+    }
+
+    }
+</style>

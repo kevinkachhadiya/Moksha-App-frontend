@@ -68,6 +68,8 @@ namespace Moksha_App.Controllers
             }
             return View();
         }
+
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Stock s)
         {
@@ -193,6 +195,53 @@ namespace Moksha_App.Controllers
 
             }
              
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll_availableStocks(string searchTerm = "",
+           string sortColumn = "ColorName",
+           string sortDirection = "asc",
+           int page = 1,
+           int pageSize = 10)
+        {
+            string baseAdd = uri + "/Stock_Management/GetAllStocks";
+            var queryParams = System.Web.HttpUtility.ParseQueryString(string.Empty);
+            queryParams["searchTerm"] = searchTerm ?? "";
+            queryParams["sortColumn"] = sortColumn ?? "ColorName";
+            queryParams["sortDirection"] = sortDirection ?? "";
+            queryParams["page"] = page.ToString() ?? "1";
+            queryParams["pageSize"] = pageSize.ToString() ?? "10";
+            string fullUrl = $"{baseAdd}?{queryParams}";
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(fullUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                    var stocks = System.Text.Json.JsonSerializer.Deserialize<stockListViewModel>(jsonResponse, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    Debug.WriteLine(JsonSerializer.Serialize(stocks));
+
+                    return Json(new {success = true, message = stocks});
+
+                }
+                else
+                {
+                    string errorResponse = await response.Content.ReadAsStringAsync();
+                    return Json(new { success = true, message = errorResponse });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                ViewBag.Error = "An error occurred while calling the API: " + ex.Message;
+            }
+            return View();
         }
 
     }

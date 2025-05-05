@@ -897,7 +897,6 @@ document.addEventListener('DOMContentLoaded', function() {
               //etoggleSubmitButtonState();
 
 
-            // 1. Load materials data
             let materials = [];
   
              const params = new URLSearchParams({
@@ -923,7 +922,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error("AJAX error:", error);
                 }
             });
-            //add materials in EditItem bill
+
+
+           
 
               // for edit in add material
             window.eAddItem = function()
@@ -1871,7 +1872,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             phone: item.p_number
                         });
 
-                        console.log(response.data);
                     });
 
                     // Display suggestions after data is loaded
@@ -1904,16 +1904,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 phoneInput.value = supplier.phone;
                 phoneInput.classList.remove('is-invalid');
                 phoneInput.classList.add('is-valid');
-                formatPhoneNumber(phoneInput);
+              
 
-                // Hide suggestions after selection
+              
                 suggestionsElement.style.display = 'none';
             });
 
             suggestionsElement.appendChild(suggestionItem);
         });
 
-        // Show the suggestions dropdown
+ 
         suggestionsElement.style.display = 'block';
     }
 
@@ -1941,7 +1941,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.classList.add('is-valid');
                 input.classList.remove('is-invalid');
                 $(input).siblings('.valid-feedback').text('Valid phone number');
-            } else {
+            } 
+            else 
+            {
                 input.classList.add('is-invalid');
                 input.classList.remove('is-valid');
                 const feedback = $(input).siblings('.invalid-feedback');
