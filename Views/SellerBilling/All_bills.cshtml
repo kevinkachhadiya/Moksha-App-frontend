@@ -496,7 +496,7 @@
                 <div class="w-100 text-center">
                     <h5 class="modal-title fw-bold d-flex align-items-center justify-content-center">
                         <i class="bi bi-receipt-cutoff me-2 fs-2"></i>
-                        <span class="fs-3">Create New Buying Invoice</span>
+                        <span class="fs-3">Create New Customer Invoice</span>
                     </h5>
                 </div>
                 <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3 top-50 translate-middle-y"
@@ -551,7 +551,7 @@
                             <div class="card border-0 shadow-sm hover-shadow rounded-4" id="itemContainer">
                                 <div class="card-header bg-light border-0 py-3 rounded-top-4">
                                     <h5 class="fw-semibold text-primary mb-0 d-flex align-items-center">
-                                        <i class="bi bi-pallet me-2 fs-5"></i>Materials
+                                        <i class="bi bi-pallet me-2 fs-5"></i>Stock Items
                                     </h5>
                                 </div>
                                 <div class="card-body p-3">
@@ -569,7 +569,7 @@
 
                         <!-- Total Amount -->
                         <div class="col-12">
-                            <div class="d-flex p-3 bg-light rounded-4 border shadow-sm">
+                            <div class="d-flex p-2 bg-light rounded-4 border shadow-sm">
                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
                                     <i class="bi bi-calculator me-2 fs-4"></i>Total Amount
                                 </h5>
@@ -579,13 +579,61 @@
                             </div>
                         </div>
 
+
+                        <div class="col-12">
+
+                            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between justify-self-start mt-2 mt-md-0">
+
+                             <div class="d-flex">
+                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-circle me-2" id="toggleTax">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+
+                             <span class="fw-semibold text-secondary align-content-center">Add CGST / SGST</span>
+                                </div>
+                              <div class=" tax-section d-none">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control shadow-sm" id="cgstPercent" placeholder="0">
+                                    <label for="gstPercent">CGST (%)</label>
+                                </div>
+                            </div>
+
+                            <div class="tax-section d-none">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control shadow-sm" id="sgstPercent" placeholder="0">
+                                    <label for="cgstPercent">SGST (%)</label>
+                                </div>
+                            </div>
+                                <div class="tax-section d-none">
+                                    <div class="form-floating">
+                                        <input type="number" class="form-control shadow-sm bg-light" id="totalGstPercent" placeholder="0" readonly>
+                                        <label for="totalGstPercent">Total GST (%)</label>
+                                    </div>
+                                </div>
+
+                             </div>
+                    
+                         </div>
+
+                        <!-- Total Amount With GST -->
+                        <div class="col-12 mt-2 d-none" id="totalWithGstContainer">
+                            <div class="d-flex p-2 bg-light rounded-4 border shadow-sm">
+                                <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
+                                    <i class="bi bi-receipt-cutoff me-2 fs-4"></i>Total Amount (with GST)
+                                </h5>
+                                <h3 id="totalAmountWithGst" class="text-success fw-bold mb-0 ms-2 d-flex align-items-center">
+                                    <span class="fs-4">₹</span><span id="totalWithGstValue">0.00</span>
+                                </h3>
+                            </div>
+                        </div>
+
                         <!-- Payment Section -->
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-floating position-relative">
                                 <select class="form-select form-select-lg shadow-sm rounded-3"
                                         id="paymentMethod" name="PaymentMethod" required>
                                     <option value=0>💰 Cash</option>
-                                    <option value=1>💳 Credit Card</option>
+                                    <option value=1>💳 Check</option>
                                     <option value=2>🏦 Bank Transfer</option>
                                 </select>
                                 <label for="paymentMethod" class="fw-semibold text-secondary">
@@ -593,10 +641,19 @@
                                 </label>
                             </div>
                         </div>
-
+                        <div class="col-md-3">
+                            <div class="form-floating position-relative">
+                                <input type="date" class="form-control form-control-lg shadow-sm rounded-3"
+                                       id="dueDate" name="DueDate" required>
+                                <label for="dueDate" class="fw-semibold text-secondary">
+                                    <i class="bi bi-calendar-event me-2"></i>Due Date
+                                </label>
+                            </div>
+                        </div>
+                      
                         <!-- Payment Status -->
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center p-3 bg-light rounded-4 border shadow-sm h-100">
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-center p-2 bg-light rounded-4 border shadow-sm h-100">
                                 <input class="form-check custom-large-checkbox"
                                        type="checkbox"
                                        id="isPaid"
@@ -636,51 +693,38 @@
 
 @section scripts{
 <script>
-     let availablestocks = [];
+       const availablestocks = [];
 
-     const params = new URLSearchParams({
-
-                    searchTerm: '',
-                    sortColumn: 'ColorName',
-                    sortDirection: 'asc',
-                    page: '1',
-                    pageSize: '9999'
-                });
-
-    function applyValidation(inputId, showValid = false) {
-     const input = document.getElementById(inputId);
-    input.classList.add('is-invalid');
-
-    const icon = input.nextElementSibling;
-    const feedback = icon?.nextElementSibling;
-
-    if (feedback) 
-    {
-        feedback.classList.add('valid-feedback');
-        feedback.style.display = showValid ? 'block' : 'none';
-    }
-
-}
-
-   document.addEventListener("DOMContentLoaded",function(){
+       document.addEventListener("DOMContentLoaded",function(){
 
        document.getElementById("cutomer-invoice").addEventListener("click",function()
         {
+                
+                 const params = new URLSearchParams({
+
+                         searchTerm: '',
+                         sortColumn: 'ColorName',
+                         sortDirection: 'asc',
+                         page: '1',
+                         pageSize: '9999'
+                     });
+
                $.ajax({
                                 url: `@Url.Action("GetAll_availableStocks", "Stock_Management_")?`+ params.toString(),
                         type: "GET",
                         success: function(response) {
                             if ( response.success) {
-                                            
+
                                             availablestocks.length = 0;
                                             Object.entries(response.message.stock).forEach(([key,stock])=>{
                                                        availablestocks.push({
                                                                id : stock.stockId,
                                                                colorName : stock.colorName,
                                                                availablestocks : stock.availableStock,
-                                                               price : stock.price
-                                                       
+                                                               price : stock.price,
+                                                               weight_per_bag : stock.weight
                                                        });
+
                                         });
 
                                       
@@ -796,146 +840,339 @@
                               }
              });
 
-      document.getElementById('addMaterialBtn').addEventListener("click", function() {
+       document.getElementById('addMaterialBtn').addEventListener("click", function() {
             const materialsContainer = document.getElementById('materialsContainer');
                               const itemCount = materialsContainer.querySelectorAll('.material-row').length + 1;
 
-          const newItem = `
-                  <div class="material-row justify-content-between" id="item-${itemCount}">
-          <!-- Item Number -->
-          <div class="item-number">${itemCount}</div>
-
-          <!-- Item Selector -->
-          <div class="item-cell item-selector">
-            <div class="cell-label">Item</div>
-            <div class="select-container">
-              <select class="item-dropdown" id="dropdown-${itemCount}" required>
-                <option value="">Select item...</option>
-              </select>
+                 const newItem = `
+          <div class="material-row justify-content-between" id="item-${itemCount}">
+            <!-- Item Number -->
+            <div class="item-number">
+          
+              <div class="number-display">${itemCount}</div>
             </div>
-          </div>
 
-          <!-- Price per Kg -->
-          <div class="item-cell">
-            <div class="cell-label">Price/kg</div>
-            <div class="input-container">
-              <span class="price-prefix">₹</span>
-              <input type="text" class="price-input" readonly>
-              <span class="check-icon" style="display:none;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                </svg>
-              </span>
+            <!-- Item Selector -->
+            <div class="item-cell item-selector mb-4">
+              <div class="cell-label">Item</div>
+              <div class="select-container">
+                <select class="item-dropdown" id="dropdown-${itemCount}" required>
+                  <option value="">Select item...</option>
+                </select>
+              </div>
             </div>
-          </div>
 
-          <!-- Weight per Bag -->
-          <div class="item-cell">
-            <div class="cell-label">Weight/bag</div>
-            <div class="input-container">
-              <input type="text" class="weight-per-bag-input input-with-unit calc-trigger" placeholder="25" required>
-              <span class="unit-suffix">kg</span>
+            <!-- Price per Kg -->
+            <div class="item-cell">
+              <div class="cell-label">Rupees/kg</div>
+              <div class="input-container">
+                <span class="price-prefix">₹</span>
+                <input type="text" class="price-input" type="number" required>
+                <span class="check-icon" style="display:none;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="calc-preview" id="PriceperKgPreview"> = 0 Price/Kg</div>
             </div>
-          </div>
 
-          <!-- Total Bags -->
-          <div class="item-cell">
-            <div class="cell-label">Bags</div>
-            <div class="input-container">
-              <input type="text" class="total-bags-input calc-trigger" placeholder="10" required>
-              <span class="unit-suffix">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
-                </svg>
-              </span>
+            <!-- Weight per Bag -->
+            <div class="item-cell">
+              <div class="cell-label">Weight/bag</div>
+              <div class="input-container">
+                <input type="text" class="weight-per-bag-input input-with-unit calc-trigger" placeholder="0" type="number" required>
+                <span class="unit-suffix">kg</span>
+              </div>
+              <div class="calc-preview" id="WeightperBagPreview"> = 0 Weight/Bag</div>
             </div>
-          </div>
 
-          <!-- Additional Weight -->
-          <div class="item-cell">
-            <div class="cell-label">Extra</div>
-            <div class="input-container">
-              <input type="text" class="additional-weight-input input-with-unit calc-trigger" placeholder="0">
-              <span class="unit-suffix">+kg</span>
+            <!-- Total Bags -->
+            <div class="item-cell">
+              <div class="cell-label">Bags</div>
+              <div class="input-container">
+                <input type="text" class="total-bags-input calc-trigger" placeholder="0" type="number" required>
+                <span class="unit-suffix">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                  </svg>
+                </span>
+              </div>
+              <div class="calc-preview" id="TotalBagsPreview"> = 0 Bags</div>
             </div>
+
+            <!-- Additional Weight -->
+            <div class="item-cell">
+              <div class="cell-label">Extra</div>
+              <div class="input-container">
+                <input type="text" class="additional-weight-input input-with-unit calc-trigger" placeholder="0" type="number" type="number">
+                <span class="unit-suffix">+kg</span>
+              </div>
+              <div class="calc-preview" id="AdditionalWeightPreview"> = 0 Additional weight</div>
+            </div>
+
+                      <!-- total Weight -->
+                    <div class="mb-4">
+                      <div class="cell-label">total wight(bags * we/b + extra )</div>
+                      <div class="input-container">
+                        <input type="text" class="total-weight-input input-with-unit calc-trigger" placeholder="0" type="text" readonly>
+                      </div>
+                    </div>
+
+            <!-- Total Price -->
+                    <div class="price-cell calc-preview">
+              <span class="total-price" readonly>₹0.00</span>
+            </div>
+
+            <!-- Delete Button -->
+            <button type="button" class="delete-btn delete-item-btn" title="Delete Item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+              </svg>
+            </button>
           </div>
+        `;
 
-          <!-- Total Price -->
-          <div class="price-cell">
-            <span class="total-price">₹0.00</span>
-          </div>
+                materialsContainer.insertAdjacentHTML("beforeend", newItem);
 
-          <!-- Delete Button -->
-                  <button type="button" class="delete-btn delete-item-btn" title="Delete Item">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-            </svg>
-          </button>
-                  `;
+        // Wait for DOM to update before querying new elements
+        setTimeout(() => {
+          const lastItem = materialsContainer.lastElementChild;
+          const dropdown = lastItem.querySelector('.item-dropdown');
 
-            materialsContainer.insertAdjacentHTML("beforeend", newItem);
+          dropdown.innerHTML = '';
 
-               const lastItem = materialsContainer.lastElementChild;
-                       const dropdown = lastItem.querySelector('.item-dropdown');
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Select a stock';
+          dropdown.appendChild(defaultOption);
+          availablestocks.forEach(stock => {
+            const option = document.createElement('option');
+            option.value = stock.id;
+            option.textContent = `${stock.colorName} - ${stock.availablestocks.toFixed(2)} Kg (available)`;
+            option.setAttribute('data-price', stock.price);
+             option.setAttribute('data-weightperbag',stock.weight_per_bag);
+            dropdown.appendChild(option);
+          });
+              
+             dropdown.addEventListener("change",function()
+                           {
+                               const selectedOption = this.options[this.selectedIndex];
+                               const selectedText = selectedOption.textContent;
+                               const price = selectedOption.getAttribute('data-price');
+                               
+                             
+                               const weightperpag = selectedOption.getAttribute('data-weightperbag');
+                               
+                               const row = this.closest('.material-row');
 
-                dropdown.innerHTML = '';
+                                 
+                               const stockprice = row.querySelector('.price-input');
+                               const weight_Per_bag = row.querySelector('.weight-per-bag-input');
 
-                 // Add default option
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Select a stock';
-                dropdown.appendChild(defaultOption);
 
-               // Loop through available stocks and add as options
-                availablestocks.forEach(stock => {
-               const option = document.createElement('option');
-               option.value = stock.id;
-               option.textContent = `${stock.colorName} - ${stock.availablestocks.toFixed(2)} Kg (available)`;
-               option.setAttribute('data-price', stock.price);
-               dropdown.appendChild(option);
-               });
+                               const isSelected = !!selectedOption.value;
 
-                       dropdown.addEventListener("change",function()
-                      {
-                          const selectedOption = this.options[this.selectedIndex];
-                          const selectedText = selectedOption.textContent;
-                          const price = selectedOption.getAttribute('data-price');
+                               stockprice.value = isSelected ? price : 0;
+                               weight_Per_bag.value = weightperpag;
 
-                                  const stockprice = this.closest('.row').querySelector('.price-input');
+                               stockprice.classList.toggle('is-valid', isSelected);
+                               stockprice.classList.toggle('is-invalid', !isSelected);
 
-                                  if(selectedOption.value)
-                                  {
-                                        stockprice.value = price;
-                                        stockprice.classList.remove('is-invalid');
-                                        stockprice.classList.add('is-valid');
-                                  }
-                                  else
-                                  {
-                                          
-                                         stockprice.classList.remove('is-valid');
-                                         stockprice.classList.add('is-invalid');
-                                  }
-                       });
+                               weight_Per_bag.classList.remove('is-valid', 'is-invalid');
 
+                               calculateLineTotal(row);
+                               updateTotalAmount();
+                            });
+        }, 0);
+
+       document.getElementById('materialsContainer').addEventListener('click', function(e) {
+                     if (e.target.closest('.delete-btn')) {
+                           const row = e.target.closest('.material-row');
+                           if (row) {
+                               row.remove();
+                               updateTotalAmount();
+                               updateItemNumbers();
+                            }
+                        }
         });
-
-        document.addEventListener("click", function (event) {
+ 
+                });
+                 
+       document.addEventListener("click", function (event) {
              const nameSuggestions = document.getElementById('nameSuggestions');
                if (!nameSuggestions.contains(event.target)) {
                     nameSuggestions.style.display = "none";
                     }
         });
 
+       document.getElementById('materialsContainer').addEventListener('input', function (e) {
+
+                  const target = e.target;
+
+                  if (target.classList.contains('calc-trigger') || target.classList.contains('price-input')) {
+                    const row = target.closest('.material-row');
+
+                    calculateLineTotal(row);
+                    updateTotalAmount();
+                  }
+                });
    });
 
+              function applyValidation(inputId, showValid = false) {
+             const input = document.getElementById(inputId);
+            input.classList.add('is-invalid');
+
+            const icon = input.nextElementSibling;
+            const feedback = icon?.nextElementSibling;
+
+            if (feedback)
+            {
+                feedback.classList.add('valid-feedback');
+                feedback.style.display = showValid ? 'block' : 'none';
+            }
+
+        }
+            
+              function safeEval(expression) {
+                  try {
+                    const sanitized = expression.replace(/[^-()\d/*+.]/g, '');
+                    const result =  eval(sanitized);
+                    return result < 0 || isNaN(result) ? 0 : result;
+                  } catch (e) {
+                    return 0;
+                  }
+                }
+
+              function applyValidationStyles(input, isValid) {
+                  input.classList.remove('is-invalid', 'is-valid');
+                  input.classList.add(isValid ? 'is-valid' : 'is-invalid');
+                }
+
+              function calculateLineTotal(row) {
+                  
+                  const priceInput = row.querySelector('.price-input');
+                  const weightPerBagInput = row.querySelector('.weight-per-bag-input');
+                  const totalBagsInput = row.querySelector('.total-bags-input');
+                  const additionalWeightInput = row.querySelector('.additional-weight-input');
+                  const totalWeightInput = row.querySelector('.total-weight-input');
+                       
+
+
+
+                  const price = safeEval(priceInput.value || "0");
+                  const weightPerBag = safeEval(weightPerBagInput.value || "0");
+                  const totalBags = safeEval(totalBagsInput.value || "0");
+                  const additionalWeight = safeEval(additionalWeightInput.value || "0");
+
+                  // Apply validation styles (non-zero, valid numbers)
+                  applyValidationStyles(priceInput, price > 0);
+                  applyValidationStyles(weightPerBagInput, weightPerBag > 0);
+                  applyValidationStyles(totalBagsInput, totalBags > 0);
+                  applyValidationStyles(additionalWeightInput, additionalWeight >= 0);
+
+                  // Update previews
+                  row.querySelector('#PriceperKgPreview').textContent = `= ${price} Rupees/Kg`;
+                  row.querySelector('#WeightperBagPreview').textContent = `= ${weightPerBag} Weight/Bag`;
+                  row.querySelector('#TotalBagsPreview').textContent = `= ${totalBags} Bags`;
+                  row.querySelector('#AdditionalWeightPreview').textContent = `= ${additionalWeight} Additional weight`;
+
+                  const totalWeight = (weightPerBag * totalBags) + additionalWeight;
+
+                  const totalPrice = totalWeight * price;
+
+                  totalWeightInput.value = `${totalWeight.toFixed(2)} = (${weightPerBag}*${totalBags})+ ${additionalWeight}`;
+
+                  row.querySelector('.total-price').textContent = `₹${totalPrice.toFixed(2)}`;
+
+                  return totalPrice;
+                }
+
+              function updateTotalAmount() {
+                  const rows = document.querySelectorAll('.material-row');
+                  let grandTotal = 0;
+
+                  rows.forEach(row => {
+                    grandTotal += calculateLineTotal(row);
+                  });
+
+                  document.getElementById('totalValue').textContent = grandTotal.toFixed(2);
+                }
+
+              function updateItemNumbers() {
+                    const rows = document.querySelectorAll('.material-row');
+                    rows.forEach((row, index) => {
+                    const itemNumberCell = row.querySelector('.item-number');
+                    itemNumberCell.textContent = index + 1;
+                    row.id = `item-${index + 1}`;
+                    const dropdown = row.querySelector('.item-dropdown');
+                    if (dropdown) dropdown.id = `dropdown-${index + 1}`;
+                  });
+                }
+
+                     document.getElementById('toggleTax').addEventListener('click', function () {
+        const taxFields = document.querySelectorAll('.tax-section');
+        const isVisible = !taxFields[0].classList.contains('d-none');
+        const icon = this.querySelector('i');
+         const container = document.getElementById("totalWithGstContainer");
+
+      
+        taxFields.forEach(el => el.classList.toggle('d-none'));
+        container.classList.toggle('d-none');
+
+
+        // Toggle icon
+        icon.className = isVisible ? 'bi bi-plus-lg' : 'bi bi-x-lg';
+
+        // Toggle background color (you can use a class or inline style)
+        if (!isVisible) {
+            this.style.backgroundColor = 'var(--error)';
+            this.style.color = 'white';
+        } else {
+            this.style.backgroundColor = '';
+            this.style.color = '';
+        }
+    });
+
+        function updateTotalGst() {
+        const cgst = parseFloat(document.getElementById('cgstPercent').value) || 0;
+        const sgst = parseFloat(document.getElementById('sgstPercent').value) || 0;
+
+        document.getElementById('totalGstPercent').value = cgst + sgst;
+    }
+
+    document.getElementById('cgstPercent').addEventListener('input', updateTotalGst);
+    document.getElementById('sgstPercent').addEventListener('input', updateTotalGst);
+
+        function updateTotalWithGST() {
+        const cgst = parseFloat(document.getElementById("cgstPercent").value) || 0;
+        const sgst = parseFloat(document.getElementById("sgstPercent").value) || 0;
+        const baseTotal = parseFloat(document.getElementById("totalValue").textContent) || 0;
+
+
+        console.log(baseTotal);
+
+        const totalGstPercent = cgst + sgst;
+
+        const gstAmount = (baseTotal * totalGstPercent) / 100;
+
+        const totalWithGst = baseTotal + gstAmount;
+
+         document.getElementById("totalWithGstValue").textContent = totalWithGst.toFixed(2);
+
+    }
+
+    // Add listeners
+    document.getElementById("cgstPercent").addEventListener("input", updateTotalWithGST);
+
+    document.getElementById("sgstPercent").addEventListener("input", updateTotalWithGST);
 
 
 </script>
+  
 }
-
  <style>
-
     .suggestions-dropdown {
         position: absolute;
         width: 100%;
@@ -986,7 +1223,7 @@
         padding: 12px;
         margin-bottom: 8px;
         border-radius: 8px;
-        background-color: white;
+        background-color: #eef5ff;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
@@ -995,7 +1232,7 @@
         align-items: center;
         justify-content: center;
         width: 28px;
-        height: 28px;
+        height:28px;
         border-radius: 50%;
         background-color: #3366ff;
         color: white;
@@ -1007,7 +1244,8 @@
     .item-cell {
         display: flex;
         flex-direction: column;
-        min-width: 80px;
+        width: 170px !important;
+        position:static !important;
     }
 
     .item-selector {
@@ -1093,10 +1331,8 @@
 
     /* Price cell */
     .price-cell {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        background-color: #f0f7ff;
+        width: 120px;
+        background-color: #ffffff;
         border-radius: 4px;
         padding: 6px 12px;
         height: 32px;
@@ -1138,20 +1374,48 @@
 
     {
         flex-wrap: wrap;
+       
+    
     }
 
     .item-selector {
         flex: 1 0 calc(100% - 80px);
     }
 
-    .item-cell {
-        flex: 1 0 30%;
-        min-width: 60px;
-    }
-
+  
     .price-cell {
         margin-left: auto;
     }
 
+        .item-cell {
+            display: flex;
+            flex-direction: column;
+            width: 100% !important;
+            position: static !important;
+        }
+
     }
+
+    /* Validation styles */
+    .is-invalid {
+        border-color: var(--error) !important;
+        background-color: #ffe6e6;
+    }
+
+    .is-valid {
+        border-color: var(--success) !important;
+    }
+
+    .total-weight-input
+    {
+       width: 138px !important;
+    
+    }
+
+    .calc-preview {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
 </style>
