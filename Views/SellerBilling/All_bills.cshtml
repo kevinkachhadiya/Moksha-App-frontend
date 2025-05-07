@@ -504,49 +504,66 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="modal-body p-4">
-                <form id="customerBillForm" class="needs-validation" novalidate method="post">
-                    <div class="row g-4">
+            <div class="modal-body p-3">
+                    <form id="customerBillForm" class="needs-validation" novalidate method="post">
                         <div class="row g-3">
-                            <div class="col-6">
-                                <div class="form-floating position-relative">
-                                    <input type="text"
-                                           class="form-control form-control-lg shadow-sm rounded-3"
-                                           id="CustomerName"
-                                           name="CustomerName"
-                                           placeholder=""
-                                          
-                                           required
-                                           autocomplete="off">
-                                    <label for="CutomerName" class="fw-semibold text-secondary ps-2">
-                                        <i class="bi bi-person-badge me-2"></i>Supplier Name
-                                    </label>
-                                    <div class="valid-feedback"> Looks good! </div>
 
-                                    <div id="nameSuggestions" class="suggestions-dropdown">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-floating position-relative">
-                                    <input type="tel"
-                                           class="form-control form-control-lg shadow-sm rounded-3"
-                                           id="phoneNumber"
-                                           name="PhoneNumber"
-                                           placeholder=""
-                                           pattern="[0-9]{10}"
-                                           maxlength="10"
-                                           oninput="formatPhoneNumber(this)"
-                                           autocomplete="off" readonly>
-                                    <label for="phoneNumber" class="fw-semibold text-secondary ps-2">
-                                        <i class="bi bi-telephone me-2"></i>Phone Number
-                                    </label>
-                                    <div class="valid-feedback">Valid phone number</div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Customer Information Row -->
+                        <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-icon align-content-center"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control ms-2" id="CustomerName" name="CustomerName" placeholder="Supplier Name" required>
+                         <div id="nameSuggestions" class="suggestions-dropdown" style="margin-top:42px; margin-left:24px"></div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="input-group">
+                                    <span class="input-icon align-content-center"><i class="bi bi-telephone"></i></span>
+                        <input type="tel" class="form-control ms-2" id="phoneNumber" name="PhoneNumber" placeholder="Phone Number" readonly>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="input-group">
+                                    <span class="input-icon align-content-center"><i class="bi bi-geo-alt"></i></span>
+                        <input type="text" class="form-control ms-2" id="CustomerAddress" name="CustomerAddress" placeholder="Customer Address" readonly>
+                    </div>
+                </div>
+            </div>
+            
+                        <!-- Invoice Details Row -->
+                        <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                                    <span class="input-icon align-content-center">Bill Date </span>
+                        <input type="date" class="form-control ms-2" id="invoiceDate" name="InvoiceDate" required>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="input-group">
+                                    <span class="input-icon align-content-center"><i class="bi bi-upc-scan"></i></span>
+                        <input type="text" class="form-control ms-2" id="CustomerGSTIN" name="CustomerGSTIN" placeholder="Customer GSTIN (if available)">
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="input-group">
+                                    <span class="input-icon align-content-center"><i class="bi bi-geo"></i></span>
+                        <select class="form-select ms-2" id="PlaceOfSupply" name="PlaceOfSupply" required>
+                            <option value="">Place of Supply</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Materials Section -->
+                         <!-- Materials Section -->
                         <div class="col-12">
                             <div class="card border-0 shadow-sm hover-shadow rounded-4" id="itemContainer">
                                 <div class="card-header bg-light border-0 py-3 rounded-top-4">
@@ -568,105 +585,125 @@
                         </div>
 
                         <!-- Total Amount -->
-                        <div class="col-12">
-                            <div class="d-flex p-2 bg-light rounded-4 border shadow-sm">
-                                <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
-                                    <i class="bi bi-calculator me-2 fs-4"></i>Total Amount
+                         <div class="d-flex p-2">
+                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
+                                        <i class="bi bi-receipt-cutoff me-2 fs-4"></i> Subtotal
                                 </h5>
                                 <h3 id="totalAmount" class="text-success fw-bold mb-0 ms-2 d-flex align-items-center">
                                     <span class="fs-4">₹</span><span id="totalValue">0.00</span>
                                 </h3>
                             </div>
+
+                        <div class="form-check form-switch mb-2 ms-2">
+                            <input class="form-check-input" type="checkbox" id="gstToggle">
+                            <label class="form-check-label fw-semibold text-secondary" for="gstToggle" id="gstLabel">Add GST</label>
                         </div>
 
+                        <div class="row">
 
-                        <div class="col-12">
+                            <div class="row tax-section d-none">
 
-                            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between justify-self-start mt-2 mt-md-0">
-
-                             <div class="d-flex">
-                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-circle me-2" id="toggleTax">
-                                        <i class="bi bi-plus-lg"></i>
-                                    </button>
-
-                             <span class="fw-semibold text-secondary align-content-center">Add CGST / SGST</span>
-                                </div>
-                              <div class=" tax-section d-none">
-                                <div class="form-floating">
-                                    <input type="number" class="form-control shadow-sm" id="cgstPercent" placeholder="0">
-                                    <label for="gstPercent">CGST (%)</label>
-                                </div>
-                            </div>
-
-                            <div class="tax-section d-none">
-                                <div class="form-floating">
-                                    <input type="number" class="form-control shadow-sm" id="sgstPercent" placeholder="0">
-                                    <label for="cgstPercent">SGST (%)</label>
-                                </div>
-                            </div>
-                                <div class="tax-section d-none">
-                                    <div class="form-floating">
-                                        <input type="number" class="form-control shadow-sm bg-light" id="totalGstPercent" placeholder="0" readonly>
-                                        <label for="totalGstPercent">Total GST (%)</label>
+                                <!-- CGST Input -->
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <span class="input-icon align-content-center">CGST (%)</span>
+                                        <input type="number" class="form-control ms-2 shadow-sm" id="cgstPercent" placeholder="CGST (%)" min="0">
                                     </div>
                                 </div>
 
-                             </div>
-                    
-                         </div>
+                                <!-- SGST Input -->
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <span class="input-icon align-content-center">SGST (%)</span>
+                                        <input type="number" class="form-control ms-2 shadow-sm" id="sgstPercent" placeholder="SGST (%)" min="0">
+                                    </div>
+                                </div>
 
+                                <!-- IGST Input-->
+                                <div class="col-md-4 mb-2">
+                                    <div class="input-group">
+                                        <span class="input-icon align-content-center">IGST (%)</span>
+                                        <input type="number" class="form-control ms-2 shadow-sm" id="igstPercent" placeholder="IGST (%)" min="0">
+                                    </div>
+                                </div>
+
+
+                            <div class="row g-2 tax-section d-none">
+
+                                <!-- Total GST (%) Field -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-icon align-content-center">GST(%)</span>
+                                        <input type="number" class="form-control ms-2 shadow-sm bg-light" id="totalGstPercent" placeholder="Total GST (%)" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Amount of Tax Field -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-icon align-content-center">Tax Amount (₹)</span>
+                                        <input type="text" class="form-control ms-2 shadow-sm bg-light" id="gstAmount" placeholder="Total GST Amount" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- HSN Code Field -->
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-icon align-content-center">HSN Code</span>
+                                        <input type="text" class="form-control ms-2 shadow-sm bg-light" id="hsnCode" value="3915" readonly>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
                         <!-- Total Amount With GST -->
                         <div class="col-12 mt-2 d-none" id="totalWithGstContainer">
-                            <div class="d-flex p-2 bg-light rounded-4 border shadow-sm">
+                            <div class="d-flex p-2 ">
                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
-                                    <i class="bi bi-receipt-cutoff me-2 fs-4"></i>Total Amount (with GST)
+                                    <i class="bi bi-receipt-cutoff me-2 fs-4"></i> Total Invoice Value (With GST)
                                 </h5>
                                 <h3 id="totalAmountWithGst" class="text-success fw-bold mb-0 ms-2 d-flex align-items-center">
                                     <span class="fs-4">₹</span><span id="totalWithGstValue">0.00</span>
                                 </h3>
                             </div>
                         </div>
+                        </div>
 
-                        <!-- Payment Section -->
+                        <!-- Payment Method -->
                         <div class="col-md-3">
-                            <div class="form-floating position-relative">
-                                <select class="form-select form-select-lg shadow-sm rounded-3"
-                                        id="paymentMethod" name="PaymentMethod" required>
+                            <div class="input-group">
+                                <span class="input-icon align-content-center"><i class="bi bi-credit-card-2-back"></i></span>
+                                <select class="form-select ms-2 shadow-sm" id="paymentMethod" name="PaymentMethod" required>
                                     <option value=0>💰 Cash</option>
                                     <option value=1>💳 Check</option>
                                     <option value=2>🏦 Bank Transfer</option>
                                 </select>
-                                <label for="paymentMethod" class="fw-semibold text-secondary">
-                                    <i class="bi bi-credit-card-2-back me-2"></i>Payment Method
-                                </label>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-floating position-relative">
-                                <input type="date" class="form-control form-control-lg shadow-sm rounded-3"
-                                       id="dueDate" name="DueDate" required>
-                                <label for="dueDate" class="fw-semibold text-secondary">
-                                    <i class="bi bi-calendar-event me-2"></i>Due Date
-                                </label>
+
+                        <!-- Due Date -->
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-icon align-content-center">Due Date</span>
+                                <input type="date" class="form-control ms-2 shadow-sm" id="dueDate" name="DueDate" required>
                             </div>
                         </div>
-                      
-                        <!-- Payment Status -->
-                        <div class="col-md-3">
-                            <div class="d-flex align-items-center p-2 bg-light rounded-4 border shadow-sm h-100">
-                                <input class="form-check custom-large-checkbox"
-                                       type="checkbox"
-                                       id="isPaid"
-                                       name="IsPaid"
-                                       required>
+
+                        <!-- Mark as Paid Checkbox -->
+                        <div class="col-md-4">
+                            <div class="input-group bg-light rounded-4 border shadow-sm p-2 align-items-center">
+                                <input class="form-check-input mt-0" type="checkbox" id="isPaid" name="IsPaid" required>
                                 <label class="form-check-label ms-2 fw-semibold" for="isPaid">
-                                    <i class="bi bi-receipt me-2"></i>Mark as Paid
+                                    <i class="bi bi-receipt me-1"></i>Mark as Paid
                                 </label>
-                                <div class="invalid-feedback" style="max-width: 40%; margin-left: 30px;">
+                                <div class="invalid-feedback ms-3" style="max-width: 40%;">
                                     Please confirm payment status
                                 </div>
                             </div>
                         </div>
+
 
                     </div>
                     <!-- Modal Footer -->
@@ -845,93 +882,106 @@
                               const itemCount = materialsContainer.querySelectorAll('.material-row').length + 1;
 
                  const newItem = `
-          <div class="material-row justify-content-between" id="item-${itemCount}">
-            <!-- Item Number -->
-            <div class="item-number">
-          
-              <div class="number-display">${itemCount}</div>
-            </div>
-
-            <!-- Item Selector -->
-            <div class="item-cell item-selector mb-4">
-              <div class="cell-label">Item</div>
-              <div class="select-container">
-                <select class="item-dropdown" id="dropdown-${itemCount}" required>
-                  <option value="">Select item...</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Price per Kg -->
-            <div class="item-cell">
-              <div class="cell-label">Rupees/kg</div>
-              <div class="input-container">
-                <span class="price-prefix">₹</span>
-                <input type="text" class="price-input" type="number" required>
-                <span class="check-icon" style="display:none;">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                  </svg>
-                </span>
-              </div>
-              <div class="calc-preview" id="PriceperKgPreview"> = 0 Price/Kg</div>
-            </div>
-
-            <!-- Weight per Bag -->
-            <div class="item-cell">
-              <div class="cell-label">Weight/bag</div>
-              <div class="input-container">
-                <input type="text" class="weight-per-bag-input input-with-unit calc-trigger" placeholder="0" type="number" required>
-                <span class="unit-suffix">kg</span>
-              </div>
-              <div class="calc-preview" id="WeightperBagPreview"> = 0 Weight/Bag</div>
-            </div>
-
-            <!-- Total Bags -->
-            <div class="item-cell">
-              <div class="cell-label">Bags</div>
-              <div class="input-container">
-                <input type="text" class="total-bags-input calc-trigger" placeholder="0" type="number" required>
-                <span class="unit-suffix">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
-                  </svg>
-                </span>
-              </div>
-              <div class="calc-preview" id="TotalBagsPreview"> = 0 Bags</div>
-            </div>
-
-            <!-- Additional Weight -->
-            <div class="item-cell">
-              <div class="cell-label">Extra</div>
-              <div class="input-container">
-                <input type="text" class="additional-weight-input input-with-unit calc-trigger" placeholder="0" type="number" type="number">
-                <span class="unit-suffix">+kg</span>
-              </div>
-              <div class="calc-preview" id="AdditionalWeightPreview"> = 0 Additional weight</div>
-            </div>
-
-                      <!-- total Weight -->
-                    <div class="mb-4">
-                      <div class="cell-label">total wight(bags * we/b + extra )</div>
-                      <div class="input-container">
-                        <input type="text" class="total-weight-input input-with-unit calc-trigger" placeholder="0" type="text" readonly>
-                      </div>
-                    </div>
-
-            <!-- Total Price -->
-                    <div class="price-cell calc-preview">
-              <span class="total-price" readonly>₹0.00</span>
-            </div>
-
-            <!-- Delete Button -->
-            <button type="button" class="delete-btn delete-item-btn" title="Delete Item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-              </svg>
-            </button>
+                  <div class="material-row justify-content-between" id="item-${itemCount}">
+          <!-- Item Number -->
+          <div class="item-number">
+            <div class="number-display">${itemCount}</div>
           </div>
+
+          <!-- Item Selector -->
+          <div class="item-cell item-selector mb-4">
+            <div class="cell-label fw-semibold text-secondary">
+              <i class="bi bi-box-seam me-1"></i> Item
+            </div>
+            <div class="select-container">
+              <select class="item-dropdown" id="dropdown-${itemCount}" required>
+                <option value="">Select item...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Price per Kg -->
+          <div class="item-cell">
+            <div class="cell-label fw-semibold text-secondary">
+              <i class="bi bi-currency-rupee me-1"></i> Rupees/kg
+            </div>
+            <div class="input-container">
+              <span class="price-prefix">₹</span>
+              <input type="text" class="price-input" type="number" min="0" required>
+              <span class="check-icon" style="display:none;">
+                <!-- Check Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+                </svg>
+              </span>
+            </div>
+            <div class="calc-preview" id="PriceperKgPreview"> = 0 Price/Kg</div>
+          </div>
+
+          <!-- Weight per Bag -->
+          <div class="item-cell">
+            <div class="cell-label fw-semibold text-secondary">
+              <i class="bi bi-scale me-1"></i> Weight/bag
+            </div>
+            <div class="input-container">
+              <input type="text" class="weight-per-bag-input input-with-unit calc-trigger" placeholder="0" min="0" type="number" required>
+              <span class="unit-suffix">kg</span>
+            </div>
+            <div class="calc-preview" id="WeightperBagPreview"> = 0 Weight/Bag</div>
+          </div>
+
+          <!-- Total Bags -->
+          <div class="item-cell">
+            <div class="cell-label fw-semibold text-secondary">
+              <i class="bi bi-bag me-1"></i> Bags
+            </div>
+            <div class="input-container">
+              <input type="text" class="total-bags-input calc-trigger" placeholder="0" type="number" min="0" required>
+              <span class="unit-suffix">
+                <!-- Bag Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                </svg>
+              </span>
+            </div>
+            <div class="calc-preview" id="TotalBagsPreview"> = 0 Bags</div>
+          </div>
+
+          <!-- Additional Weight -->
+          <div class="item-cell">
+            <div class="cell-label fw-semibold text-secondary">
+              <i class="bi bi-plus-circle me-1"></i> Extra
+            </div>
+            <div class="input-container">
+              <input type="text" class="additional-weight-input input-with-unit calc-trigger" placeholder="0" min="0"type="number">
+              <span class="unit-suffix">+kg</span>
+            </div>
+            <div class="calc-preview" id="AdditionalWeightPreview"> = 0 Additional weight</div>
+          </div>
+
+          <!-- Total Weight -->
+          <div class="mb-4">
+            <div class="cell-label fw-semibold text-secondary">
+                   <i class="bi bi-calculator me-1"></i> Total Wt (kg)
+            </div>
+            <div class="input-container">
+              <input type="text" class="total-weight-input input-with-unit calc-trigger" placeholder="0" type="text" readonly>
+            </div>
+          </div>
+
+          <!-- Total Price -->
+          <div class="price-cell calc-preview">
+            <span class="total-price fw-semibold text-success" readonly>₹0.00</span>
+          </div>
+
+          <!-- Delete Button -->
+          <button type="button" class="delete-btn delete-item-btn" title="Delete Item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+              <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+            </svg>
+          </button>
+        </div>
         `;
 
                 materialsContainer.insertAdjacentHTML("beforeend", newItem);
@@ -984,6 +1034,7 @@
 
                                calculateLineTotal(row);
                                updateTotalAmount();
+                                          updateTotalWithGST();
                             });
         }, 0);
 
@@ -994,6 +1045,7 @@
                                row.remove();
                                updateTotalAmount();
                                updateItemNumbers();
+                                          updateTotalWithGST();
                             }
                         }
         });
@@ -1016,6 +1068,7 @@
 
                     calculateLineTotal(row);
                     updateTotalAmount();
+                         updateTotalWithGST();
                   }
                 });
    });
@@ -1098,7 +1151,8 @@
                   });
 
                   document.getElementById('totalValue').textContent = grandTotal.toFixed(2);
-                }
+                       
+                   }
 
               function updateItemNumbers() {
                     const rows = document.querySelectorAll('.material-row');
@@ -1111,64 +1165,59 @@
                   });
                 }
 
-                     document.getElementById('toggleTax').addEventListener('click', function () {
-        const taxFields = document.querySelectorAll('.tax-section');
-        const isVisible = !taxFields[0].classList.contains('d-none');
-        const icon = this.querySelector('i');
-         const container = document.getElementById("totalWithGstContainer");
+          document.getElementById('gstToggle').addEventListener('change', function () {
+          const taxFields = document.querySelectorAll('.tax-section');
+          const container = document.getElementById("totalWithGstContainer");
+          const isChecked = this.checked;
 
-      
-        taxFields.forEach(el => el.classList.toggle('d-none'));
-        container.classList.toggle('d-none');
+          // Show/hide tax input fields and container
+          taxFields.forEach(el => el.classList.toggle('d-none', !isChecked));
+          container.classList.toggle('d-none', !isChecked);
 
+          // Update label text
+          const setValue = (id, value) => document.getElementById(id).value = value;
+          const setText = (id, text) => document.getElementById(id).textContent = text;
 
-        // Toggle icon
-        icon.className = isVisible ? 'bi bi-plus-lg' : 'bi bi-x-lg';
+          if (isChecked) {
+            setText("gstLabel", "Remove GST");
+            // Optionally: Calculate GST here
+          } else {
+            setText("gstLabel", "Add GST");
+            setText("totalWithGstValue", "0.00");
 
-        // Toggle background color (you can use a class or inline style)
-        if (!isVisible) {
-            this.style.backgroundColor = 'var(--error)';
-            this.style.color = 'white';
-        } else {
-            this.style.backgroundColor = '';
-            this.style.color = '';
-        }
-    });
-
-        function updateTotalGst() {
-        const cgst = parseFloat(document.getElementById('cgstPercent').value) || 0;
-        const sgst = parseFloat(document.getElementById('sgstPercent').value) || 0;
-
-        document.getElementById('totalGstPercent').value = cgst + sgst;
-    }
-
-    document.getElementById('cgstPercent').addEventListener('input', updateTotalGst);
-    document.getElementById('sgstPercent').addEventListener('input', updateTotalGst);
-
-        function updateTotalWithGST() {
-        const cgst = parseFloat(document.getElementById("cgstPercent").value) || 0;
-        const sgst = parseFloat(document.getElementById("sgstPercent").value) || 0;
-        const baseTotal = parseFloat(document.getElementById("totalValue").textContent) || 0;
+            // Reset GST input values
+            ["cgstPercent", "sgstPercent", "igstPercent", "totalGstPercent","gstAmount"].forEach(id => setValue(id, 0));
+          }
+        });
 
 
-        console.log(baseTotal);
+                ['cgstPercent', 'sgstPercent', 'igstPercent'].forEach(id => {
+                  document.getElementById(id).addEventListener('input', updateTotalWithGST);
+            });
 
-        const totalGstPercent = cgst + sgst;
+
+    function updateTotalWithGST() {
+
+          const getNumericValue = id => parseFloat(document.getElementById(id)?.value || document.getElementById(id)?.textContent || 0) || 0;
+
+        const cgst = getNumericValue("cgstPercent");
+        const sgst = getNumericValue("sgstPercent");
+        const igst = getNumericValue("igstPercent");
+        const baseTotal = getNumericValue("totalValue");
+        const totalgst = getNumericValue("totalGstPercent");
+        const totalGstPercent = cgst + sgst + igst;
+
+        document.getElementById("totalGstPercent").value = totalGstPercent;
 
         const gstAmount = (baseTotal * totalGstPercent) / 100;
 
         const totalWithGst = baseTotal + gstAmount;
 
+        document.getElementById("gstAmount").value = gstAmount;
+
          document.getElementById("totalWithGstValue").textContent = totalWithGst.toFixed(2);
 
     }
-
-    // Add listeners
-    document.getElementById("cgstPercent").addEventListener("input", updateTotalWithGST);
-
-    document.getElementById("sgstPercent").addEventListener("input", updateTotalWithGST);
-
-
 </script>
   
 }
@@ -1214,6 +1263,28 @@
 </style>
 
 <style>
+    .form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
+}
+
+.form-floating > label {
+    padding: 1rem 0.75rem;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/* Ensuring icons stay aligned with text in labels */
+.form-floating > label i {
+    vertical-align: middle;
+}
+
     /* Clean, minimal styling to match your screenshot */
     .material-row {
         display: flex;
@@ -1416,6 +1487,56 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+    .subtotal-card {
+        background-color: var(--light-bg);
+        border-radius: 8px;
+        padding: 15px;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .tax-section {
+        min-width: 130px;
+        margin: 0.5rem;
+    }
+
+        .tax-section .form-floating {
+            height: 100%;
+        }
+
+        .tax-section .form-control {
+            height: 42px;
+            border-radius: 8px;
+        }
+
+        .tax-section .form-floating > label {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        .tax-section .form-floating > .form-control {
+            padding: 0.5rem 0.75rem;
+        }
+
+            /* Fixed floating label positioning */
+            .tax-section .form-floating > .form-control:focus ~ label,
+            .tax-section .form-floating > .form-control:not(:placeholder-shown) ~ label {
+                transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+                opacity: 0.65;
+            }
+
+    /* Toggle button styling */
+    #toggleTax {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
     }
 
 </style>
