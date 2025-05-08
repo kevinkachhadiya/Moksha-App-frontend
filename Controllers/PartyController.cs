@@ -245,27 +245,22 @@ namespace Moksha_App.Controllers
 
             var response = await _httpClient.GetAsync(baseAdd);
 
-            Debug.WriteLine(response);
-
             string jsonResponse = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                Dictionary<string, string> p = new Dictionary<string, string>();
+             
                 var parties = JsonSerializer.Deserialize<List<Party>>(jsonResponse, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
-                foreach (var party in parties)
-                {
-                    p.Add(party.P_Name, party.P_number);
-                }
-                if (parties.Count() >= 1)
+
+                if (parties?.Count() >= 1)
                 {
                     return Ok(new
                     {
                         success = true,
-                        data = p
+                        data = parties
                     });
                 }
                 else
@@ -289,7 +284,52 @@ namespace Moksha_App.Controllers
             }
         }
 
+        [HttpGet("getAllStates")]
+        [Route("Party/getAllStates")]
 
+        public async Task<IActionResult> getAllStates()
+        {
+            string baseAdd = _httpClient.BaseAddress + $"/Party/getAllStates";
+
+            var response = await _httpClient.GetAsync(baseAdd);
+
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+
+                var states = JsonSerializer.Deserialize<List<States>>(jsonResponse, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (states?.Count() >= 1)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        data = states
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        data = states
+                    });
+                }
+
+            }
+            else
+            {
+                return Ok(new
+                {
+                    success = false,
+                    data = "" // you can even return the list
+                });
+            }
+
+        }
 
 
     }

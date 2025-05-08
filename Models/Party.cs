@@ -33,4 +33,11 @@ namespace Moksha_App.Models
         public int TotalItems { get; set; }
         public int TotalPages { get; set; }
     }
+
+    public class States
+    {
+        public int Id { get; set; }
+        public string StateName { get; set; } = "";
+
+    }
 }

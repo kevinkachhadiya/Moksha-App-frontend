@@ -506,6 +506,7 @@
             <!-- Modal Body -->
             <div class="modal-body p-3">
                     <form id="customerBillForm" class="needs-validation" novalidate method="post">
+                    <input type="hidden" id="CustomerId" typeof="number"/>
                         <div class="row g-3">
 
                         <!-- Customer Information Row -->
@@ -552,12 +553,8 @@
                 <div class="col-md-4">
                     <div class="input-group">
                                     <span class="input-icon align-content-center"><i class="bi bi-geo"></i></span>
-                        <select class="form-select ms-2" id="PlaceOfSupply" name="PlaceOfSupply" required>
-                            <option value="">Place of Supply</option>
-                            <option value="Gujarat">Gujarat</option>
-                            <option value="Maharashtra">Maharashtra</option>
-                            <option value="Delhi">Delhi</option>
-                            <option value="Rajasthan">Rajasthan</option>
+                        <select class="form-select ms-2" id="PlaceOfSupply" name="PlaceOfSupply" >
+                           
                         </select>
                     </div>
                 </div>
@@ -659,7 +656,7 @@
 
                         </div>
                         <!-- Total Amount With GST -->
-                        <div class="col-12 mt-2 d-none" id="totalWithGstContainer">
+                        <div class="col-12 mt-2 d-none p-0" id="totalWithGstContainer">
                             <div class="d-flex p-2 ">
                                 <h5 class="fw-bold text-secondary mb-0 d-flex align-items-center">
                                     <i class="bi bi-receipt-cutoff me-2 fs-4"></i> Total Invoice Value (With GST)
@@ -669,7 +666,8 @@
                                 </h3>
                             </div>
                         </div>
-                        </div>
+                     
+                    </div>
 
                         <!-- Payment Method -->
                         <div class="col-md-3">
@@ -679,31 +677,50 @@
                                     <option value=0>💰 Cash</option>
                                     <option value=1>💳 Check</option>
                                     <option value=2>🏦 Bank Transfer</option>
+                                    <option value=3>📄 Due</option> <!-- Added Due Option -->
                                 </select>
                             </div>
                         </div>
 
                         <!-- Due Date -->
-                        <div class="col-md-4">
+                        <div class="col-md-5">
                             <div class="input-group">
-                                <span class="input-icon align-content-center">Due Date</span>
-                                <input type="date" class="form-control ms-2 shadow-sm" id="dueDate" name="DueDate" required>
+                                <span class="input-icon align-content-center">📅 Due Date</span>
+                                <input type="date" class="form-control ms-2 shadow-sm" id="dueDate" name="DueDate">
                             </div>
                         </div>
 
                         <!-- Mark as Paid Checkbox -->
                         <div class="col-md-4">
                             <div class="input-group bg-light rounded-4 border shadow-sm p-2 align-items-center">
-                                <input class="form-check-input mt-0" type="checkbox" id="isPaid" name="IsPaid" required>
+                                <input class="form-check-input mt-0" type="checkbox" id="isPaid" name="IsPaid">
                                 <label class="form-check-label ms-2 fw-semibold" for="isPaid">
-                                    <i class="bi bi-receipt me-1"></i>Mark as Paid
+                                    <i class="bi bi-receipt me-1"></i>Mark as Read
                                 </label>
-                                <div class="invalid-feedback ms-3" style="max-width: 40%;">
+                                <div class="invalid-feedback ms-3">
                                     Please confirm payment status
                                 </div>
                             </div>
                         </div>
 
+
+                        <!-- Amount Paid -->
+                        <div class="col-md-6 mt-4">
+                            <div class="input-group align-items-center">
+                                <i class="fas fa-wallet me-2"></i> ₹ Amount Paid
+                                <input type="number" step="0.01" min="0" class="form-control ms-2 shadow-sm" id="amountPaid" name="AmountPaid" required>
+                            </div>
+                        </div>
+
+                        <!-- Balance Due (Read-only) -->
+                        <div class="col-md-6 mt-4">
+                            <div class="input-group">
+                                <span class="input-icon align-content-center">
+                                    <i class="fas fa-exclamation-circle"></i> Balance Due
+                                </span>
+                                <input type="text" class="form-control ms-2 shadow-sm" id="balanceDue" name="BalanceDue" readonly>
+                            </div>
+                        </div>
 
                     </div>
                     <!-- Modal Footer -->
@@ -717,7 +734,7 @@
                             <button type="submit"
                                     id="createInvoiceBtn"
                                     class="btn btn-lg btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center"
-                                    disabled>
+                                    >
                                 <i class="bi bi-file-earmark-check me-2"></i>Create Invoice
                             </button>
                         </div>
@@ -774,26 +791,40 @@
                         }
                     });
 
+                      $.ajax({
+                             url: `@Url.Action("getAllStates", "Party")`,
+                             type: "GET",
+                             success: function(response) {
+                                 if ( response.success)
+                                 {
+                                          const selectElement = document.getElementById('PlaceOfSupply');
+
+                                          const placeholderOption = document.createElement('option');
+                                              placeholderOption.value = '';
+                                              placeholderOption.text = 'Place of Supply';
+                                              selectElement.appendChild(placeholderOption);
+
+                                              Object.entries(response.data).forEach(([key, value]) => {
+                                              const option = document.createElement('option');
+                                              option.value = value.id; 
+                                              option.text = value.stateName;
+                                              selectElement.appendChild(option);
+
+                                                   });
+                                              
+                                 }
+                                 else
+                                 {
+                                     console.error("No data received");
+                                 }
+                             },
+                             error: function(xhr, status, error) {
+                                 console.error("AJAX error:", error);
+                             }
+                         });
+
                  const modal =  new bootstrap.Modal(document.getElementById('addCutomerBillModal'));
-                 const form = document.getElementById('customerBillForm');
-                 if (form)
-                      {
-                  const inputs = form.querySelectorAll('.is-valid, .is-invalid');
-                  inputs.forEach(input => {
-                  input.classList.remove('is-valid', 'is-invalid');
-                    });
-
-                 // Optional: remove feedback text if needed
-                 const feedbacks = form.querySelectorAll('.valid-feedback, .invalid-feedback');
-                 feedbacks.forEach(fb => {
-                  fb.style.display = 'none'; // or hide it with ``
-                 fb.classList.remove('valid-feedback', 'invalid-feedback');
-                   });
-
-                          form.reset(); 
-                 }
-
-            modal.show();
+                  modal.show();
 
         });
 
@@ -805,6 +836,8 @@
                document.getElementById('phoneNumber').value = "";
                applyValidation('CustomerName', false);
                applyValidation('phoneNumber', false);
+                applyValidation('CustomerAddress', false);
+
 
                                         if (value.length <= 0 || /\d/.test(value))
                                 {
@@ -826,10 +859,15 @@
                        .then(response => response.json())
                        .then(response =>{
                             customer.length = 0;
-                            Object.entries(response.data).forEach(([key,value]) => customer.push({name: key,
-                            phone: parseInt(value)
-                        })
-                       )
+                            Object.entries(response.data).forEach(([key,value]) => customer.push({
+                                 id : parseInt(value.id),
+                                 name: value.p_Name,
+                                 phone: parseInt(value.p_number),
+                                 address: value.p_Address
+                                 })
+
+                        )
+                                       console.log(response.data);
                              const nameSuggestions = document.getElementById('nameSuggestions');
                             
                             displayCustomerSuggestions(customer, nameSuggestions);
@@ -847,7 +885,8 @@
                                            suggestionItem.className = 'suggestion-item';
                                            suggestionItem.innerHTML = `
                                             <div class="suggestion-name">${cus.name}</div>
-                                            <div class="suggestion-phone">${cus.phone}</div>`;
+                                            <div class="suggestion-phone">${cus.phone}</div>
+                                            `;
                                              nameSuggestions.appendChild(suggestionItem);
 
                                    suggestionItem.addEventListener('click', () => {
@@ -867,8 +906,19 @@
                                   phoneInput.value  = cus.phone;
                                   phoneInput.classList.remove('is-invalid');
                                   phoneInput.classList.add('is-valid');
-                                 
+
+                                  const addressInput = document.getElementById('CustomerAddress');
+                                       applyValidation('CustomerAddress', true);
+                                  addressInput.value = cus.address;
+                                  addressInput.classList.remove('is-invalid');
+                                  addressInput.classList.add('is-valid');
+
+                                  const customerIdInput = document.getElementById('CustomerId');
+                                  customerIdInput.value = cus.id;
+                                
+
                                   nameSuggestions.style.display = 'none';
+
                                  });
                                  });
 
@@ -877,6 +927,7 @@
                               }
              });
 
+        
        document.getElementById('addMaterialBtn').addEventListener("click", function() {
             const materialsContainer = document.getElementById('materialsContainer');
                               const itemCount = materialsContainer.querySelectorAll('.material-row').length + 1;
@@ -894,7 +945,7 @@
               <i class="bi bi-box-seam me-1"></i> Item
             </div>
             <div class="select-container">
-              <select class="item-dropdown" id="dropdown-${itemCount}" required>
+                  <select name="stockItem" class="item-dropdown" id="dropdown-${itemCount}" required>
                 <option value="">Select item...</option>
               </select>
             </div>
@@ -907,7 +958,7 @@
             </div>
             <div class="input-container">
               <span class="price-prefix">₹</span>
-              <input type="text" class="price-input" type="number" min="0" required>
+                       <input name="priceperkg" class="price-input" type="number" min="0" required>
               <span class="check-icon" style="display:none;">
                 <!-- Check Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
@@ -924,7 +975,7 @@
               <i class="bi bi-scale me-1"></i> Weight/bag
             </div>
             <div class="input-container">
-              <input type="text" class="weight-per-bag-input input-with-unit calc-trigger" placeholder="0" min="0" type="number" required>
+              <input class="weight-per-bag-input input-with-unit calc-trigger" placeholder="0" min="0" type="number" required>
               <span class="unit-suffix">kg</span>
             </div>
             <div class="calc-preview" id="WeightperBagPreview"> = 0 Weight/Bag</div>
@@ -936,7 +987,7 @@
               <i class="bi bi-bag me-1"></i> Bags
             </div>
             <div class="input-container">
-              <input type="text" class="total-bags-input calc-trigger" placeholder="0" type="number" min="0" required>
+              <input name="bags" class="total-bags-input calc-trigger" placeholder="0" type="number" min="0" required>
               <span class="unit-suffix">
                 <!-- Bag Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
@@ -953,7 +1004,7 @@
               <i class="bi bi-plus-circle me-1"></i> Extra
             </div>
             <div class="input-container">
-              <input type="text" class="additional-weight-input input-with-unit calc-trigger" placeholder="0" min="0"type="number">
+              <input  name="extra" class="additional-weight-input input-with-unit calc-trigger" placeholder="0" min="0" type="number">
               <span class="unit-suffix">+kg</span>
             </div>
             <div class="calc-preview" id="AdditionalWeightPreview"> = 0 Additional weight</div>
@@ -965,13 +1016,13 @@
                    <i class="bi bi-calculator me-1"></i> Total Wt (kg)
             </div>
             <div class="input-container">
-              <input type="text" class="total-weight-input input-with-unit calc-trigger" placeholder="0" type="text" readonly>
+              <input type="text" name="totalWeight" class="total-weight-input input-with-unit calc-trigger" placeholder="0" type="text" readonly>
             </div>
           </div>
 
           <!-- Total Price -->
           <div class="price-cell calc-preview">
-            <span class="total-price fw-semibold text-success" readonly>₹0.00</span>
+            <span name="itemamount" class="total-price fw-semibold text-success" readonly>₹0.00</span>
           </div>
 
           <!-- Delete Button -->
@@ -1034,7 +1085,7 @@
 
                                calculateLineTotal(row);
                                updateTotalAmount();
-                                          updateTotalWithGST();
+                                updateTotalWithGST();
                             });
         }, 0);
 
@@ -1071,22 +1122,178 @@
                          updateTotalWithGST();
                   }
                 });
-   });
+          });
+
+
+
+         document.addEventListener("DOMContentLoaded", function() {
+                const form = document.getElementById('customerBillForm');
+                const submitButton = document.getElementById('createInvoiceBtn');
+
+               
+                checkFormValidity();
+
+                // Add event listeners to all form elements, not just required ones
+                // This ensures we catch all potential validation changes
+                const allFormElements = form.querySelectorAll('input, select');
+                allFormElements.forEach(element => {
+                    ['input', 'change', 'blur'].forEach(eventType => {
+                        element.addEventListener(eventType, checkFormValidity);
+
+                    });
+                });
+
+                // Listen for material item additions and deletions
+                const addMaterialBtn = document.getElementById('addMaterialBtn');
+                if (addMaterialBtn) {
+                    addMaterialBtn.addEventListener('click', function() {
+                        setTimeout(function() {
+                            // Add event listeners to new form elements
+                            const newElements = form.querySelectorAll('input:not([data-has-listener]), select:not([data-has-listener]), textarea:not([data-has-listener])');
+                            newElements.forEach(element => {
+                                ['input', 'change', 'blur'].forEach(eventType => {
+                                    element.addEventListener(eventType, checkFormValidity);
+                                });
+                                element.setAttribute('data-has-listener', 'true');
+                            });
+                            checkFormValidity();
+                        }, 100);
+                    });
+                }
+
+                // Add event delegation for delete buttons on material items
+                const materialsContainer = document.getElementById('materialsContainer');
+                if (materialsContainer) {
+                    materialsContainer.addEventListener('click', function(event) {
+                        if (event.target.closest('.delete-item-btn')) {
+                            setTimeout(checkFormValidity, 100);
+                        }
+                    });
+                }
+
+                // Bootstrap custom validation styles
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+
+                        event.preventDefault();
+                 const formData = {
+
+                           Id:  parseInt(document.getElementById('CustomerId').value),
+                           billDate: document.getElementById('invoiceDate').value,
+                           stockItems: [],
+                           sumValue : parseFloat(document.getElementById("totalValue").textContent)||0,
+                           includeGst : document.getElementById("gstToggle").checked,
+                           paymentMethod : parseFloat(document.getElementById('paymentMethod').value) ||0,
+                           dueDate : document.getElementById('dueDate').value,
+                           amountPaid : parseFloat(document.getElementById("amountPaid").textContent)||0,
+                           balanceDue : parseFloat(document.getElementById("BalanceDue").textContent)||0
+        };
+
+            const stockItems = document.querySelectorAll('.material-row');
+              stockItems.forEach(item => {
+              const stockItem = {
+                              stockName: item.querySelector('select[name="stockItem"]').value,
+                              bags: parseFloat(item.querySelector('input[name="bags"]').value) || 0,
+                              extra: parseFloat(item.querySelector('input[name="extra"]').value) || 0,
+                              totalWeight: parseFloat(item.querySelector('input[name="totalWeight"]').value) || 0,
+                              priceperkg: parseFloat(item.querySelector('input[name="priceperkg"]').value) || 0,
+                              itemamount: parseFloat((item.querySelector('span[name="itemamount"]')?.textContent || "₹0.00").replace("₹", "")) || 0
+                           };
+        formData.stockItems.push(stockItem);
+    });
+               if (formData.includeGst)
+        {
+
+             formData.CustomerGSTIN =  document.getElementById('CustomerGSTIN').value,
+                 formData.PlaceOfSupply = parseInt(document.getElementById('PlaceOfSupply').value),
+             formData.cgstPercent = parseFloat(document.getElementById('cgstPercent').value) || 0,
+             formData.sgstPercent = parseFloat(document.getElementById('sgstPercent').value) || 0,
+             formData.igstPercent = parseFloat(document.getElementById('igstPercent').value) || 0,
+             formData.gstPercent = parseFloat(document.getElementById('totalGstPercent').value) || 0,
+             formData.gstAmount = parseFloat(document.getElementById('gstAmount').value) || 0,
+             formData.hsnCode = document.getElementById('hsnCode').value,
+                 formData.totalWithGstValue = parseFloat(document.getElementById('totalWithGstValue').textContent) || 0
+        }
+
+        console.log(formData);
+
+
+                }, false);
+
+                function checkFormValidity() {
+
+                    let isValid = true;
+
+                    // PART 1: Check all required fields are filled
+                    const requiredElements = form.querySelectorAll('[required]');
+                    requiredElements.forEach(element => {
+                        // Special handling for checkboxes and radio buttons
+                        if (element.type === 'checkbox' || element.type === 'radio') {
+                            if (!element.checked) {
+                                isValid = false;
+                            }
+                        }
+                        // For selects, check if a non-empty option is selected
+                        else if (element.tagName === 'SELECT') {
+                            if (!element.value || element.value.trim() === '') {
+                                isValid = false;
+                            }
+                        }
+                        // For all other input types
+                        else if (!element.value || element.value.trim() === '') {
+                            isValid = false;
+                        }
+                    });
+
+                    // PART 2: Check if any element has is-invalid class
+                    const invalidElements = form.querySelectorAll('.is-invalid');
+                    if (invalidElements.length > 0) {
+                        isValid = false;
+                    }
+
+                    // PART 3: Check if at least one material item exists in the container
+                    const materialItems = document.querySelectorAll('#materialsContainer .material-row');
+                    if (materialItems.length === 0) {
+                        isValid = false;
+                    }
+
+                    // PART 4: Check item-specific required fields in material rows
+                    materialItems.forEach(row => {
+                        // Check dropdown selection
+                        const dropdown = row.querySelector('.item-dropdown');
+                        if (!dropdown || !dropdown.value) {
+                            isValid = false;
+                        }
+
+                        // Check if any required inputs in this row are empty or invalid
+                        const requiredRowInputs = row.querySelectorAll('input[required]');
+                        requiredRowInputs.forEach(input => {
+                            if (!input.value || input.value.trim() === '' || input.classList.contains('is-invalid')) {
+                                isValid = false;
+                            }
+                        });
+                    });
+
+
+
+                   !isValid ? submitButton.setAttribute("disabled", "") : submitButton.removeAttribute("disabled");
+
+                    return isValid;
+                }
+            });
+        
 
               function applyValidation(inputId, showValid = false) {
-             const input = document.getElementById(inputId);
-            input.classList.add('is-invalid');
+              const input = document.getElementById(inputId);
+                    showValid === true
+                       ? (input.classList.remove('is-invalid'), input.classList.add('is-valid'))
+                       : (input.classList.remove('is-valid'), input.classList.add('is-invalid'));
 
-            const icon = input.nextElementSibling;
-            const feedback = icon?.nextElementSibling;
-
-            if (feedback)
-            {
-                feedback.classList.add('valid-feedback');
-                feedback.style.display = showValid ? 'block' : 'none';
-            }
-
-        }
+             }
             
               function safeEval(expression) {
                   try {
@@ -1135,14 +1342,14 @@
 
                   const totalPrice = totalWeight * price;
 
-                  totalWeightInput.value = `${totalWeight.toFixed(2)} = (${weightPerBag}*${totalBags})+ ${additionalWeight}`;
+                  totalWeightInput.value = `${totalWeight.toFixed(2)}`;
 
                   row.querySelector('.total-price').textContent = `₹${totalPrice.toFixed(2)}`;
 
                   return totalPrice;
                 }
 
-              function updateTotalAmount() {
+         function updateTotalAmount() {
                   const rows = document.querySelectorAll('.material-row');
                   let grandTotal = 0;
 
@@ -1151,52 +1358,10 @@
                   });
 
                   document.getElementById('totalValue').textContent = grandTotal.toFixed(2);
-                       
+                        updateBalanceDue();
+                
                    }
-
-              function updateItemNumbers() {
-                    const rows = document.querySelectorAll('.material-row');
-                    rows.forEach((row, index) => {
-                    const itemNumberCell = row.querySelector('.item-number');
-                    itemNumberCell.textContent = index + 1;
-                    row.id = `item-${index + 1}`;
-                    const dropdown = row.querySelector('.item-dropdown');
-                    if (dropdown) dropdown.id = `dropdown-${index + 1}`;
-                  });
-                }
-
-          document.getElementById('gstToggle').addEventListener('change', function () {
-          const taxFields = document.querySelectorAll('.tax-section');
-          const container = document.getElementById("totalWithGstContainer");
-          const isChecked = this.checked;
-
-          // Show/hide tax input fields and container
-          taxFields.forEach(el => el.classList.toggle('d-none', !isChecked));
-          container.classList.toggle('d-none', !isChecked);
-
-          // Update label text
-          const setValue = (id, value) => document.getElementById(id).value = value;
-          const setText = (id, text) => document.getElementById(id).textContent = text;
-
-          if (isChecked) {
-            setText("gstLabel", "Remove GST");
-            // Optionally: Calculate GST here
-          } else {
-            setText("gstLabel", "Add GST");
-            setText("totalWithGstValue", "0.00");
-
-            // Reset GST input values
-            ["cgstPercent", "sgstPercent", "igstPercent", "totalGstPercent","gstAmount"].forEach(id => setValue(id, 0));
-          }
-        });
-
-
-                ['cgstPercent', 'sgstPercent', 'igstPercent'].forEach(id => {
-                  document.getElementById(id).addEventListener('input', updateTotalWithGST);
-            });
-
-
-    function updateTotalWithGST() {
+         function updateTotalWithGST() {
 
           const getNumericValue = id => parseFloat(document.getElementById(id)?.value || document.getElementById(id)?.textContent || 0) || 0;
 
@@ -1216,8 +1381,137 @@
         document.getElementById("gstAmount").value = gstAmount;
 
          document.getElementById("totalWithGstValue").textContent = totalWithGst.toFixed(2);
+         updateBalanceDue();
 
     }
+         function updateBalanceDue()
+               {
+                        const includeGst = document.getElementById("gstToggle").checked;
+                        const balanceInput = document.getElementById("balanceDue");
+                         if (includeGst) 
+                            {
+                              const totalWithGst = parseFloat(document.getElementById("totalWithGstValue").textContent) || 0;
+                              balanceInput.value = totalWithGst.toFixed(2);
+                            }
+                          else {
+                            const baseTotal = parseFloat(document.getElementById("totalValue").textContent) || 0;
+                            balanceInput.value = baseTotal.toFixed(2);
+                               }
+                       }
+
+
+          function updateItemNumbers() {
+                    const rows = document.querySelectorAll('.material-row');
+                    rows.forEach((row, index) => {
+                    const itemNumberCell = row.querySelector('.item-number');
+                    itemNumberCell.textContent = index + 1;
+                    row.id = `item-${index + 1}`;
+                    const dropdown = row.querySelector('.item-dropdown');
+                    if (dropdown) dropdown.id = `dropdown-${index + 1}`;
+                  });
+                }
+
+          function validateGSTINField() {
+            const customerGst = document.getElementById('CustomerGSTIN');
+            const gstinInput = customerGst.value.trim();
+            const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
+            applyValidation('CustomerGSTIN', gstinRegex.test(gstinInput));
+        }
+        function validateAmountPaid() {
+            const amountPaidInput = document.getElementById("amountPaid");
+            const balanceDueInput = document.getElementById("balanceDue");
+            const gstToggle = document.getElementById("gstToggle");
+
+           
+            updateTotalAmount();
+            if (gstToggle.checked) {
+                updateTotalWithGST();
+            }
+
+            const totalAmount = gstToggle.checked
+                ? parseFloat(document.getElementById("totalWithGstValue").textContent) || 0
+                : parseFloat(document.getElementById("totalValue").textContent) || 0;
+
+            const rawInput = amountPaidInput.value.trim();
+            const isValidNumber = /^\d+(\.\d{1,2})?$/.test(rawInput);  
+
+          const paid = isValidNumber ? parseFloat(rawInput) : -1; 
+
+
+            if (paid < 0 || paid > totalAmount) {
+                applyValidation("amountPaid", false);
+            } else {
+                applyValidation("amountPaid", true);
+                balanceDueInput.value = (totalAmount - paid).toFixed(2);
+            }
+        }
+
+
+         
+            document.getElementById('gstToggle').addEventListener('change', function () {
+          const taxFields = document.querySelectorAll('.tax-section');
+          const container = document.getElementById("totalWithGstContainer");
+          const isChecked = this.checked;
+          const supplySelect = document.getElementById("PlaceOfSupply");
+          const customerGst = document.getElementById("CustomerGSTIN");
+
+
+          taxFields.forEach(el => el.classList.toggle('d-none', !isChecked));
+          container.classList.toggle('d-none', !isChecked);
+
+         
+          const setValue = (id, value) => document.getElementById(id).value = value;
+          const setText = (id, text) => document.getElementById(id).textContent = text;
+
+          if (isChecked) {
+            setText("gstLabel", "Remove GST");
+            supplySelect.setAttribute("required", "required");
+            customerGst.setAttribute("required", "required");
+
+            if (supplySelect.value === "") 
+                {
+                        applyValidation("PlaceOfSupply", false);
+                }
+            else 
+        {
+            applyValidation("PlaceOfSupply", true);
+        }
+            supplySelect.addEventListener("change", function () {
+            applyValidation("PlaceOfSupply", this.value !== "");
+        });
+
+            validateGSTINField();
+                   document.getElementById("CustomerGSTIN").addEventListener("keyup", validateGSTINField);
+               }
+          else
+          
+          {
+            setText("gstLabel", "Add GST");
+            setText("totalWithGstValue", "0.00");
+
+            // Reset GST input values
+            ["cgstPercent", "sgstPercent", "igstPercent", "totalGstPercent","gstAmount"].forEach(id => setValue(id, 0));
+
+         supplySelect.removeAttribute("required");
+         customerGst.removeAttribute("required");
+
+         
+         supplySelect.classList.remove("is-valid", "is-invalid");
+         customerGst.classList.remove("is-valid", "is-invalid");
+          
+          }
+        });
+
+             document.getElementById("amountPaid").addEventListener("input", validateAmountPaid);
+
+
+            ['cgstPercent', 'sgstPercent', 'igstPercent'].forEach(id => {
+                  document.getElementById(id).addEventListener('input', updateTotalWithGST);
+
+            });
+
+            
 </script>
   
 }
