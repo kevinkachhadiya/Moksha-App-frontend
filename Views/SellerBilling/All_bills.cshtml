@@ -1129,47 +1129,69 @@
          document.addEventListener("DOMContentLoaded", function() {
                 const form = document.getElementById('customerBillForm');
                 const submitButton = document.getElementById('createInvoiceBtn');
-
+                 const amountPaidInput = document.getElementById('amountPaid');
                
                 checkFormValidity();
 
-                // Add event listeners to all form elements, not just required ones
-                // This ensures we catch all potential validation changes
-                const allFormElements = form.querySelectorAll('input, select');
-                allFormElements.forEach(element => {
-                    ['input', 'change', 'blur'].forEach(eventType => {
-                        element.addEventListener(eventType, checkFormValidity);
+       
+        // Core event handler
+        function handleFormEvent(event) {
+            const element = event.target;
 
-                    });
+            // Determine all validated elements dynamically
+            const requiredElements = form.querySelectorAll('[required]');
+            const invalidElements = form.querySelectorAll('.is-invalid');
+            const materialRows = document.querySelectorAll('#materialsContainer .material-row');
+            const itemDropdowns = Array.from(materialRows).map(row => row.querySelector('.item-dropdown'));
+            const rowInputs = Array.from(materialRows).flatMap(row => Array.from(row.querySelectorAll('input[required]')));
+
+            const validatedElements = new Set([
+                ...requiredElements,
+                ...invalidElements,
+                ...itemDropdowns,
+                ...rowInputs
+            ]);
+
+             if (element !== amountPaidInput) {
+                amountPaidInput.value = "0";
+                    checkFormValidity();
+            }
+        }
+
+        // Initial binding of event listeners
+        function bindValidationListeners(scope) {
+            const elements = scope.querySelectorAll('input:not([data-has-listener]), select:not([data-has-listener]), textarea:not([data-has-listener])');
+            elements.forEach(element => {
+                ['input', 'change', 'blur'].forEach(eventType => {
+                    element.addEventListener(eventType, handleFormEvent);
                 });
+                element.setAttribute('data-has-listener', 'true');
+            });
+        }
 
-                // Listen for material item additions and deletions
-                const addMaterialBtn = document.getElementById('addMaterialBtn');
-                if (addMaterialBtn) {
-                    addMaterialBtn.addEventListener('click', function() {
-                        setTimeout(function() {
-                            // Add event listeners to new form elements
-                            const newElements = form.querySelectorAll('input:not([data-has-listener]), select:not([data-has-listener]), textarea:not([data-has-listener])');
-                            newElements.forEach(element => {
-                                ['input', 'change', 'blur'].forEach(eventType => {
-                                    element.addEventListener(eventType, checkFormValidity);
-                                });
-                                element.setAttribute('data-has-listener', 'true');
-                            });
-                            checkFormValidity();
-                        }, 100);
-                    });
-                }
+        // Bind to all existing elements at start
+        bindValidationListeners(form);
 
-                // Add event delegation for delete buttons on material items
-                const materialsContainer = document.getElementById('materialsContainer');
-                if (materialsContainer) {
-                    materialsContainer.addEventListener('click', function(event) {
-                        if (event.target.closest('.delete-item-btn')) {
-                            setTimeout(checkFormValidity, 100);
-                        }
-                    });
+        // Handle material row additions
+        const addMaterialBtn = document.getElementById('addMaterialBtn');
+        if (addMaterialBtn) {
+            addMaterialBtn.addEventListener('click', function () {
+                setTimeout(() => {
+                    bindValidationListeners(form);
+                    checkFormValidity(); // Optional: ensure state is updated after new row
+                }, 100);
+            });
+        }
+
+        // Handle material row deletions
+        const materialsContainer = document.getElementById('materialsContainer');
+        if (materialsContainer) {
+            materialsContainer.addEventListener('click', function (event) {
+                if (event.target.closest('.delete-item-btn')) {
+                    setTimeout(checkFormValidity, 100);
                 }
+            });
+        }
 
                 // Bootstrap custom validation styles
                 form.addEventListener('submit', function(event) {
@@ -1281,6 +1303,8 @@
 
 
                    !isValid ? submitButton.setAttribute("disabled", "") : submitButton.removeAttribute("disabled");
+
+                   
 
                     return isValid;
                 }
@@ -1510,8 +1534,31 @@
                   document.getElementById(id).addEventListener('input', updateTotalWithGST);
 
             });
+                   ['invoiceDate','dueDate'].forEach(id=>
+                   {
+                         const invoicedate = document.getElementById('invoiceDate');
+                         const duedate = document.getElementById('dueDate');
+                         document.getElementById(id).addEventListener('change',function()
+                         {
+                           if(invoicedate && duedate)
+                          {
+                              const invoice = new Date(invoicedate.value);
+                              const due = new Date(duedate.value);
 
-            
+                              if(invoice <= due)
+                                 {
+                                      applyValidation('invoiceDate', true);
+                                      applyValidation('dueDate', true);
+                                }
+                              else
+                                  {
+                                          applyValidation('invoiceDate', false);
+                                          applyValidation('dueDate', false);
+                                  }
+                          }
+                         });              
+                   });
+                
 </script>
   
 }
